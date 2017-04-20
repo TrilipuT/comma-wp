@@ -11,6 +11,8 @@ services:
     volumes:
 #      - ./mariadb-init:/docker-entrypoint-initdb.d # Place init .sql file(s) here.
       - ./mariadb:/var/lib/mysql # I want to manage volumes manually.
+    ports:
+      - '3306:3306'
 
   php:
 #    image: wodby/wordpress:4-7.1-2.1.0
