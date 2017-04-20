@@ -1,7 +1,7 @@
 [
 	{
-		"local_folder": "comma-uploads",
-		"bucket": "wp-content/uploads",
+		"local_folder": "wp-content/uploads",
+		"bucket": "comma-uploads",
 		"cache_folder": "/tmp",
 		"gid": "498",
 		"uid": "498",
