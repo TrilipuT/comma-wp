@@ -1,5 +1,7 @@
 .idea
 .DS_Store
+mariadb
+wp-content/uploads
 # Elastic Beanstalk Files
 .htaccess
 .elasticbeanstalk/*

@@ -9,8 +9,8 @@ $s3fs_mounts 			= array();
 
 
 // get the mounts out of the ondeck config file
-if (file_exists("/var/app/ondeck/etc/s3fs.json")) {
-	$s3fs_mounts = json_decode(file_get_contents("/var/app/ondeck/etc/s3fs.json"),true);
+if (file_exists("/var/app/ondeck/s3fs/s3fs.json")) {
+	$s3fs_mounts = json_decode(file_get_contents("/var/app/ondeck/s3fs/s3fs.json"),true);
 }
 
 if (!empty($s3fs_mounts)) {
@@ -62,6 +62,6 @@ if (!empty($s3fs_mounts)) {
 	}
 
 } else {
-	echo "No mounts defined in yourapp /etc/s3fs.json";
+	echo "No mounts defined in yourapp /s3fs/s3fs.json";
 }
 ?>
