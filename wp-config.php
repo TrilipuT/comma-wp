@@ -79,6 +79,8 @@ $table_prefix  = 'wp_';
  */
 define('WP_DEBUG', $_SERVER['WP_DEBUG']);
 
+define('AWS_CLOUDFRONT_DOMAIN', $_SERVER['AWS_CLOUDFRONT_DOMAIN']);
+
 /* That's all, stop editing! Happy blogging. */
 
 /** Absolute path to the WordPress directory. */
