@@ -58,7 +58,7 @@ if( defined( 'AWS_CLOUDFRONT_DOMAIN' ) ) {
 
             $regex_ext = implode( '|', array_map( 'preg_quote', $ext ) );
 
-            $regex = "https?:\/\/($regex_hosts)\/(([^\"^']+)\.($regex_ext))";
+            $regex = "https?:\/\/($regex_hosts)\/wp-content\/uploads\/(([^\"^']+)\.($regex_ext))";
             if ( ! $in_text ) {
                 $regex = '^' . $regex;
             }
@@ -72,8 +72,8 @@ if( defined( 'AWS_CLOUDFRONT_DOMAIN' ) ) {
     $filters = [
         //'template_directory_uri',
         //'stylesheet_directory_uri',
-        'script_loader_src',
-        'style_loader_src',
+//        'script_loader_src',
+//        'style_loader_src',
         'wp_get_attachment_url'
     ];
 
