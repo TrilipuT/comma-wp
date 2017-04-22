@@ -81,6 +81,9 @@ define('WP_DEBUG', $_SERVER['WP_DEBUG']);
 
 define('AWS_CLOUDFRONT_DOMAIN', $_SERVER['AWS_CLOUDFRONT_DOMAIN']);
 
+define( 'DISALLOW_FILE_EDIT', TRUE );
+define( 'DISALLOW_FILE_MODS', TRUE );
+
 /* That's all, stop editing! Happy blogging. */
 
 /** Absolute path to the WordPress directory. */

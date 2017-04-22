@@ -2,7 +2,7 @@
 .DS_Store
 mariadb
 wp-content/uploads
-wp-content/themes/comma
+wp-content/themes/*
 # Elastic Beanstalk Files
 .htaccess
 .elasticbeanstalk/*
