@@ -30,7 +30,7 @@ services:
       DB_USER: 'wordpress'
       DB_PASSWORD: 'wordpress'
       WP_DEBUG: 'true'
-      AWS_CLOUDFRONT_DOMAIN: 'comma.dev'
+      AWS_CLOUDFRONT_DOMAIN: 'comma.dev/wp-content/uploads'
     volumes:
       - ./:/var/www/html
 #      - d4d-unison-sync:/var/www/html # Docker-sync for macOS users
