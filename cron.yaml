@@ -1,5 +1,5 @@
 version: 1
 cron: 
-  - name: "task1"
-    url: "/scheduled.php"
+  - name: "wp-cron"
+    url: "/wp-cron.php?doing_wp_cron"
     schedule: "*/1 * * * *"
