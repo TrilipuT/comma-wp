@@ -82,7 +82,8 @@ define( 'WP_DEBUG', $_SERVER['WP_DEBUG'] );
 define( 'AWS_CLOUDFRONT_DOMAIN', $_SERVER['AWS_CLOUDFRONT_DOMAIN'] );
 
 define( 'DISALLOW_FILE_EDIT', true );
-define( 'DISALLOW_FILE_MODS', true );
+//define( 'DISALLOW_FILE_MODS', true );
+define( 'WP_POST_REVISIONS', 10 );
 define( 'DISABLE_WP_CRON', true );
 
 /* That's all, stop editing! Happy blogging. */
