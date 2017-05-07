@@ -4,7 +4,6 @@ mariadb
 wp-content/uploads
 wp-content/themes/*
 # Elastic Beanstalk Files
-.htaccess
 .elasticbeanstalk/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
