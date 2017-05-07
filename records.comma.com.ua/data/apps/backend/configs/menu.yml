@@ -1,0 +1,10 @@
+menu:
+  #users:
+  #  icon: user
+  #  name: Администрирование // 0 // Пользователи
+  #  link: moduleDefault:list/module=users
+
+  albums:
+    icon: music
+    name: Comma // 0 // Альбомы
+    link: moduleDefault:list/module=albums

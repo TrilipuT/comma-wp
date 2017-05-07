@@ -1,0 +1,65 @@
+<header {% if track %}class="header header-player js-player" data-tracks="{{ tracks }}"{% else %}class="header"{% endif %}>
+    <a href="{{ path("menu") }}" class="header-menu">
+        <i></i>
+        <i></i>
+        <i></i>
+    </a>
+
+    <a href="{{ path("home") }}" class="header-logo">
+        <i class="icon icon-comma"></i>
+        [RECORDS]
+    </a>
+
+    <span class="header-title js-player-trackName">{{ track.name }}</span>
+
+    <div class="header-sections">
+        {% if track %}
+            <div class="header-section header-section--player">
+                <div class="header-player-controls">
+                    <a href="#" class="icon-font icon-font-fast-backward js-player-prevBtn"></a>
+                    <a href="#" class="icon-font icon-font-play js-player-playBtn"></a>
+                    <a href="#" class="icon-font icon-font-pause js-player-pauseBtn" style="display: none"></a>
+                    <a href="#" class="icon-font icon-font-fast-forward js-player-nextBtn"></a>
+                </div>
+
+                <div class="header-player-track">
+                    <span class="header-player-track-name js-player-trackName">{{ track.name }}</span>
+
+                    <div class="header-player-progress">
+                        <div class="header-player-progress-line"></div>
+                        <div class="header-player-progress-value js-player-progressBar"></div>
+                    </div>
+
+                    <i class="header-player-track-time js-player-time" style="display: none">0:00</i>
+                    <i class="header-player-track-total js-player-duration">{{ track.duration }}</i>
+                </div>
+
+                <div class="header-player-volume">
+                    <i class="icon-font icon-font-volume"></i>
+
+                    <div class="header-player-volume-bar">
+                        <div class="header-player-volume-line">
+                            <div class="header-player-volume-value"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="header-section header-section--socialLinks">
+                <a href="https://www.facebook.com/comma.com.ua" target="_blank" class="icon-font icon-font-facebook"></a>
+                <a href="https://twitter.com/comma_com_ua" target="_blank" class="icon-font icon-font-twitter"></a>
+                <a href="https://vk.com/commacomua" target="_blank" class="icon-font icon-font-vkontakte"></a>
+                <a href="http://comma.com.ua/" target="_blank" class="icon-font icon-font-comma"></a>
+            </div>
+
+            <a href="http://comma.com.ua/" class="header-section header-section--comma">
+                <i class="icon-font icon-font-comma"></i>
+                COMMA.COM.UA
+            </a>
+        {% endif %}
+
+        <a href="/{{ lang.code }}{{ uri }}" class="header-section header-section--language">
+            {{ lang.code | upper }}
+        </a>
+    </div>
+</header>

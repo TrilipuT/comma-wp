@@ -1,0 +1,22 @@
+modules:
+  #pages:
+  #  name: Страницы
+  #  entity: StaticPage
+  #  create: false
+  #  remove: false
+  #  form:
+  #    options:
+  #      exclude: [ techUrl, isSystem ]
+
+  dictionary:
+    entity: DictionaryLocaled
+
+  albums:
+    name: Альбомы
+    entity: Album
+    submodules:
+      tracks: album
+
+  tracks:
+    name: Треки
+    entity: Track

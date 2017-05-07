@@ -1,0 +1,34 @@
+.scroller
+  position: relative
+
+.scroller-nav
+  position: absolute
+  width: 90px
+  height: 90px
+  top: 0
+  right: 0
+  border-left: 1px solid #656565
+  color: white
+  text-decoration: none
+  text-align: center
+  line-height: 90px
+  font-size: 18px
+  transition: background-color $ease
+
+  &:hover
+    background-color: #1f1f1f
+
+  .icon-font
+    vertical-align: -3px
+
+.scroller-line
+  display: flex
+
+.scroller-img
+  width: 33.3%
+  padding-top: 22.2%
+  background-position: center
+  background-size: cover
+
+.scroller-nav--prev
+  right: 90px

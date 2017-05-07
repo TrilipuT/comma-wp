@@ -1,0 +1,42 @@
+entities:
+
+  Album:
+    implements: [ iAdminRecord ]
+    constraints:
+      tracks: { entity: Track }
+    fields:
+      url: { type: string_url }
+      cover: { type: string_image }
+      fullImage: { type: string_image }
+      title: { type: string, language: true }
+      artist: { type: string, language: true }
+      forward: { type: text, language: true }
+      text1: { type: text, language: true }
+      text2: { type: text, language: true }
+      shareTitle: { type: text, language: true }
+      shareImage: { type: string_image, language: true }
+      shareDescription: { type: text, language: true }
+      releaseDate: { type: date }
+      iTunes: { type: string_href }
+      googlePlay: { type: string_href }
+      color: { type: string }
+      colorInside: { type: string }
+
+  CounterCache:
+    implements: [ iRecord ]
+    foreigns:
+      album: { entity: Album }
+    fields:
+      counter: { type: int, default: 0 }
+      error: { type: bool, default: 0 }
+      social: { type: string }
+
+  Track:
+    implements: [ iAdminRecord ]
+    foreigns:
+      album: { entity: Album }
+    fields:
+      position: { type: int }
+      name: { type: string, languaged: true }
+      duration: { type: string }
+      mp3: { type: string_file }

@@ -1,0 +1,5 @@
+debug: false
+
+view:
+  twig:
+    cache: true

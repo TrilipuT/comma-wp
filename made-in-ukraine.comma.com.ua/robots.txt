@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /support/
+Disallow: /search
+Disallow: /tag/
+Sitemap: /sitemap.xml

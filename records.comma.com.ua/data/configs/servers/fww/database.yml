@@ -1,0 +1,4 @@
+database: 
+  dsn: mysql:host=127.0.0.1;dbname=comma-records;charset=utf8
+  user: comma-records 
+  pass: H6v$1VWXIIe~O3z 

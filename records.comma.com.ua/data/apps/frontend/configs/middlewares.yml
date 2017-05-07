@@ -1,0 +1,4 @@
+app:
+    middleWares:
+        LanguageSelector:
+            useAcceptLanguage: false

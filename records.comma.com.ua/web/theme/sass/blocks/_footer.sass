@@ -1,0 +1,52 @@
+.footer
+  height: 100px
+  line-height: 100px
+  background-color: #222222
+  color: #656565
+  letter-spacing: 1px
+  position: relative
+  z-index: 2
+  overflow: hidden
+
+.footer-container
+  max-width: 1200px
+  margin: 0 auto
+  padding: 0 40px
+  display: flex
+  justify-content: space-between
+  align-items: center
+
+  .icon
+    display: inline-block
+    vertical-align: middle
+    opacity: .3
+    transition: opacity $ease
+
+    &:hover
+      opacity: 1
+
+.footer-link
+  color: white
+  text-decoration: none
+  transition: opacity $ease
+  padding: 10px
+  opacity: .3
+
+  &:hover
+    opacity: 1
+
+@media screen and (max-width: 600px)
+  .footer
+    height: 60px
+    line-height: 60px
+
+  .footer-link
+    font-size: 13px
+    padding: 8px
+
+  .footer-container
+    padding: 0 20px
+
+@media screen and (max-width: 350px)
+  .footer-copyright
+    display: none

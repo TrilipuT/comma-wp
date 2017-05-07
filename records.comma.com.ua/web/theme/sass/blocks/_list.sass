@@ -1,0 +1,230 @@
+.list
+  height: 100%
+
+.list-item
+  top: 100px
+  left: 0
+  width: 100%
+  max-height: 50vh
+  margin-top: -50vh
+  max-height: calc(50vh - 50px)
+  margin-top: calc(50px - 50vh)
+  overflow: hidden
+  bottom: 0
+  position: absolute
+  display: flex
+  opacity: .99
+  transition: margin-top .8s ease, max-height .8s ease
+
+  .list-nav
+    transform: translateY(90px)
+    opacity: .99
+    transition: transform .3s ease
+
+  .list-description-main
+    opacity: 0
+    transition: opacity .4s ease
+
+.list-item--active
+  max-height: 100vh
+  max-height: calc(100vh - 100px)
+  margin-top: 0
+
+  .list-description-main
+    opacity: 1
+    transition: opacity .4s .4s ease
+
+  .list-nav
+    transition: transform .3s .6s ease
+    transform: translateY(0)
+
+  ~ .list-item
+    margin-top: 100vh
+    margin-top: calc(100vh - 100px)
+
+  + .list-item + .list-item ~ .list-item
+    display: none
+
+.list-image
+  height: 100%
+  flex-grow: 10
+  position: relative
+
+.list-image-container
+  position: absolute
+  top: 50%
+  left: 0
+  right: 0
+  width: 100%
+  height: 100vh
+  height: calc(100vh - 100px)
+  margin-top: -50vh
+  margin-top: calc(50px - 50vh)
+  background-size: cover
+  background-position: center
+  opacity: .99
+
+.list-description
+  box-sizing: border-box
+  color: white
+  max-width: 430px
+  min-width: 350px
+  width: 30%
+  flex-shrink: 1
+  flex-grow: 0
+  display: flex
+  flex-direction: column
+  justify-content: center
+  position: relative
+
+.list-description-main
+  display: block
+  color: white
+  text-decoration: none
+  padding: 30px 60px 90px
+
+.list-description-date
+  font-size: 15px
+  font-weight: 600
+  margin-bottom: 15px
+  display: block
+
+.list-description-artist
+  font-size: 40px
+  font-weight: 200
+  letter-spacing: 2px
+  line-height: 1
+  margin-bottom: 5px
+
+.list-description-title
+  font-size: 32px
+  font-weight: bold
+  letter-spacing: 1px
+
+.list-description-text
+  font-size: 16px
+  margin-top: 35px
+  max-width: 300px
+  line-height: 1.5
+  margin-bottom: 40px
+
+@media screen and (max-width: 1200px)
+  .list-description-artist
+    font-size: 32px
+
+  .list-description-title
+    font-size: 28px
+
+  .list-description-text
+    line-height: 1.3
+    margin-top: 20px
+
+  .list-description-main
+    padding-left: 40px
+
+.list-description-listen
+  text-decoration: none
+  color: white
+  font-size: 14px
+
+.list-nav
+  position: absolute
+  left: 0
+  bottom: 0
+  width: 100%
+  height: 90px
+  display: flex
+  line-height: 90px
+  background-color: rgba(black, .2)
+
+.list-nav-link
+  width: 90px
+  display: block
+  text-align: center
+  text-decoration: none
+  color: white
+  border-right: 1px solid rgba(white, .3)
+  transition: background-color $ease
+
+  .icon-font
+    vertical-align: -5px
+
+.list-nav-link:hover
+  background-color: rgba(black, .1)
+
+.list-nav-link--disable
+  cursor: default
+
+  .icon-font
+    opacity: .4
+
+  &:hover
+    background-color: transparent
+
+@media screen and (max-width: 600px)
+  .list
+    padding-top: 50px
+    box-sizing: border-box
+
+  .list-item
+    position: relative
+    top: 0
+    height: 100%
+
+  .list-description
+    min-width: 320px
+
+
+  .list-description-main
+    padding: 25px
+
+  .list-description-date
+    font-size: 13px
+    margin-bottom: 2px
+
+  .list-description-artist
+    font-size: 24px
+    margin-bottom: 2px
+
+  .list-description-title
+    font-size: 20px
+
+  .list-description-text
+    font-size: 14px
+    margin: 15px 0
+
+  .list-nav
+    display: none
+
+@media screen and (max-width: 600px)
+  .list-image-container
+    top: 0
+    margin-top: 0
+    height: 100%
+
+  .list-item
+    position: static
+    height: 100%
+    max-height: 100%
+    margin-top: 0 !important
+
+    .list-description-main
+      opacity: 1
+
+@media screen and (max-width: 600px) and (orientation: landscape)
+  .list-item--active
+    max-height: 100vh
+
+@media screen and (max-width: 600px) and (orientation: portrait)
+  .list-item
+    flex-direction: column
+    min-height: 300px
+
+  .list-description
+    width: auto
+    max-width: none
+    min-width: 0
+    flex-grow: 1
+
+  .list-image
+    flex-shrink: 1

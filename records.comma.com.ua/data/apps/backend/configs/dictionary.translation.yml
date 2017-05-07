@@ -1,0 +1,107 @@
+dictionary: 
+  translations: 
+    defaults: 
+      fields: 
+        name: Имя 
+        surname: Фамилия 
+        url: Часть URL 
+        image: Картинка 
+        metaTitle: Мета-название 
+        metaDescription: Мета-описание 
+        metaKeywords: Ключевые слова 
+        isActive: Активен 
+        weight: Вес 
+        title: Заголовок 
+        forward: Вступление 
+        date: Дата 
+        text: Текст 
+        isDefault: По умолчанию 
+        translation: Перевод 
+        ctime: Cоздан 
+        mtime: Изменён 
+        keyword: Ключ 
+        login: Логин 
+        password: Пароль 
+        email: E-mail 
+        phone: Телефон 
+        userId: Пользователь 
+        techUrl: ~ 
+        artist: ~ 
+        releaseDate: ~ 
+        cover: ~ 
+        fullImage: ~ 
+        iTunes: ~ 
+        googlePlay: ~ 
+        text1: ~ 
+        text2: ~ 
+        position: ~ 
+        duration: ~ 
+        mp3: ~ 
+        color: ~ 
+        colorInside: ~ 
+        shareTitle: ~ 
+        shareImage: ~ 
+        shareDescription: ~ 
+        role: ~ 
+
+      validators: 
+        required: Это поле нужно заполнить 
+        uniq: Это поле должно быть уникально 
+        adminBundle\Form\FieldValidator\AdminPasswordCheck: ~ 
+
+    AdminBundle\Form\Auth\SignIn: 
+      labels: 
+        name: Привет! 
+        submit: Войти 
+
+      fields: 
+        login: ~ 
+        password: ~ 
+
+      validators: 
+        adminBundle\Form\FieldValidator\AdminPasswordCheck: Нет 
+
+    Album_Form: 
+      fields: 
+        title: ~ 
+        artist: ~ 
+        releaseDate: ~ 
+        url: ~ 
+        cover: ~ 
+        fullImage: ~ 
+        iTunes: ~ 
+        googlePlay: ~ 
+        forward: ~ 
+        text1: ~ 
+        text2: ~ 
+        color: ~ 
+        colorInside: ~ 
+        ctime: ~ 
+        mtime: ~ 
+        isActive: ~ 
+        shareTitle: ~ 
+        shareImage: ~ 
+        shareDescription: ~ 
+
+    Track_Form: 
+      fields: 
+        position: ~ 
+        name: ~ 
+        duration: ~ 
+        mp3: ~ 
+        isActive: ~ 
+
+    Dictionary_Form: 
+      fields: 
+        translation: ~ 
+
+    Admin_Form: 
+      fields: 
+        login: ~ 
+        password: ~ 
+        email: ~ 
+        name: ~ 
+        isActive: ~ 
+        role: ~ 
+        ctime: ~ 
+        mtime: ~ 

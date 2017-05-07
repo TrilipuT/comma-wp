@@ -1,0 +1,37 @@
+<section class="menu menu--bg">
+    <span class="menu-item"></span>
+    <span class="menu-item"></span>
+    <span class="menu-item"></span>
+    <span class="menu-item"></span>
+    <span class="menu-item"></span>
+    <span class="menu-item"></span>
+    <span class="menu-item"></span>
+    <span class="menu-item"></span>
+    <span class="menu-item"></span>
+    <span class="menu-item"></span>
+    <span class="menu-item"></span>
+    <span class="menu-item"></span>
+    <span class="menu-item"></span>
+    <span class="menu-item"></span>
+</section>
+
+<section class="menu">
+    {% for album in albums %}
+    <a href="{{ path("album", { album: album }) }}" class="menu-item" style="background-image: url({{ album.fullImage }})">
+
+        <span class="menu-item-hover listen">
+            <b class="menu-item-artist">{{ album.artist }}</b>
+            <b class="menu-item-title">{{ album.title }}</b>
+
+            <span>
+                <b class="listen-icon" style="color: #434343">
+                    <i></i><i></i><i></i>
+                </b>
+                Слухати
+            </span>
+        </span>
+    </a>
+    {% endfor %}
+    <span class="menu-item menu-item--empty"></span>
+    <span class="menu-item menu-item--empty"></span>
+</section>

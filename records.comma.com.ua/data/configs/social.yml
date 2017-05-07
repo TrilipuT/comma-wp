@@ -1,0 +1,13 @@
+social:
+  facebook:
+    applicationId: 1644917472451186
+    applicationSecret: e3a5c1dc3632baa9445afdc3ae27bf8e
+
+  vkontakte:
+    applicationId: ~
+    applicationSecret: ~
+
+javascript:
+  sections:
+    include: [ social ]
+    exclude: [ social.facebook.applicationSecret, social.vkontakte.applicationSecret ]

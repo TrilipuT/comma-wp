@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<umbPackage>
+  <files>
+    <file>
+      <guid>editor_plugin.js</guid>
+      <orgPath>/umbraco_client/tinymce3/plugins/embedcode</orgPath>
+      <orgName>editor_plugin.js</orgName>
+    </file>
+    <file>
+      <guid>editor_plugin_src.js</guid>
+      <orgPath>/umbraco_client/tinymce3/plugins/embedcode</orgPath>
+      <orgName>editor_plugin_src.js</orgName>
+    </file>
+    <file>
+      <guid>embedcode.htm</guid>
+      <orgPath>/umbraco_client/tinymce3/plugins/embedcode</orgPath>
+      <orgName>embedcode.htm</orgName>
+    </file>
+    <file>
+      <guid>embedcode.gif</guid>
+      <orgPath>/umbraco_client/tinymce3/plugins/embedcode/img</orgPath>
+      <orgName>embedcode.gif</orgName>
+    </file>
+    <file>
+      <guid>dialog.js</guid>
+      <orgPath>/umbraco_client/tinymce3/plugins/embedcode/js</orgPath>
+      <orgName>dialog.js</orgName>
+    </file>
+    <file>
+      <guid>pastehtml.js</guid>
+      <orgPath>/umbraco_client/tinymce3/plugins/embedcode/js</orgPath>
+      <orgName>pastehtml.js</orgName>
+    </file>
+    <file>
+      <guid>en.js</guid>
+      <orgPath>/umbraco_client/tinymce3/plugins/embedcode/langs</orgPath>
+      <orgName>en.js</orgName>
+    </file>
+    <file>
+      <guid>en_dlg.js</guid>
+      <orgPath>/umbraco_client/tinymce3/plugins/embedcode/langs</orgPath>
+      <orgName>en_dlg.js</orgName>
+    </file>
+  </files>
+  <info>
+    <package>
+      <name>WVD Media - TinyMCE Insert embed code</name>
+      <version>0.9</version>
+      <license url="http://www.opensource.org/licenses/mit-license.php">MIT license</license>
+      <url>http://www.wvdmedia.nl</url>
+      <requirements>
+        <major>3</major>
+        <minor>0</minor>
+        <patch>0</patch>
+      </requirements>
+    </package>
+    <author>
+      <name>Gerben van Diggelen</name>
+      <website>http://www.wvdmedia.nl</website>
+    </author>
+    <readme><![CDATA[This package adds a "Insert embed code" button to the TinyMCE toolbar. 
+
+This button will allow you to insert any (HTML) embed code (from Youtube, Flickr, Slideshare etc.) directly into the editor. This allows the content manager to be more flexible about what to insert in the rich text editor.
+
+Please read the installation instructions on the our.umbraco.org package page!
+]]></readme>
+  </info>
+  <DocumentTypes />
+  <Templates />
+  <Stylesheets />
+  <Macros />
+  <DictionaryItems />
+  <Languages />
+  <DataTypes />
+</umbPackage>

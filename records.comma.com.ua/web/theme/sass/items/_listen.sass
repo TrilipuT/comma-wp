@@ -1,0 +1,37 @@
+.listen-icon
+  width: 35px
+  height: 35px
+  display: inline-block
+  vertical-align: 0
+  margin-right: 6px
+  background-color: white
+  border-radius: 100%
+  text-align: center
+  line-height: 35px
+
+  > i
+    display: inline-block
+    vertical-align: 3px
+    width: 3px
+    height: 3px
+    margin: 0 1px
+    background-color: currentColor
+    border-radius: 1.5px
+    transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)
+
+  > i:first-child
+    transform-origin: 6.5px center
+
+    + i
+      transform-origin: -1.5px 1.5px
+
+    + i + i
+      transform-origin: -3.5px center
+
+.listen:hover
+  .listen-icon
+    > i:first-child
+      transform: rotate(180deg)
+
+      + i + i
+        transform: rotate(180deg)

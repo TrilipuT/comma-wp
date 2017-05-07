@@ -1,0 +1,368 @@
+.album
+  min-height: 100%
+  box-sizing: border-box
+  padding-top: 100px
+  position: relative
+  padding-left: 80px
+  padding-bottom: 1px
+
+.album-image
+  overflow: hidden
+  background-size: cover
+  background-position: center
+  position: relative
+  background-color: #222222
+
+  .album-definition
+    margin: -100px 17px 17px
+    position: relative
+
+.album-image-bg
+  background-size: cover
+  background-position: center
+  position: relative
+  left: 0
+  top: 0
+  right: 0
+  max-height: 600px
+
+  &:after
+    content: ''
+    display: block
+    padding-top: 67.5%
+
+  &:before
+    content: ''
+    position: absolute
+    left: 0
+    top: 40%
+    width: 100%
+    bottom: 0
+    background-image: linear-gradient(to bottom, rgba(#222222, 0), rgba(#222, 1))
+
+.album-definition-contentToggle-box
+  position: absolute
+  right: 0
+  top: 0
+  cursor: pointer
+  opacity: 0
+  display: none
+
+  ~ .album-definition-content
+    display: none
+
+  &:checked
+    + .album-definition-contentToggle
+      > i:first-child
+        transform: rotate(90deg)
+
+        + i + i
+          transform: rotate(90deg)
+
+    ~ .album-definition-content
+      display: block
+
+.album-definition-contentToggle
+  position: absolute
+  right: -10px
+  top: -5px
+  width: 35px
+  height: 35px
+  display: none
+  vertical-align: 0
+  text-align: center
+  line-height: 35px
+  cursor: pointer
+
+  > i
+    display: inline-block
+    vertical-align: 3px
+    width: 3px
+    height: 3px
+    margin: 0 1px
+    background-color: currentColor
+    border-radius: 1.5px
+    transition: transform 1s cubic-bezier(0.175, 0.885, 0.32, 1.275)
+
+  > i:first-child
+    transform-origin: 6.5px center
+
+    + i
+      transform-origin: -1.5px 1.5px
+
+    + i + i
+      transform-origin: -3.5px center
+
+
+.album-definition
+  padding: 40px
+
+  &:before
+    content: ''
+    position: absolute
+    left: 0
+    top: 0
+    height: 100%
+    width: 100%
+    opacity: .8
+    background-color: currentColor
+
+.album-definition-holder
+  color: white
+  position: relative
+  max-width: 1130px
+  margin: 0 auto
+  padding-left: 70px
+  z-index: 1
+
+.album-definition-date
+  font-size: 15px
+  font-weight: 600
+  opacity: .8
+  display: block
+  margin-bottom: 10px
+
+.album-definition-artist
+  font-size: 80px
+  letter-spacing: 2px
+  line-height: 60px
+  font-weight: 200
+
+.album-definition-title
+  font-weight: bold
+  font-size: 70px
+  margin-top: -2px
+
+.album-definition-text
+  width: 390px
+  line-height: 1.4
+
+  + .album-definition-text
+    margin-left: 70px
+
+.album-definition-content
+  display: flex
+  margin: 20px 0 0
+  position: relative
+  padding-right: 300px
+
+.album-definition-btns
+  width: 222px
+  position: absolute
+  right: 0
+  top: 0
+
+  .btn
+    display: block
+    margin-bottom: 20px
+    background-color: white
+    white-space: nowrap
+    text-align: center
+    height: 50px
+    line-height: 50px
+    color: black
+    text-decoration: none
+    transition: background-color $ease, color $ease
+
+    &:hover
+      color: white
+      background-color: #1f87ae
+
+.album-list
+  max-width: 1200px
+  padding: 0 17px
+  margin: 70px auto 30px
+  display: flex
+
+  .tracks
+    width: 55%
+
+.album-list-cover
+  width: 45%
+  flex-shrink: 1
+
+  .cover
+    margin: 0 auto
+    background-color: white
+
+.cover
+  width: 400px
+  max-width: 90%
+  background-size: cover
+
+  &:after
+    content: ''
+    display: block
+    padding-top: 100%
+
+.album-social
+  background-color: #5e6e81
+  position: fixed
+  z-index: 1
+  left: 0
+  top: 100px
+  bottom: 0
+  width: 80px
+
+.album-social-link
+  width: 80px
+  height: 80px
+  text-align: center
+  line-height: 80px
+  text-decoration: none
+  color: white
+  display: block
+  font-size: 18px
+  transition: background-color $ease
+
+.album-social-link--facebook
+  background-color: #235b99
+
+  &:hover
+    background-color: #1f5289
+
+.album-social-link--vkontakte
+  background-color: #587ca5
+
+  &:hover
+    background-color: #4f6f94
+
+.album-social-link--twitter
+  background-color: #00adf2
+
+  &:hover
+    background-color: #009bd9
+
+@media screen and (max-width: 980px)
+  .album-list-cover
+    width: 40%
+
+    .cover
+      margin-left: 0
+
+  .album-list .tracks
+    width: 60%
+
+  .album-social
+    width: 60px
+
+  .album
+    padding-left: 60px
+
+  .album-social-link
+    width: 60px
+    height: 60px
+    line-height: 60px
+    font-size: 15px
+
+@media screen and (max-width: 1100px)
+  .album-definition-content
+    display: block
+    padding-right: 250px
+
+  .album-definition-text
+    width: auto
+    font-size: 14px
+
+    + .album-definition-text
+      margin-left: 0
+      margin-top: 40px
+
+
+@media screen and (max-width: 980px)
+  .album-definition-holder
+    padding-left: 0
+
+  .album-list
+    margin-top: 30px
+
+@media screen and (max-width: 800px)
+  .album-definition
+    padding: 20px
+
+  .album-definition-date
+    margin-bottom: 0
+
+  .album-definition-artist
+    font-size: 40px
+    line-height: 1
+
+  .album-definition-title
+    font-size: 33px
+
+  .album-definition-content
+    padding-right: 0
+
+  .album-definition-text + .album-definition-text
+    margin-top: 20px
+
+  .album-definition-btns
+    display: block
+    width: auto
+    position: relative
+    margin-top: 20px
+    text-align: center
+
+    .btn
+      width: 222px
+      margin: 5px 10px
+      display: inline-block
+
+  .album-list-cover
+    width: auto
+    margin-bottom: 40px
+
+    .cover
+      max-width: 250px
+      margin: 0 auto
+
+  .album-list
+    display: block
+
+    .tracks
+      width: auto
+      margin: 0 auto
+
+@media screen and (max-width: 600px)
+  .album
+    padding-left: 0
+    padding-top: 80px
+
+  .album-social
+    display: none
+
+  .album-image .album-definition
+    margin: -50px 12px 0
+
+  .album-definition-artist
+    font-size: 24px
+    line-height: 1.1
+
+  .album-definition-title
+    font-size: 20px
+
+  .album-definition-date
+    font-size: 13px
+
+  .album-definition-text
+    font-size: 13px
+
+  .album-list
+    padding: 0 12px
+    background-color: #222222
+    margin: 0
+
+  .album-list-cover
+    width: 100%
+    margin-bottom: 0
+
+    .cover
+      width: 100%
+      max-width: 100%
+
+  .album-definition-contentToggle,
+  .album-definition-contentToggle-box
+    display: block
+
+  .album-definition-btns
+    display: none

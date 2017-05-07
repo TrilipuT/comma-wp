@@ -1,0 +1,194 @@
+<section class="content album">
+
+    <div class="album-image">
+
+        <div class="album-image-bg"
+             style="background-image: url('{{ album.fullImage }}')">
+        </div>
+
+        <div class="album-definition" style="color: {{ album.colorInside }};">
+            <div class="album-definition-holder">
+                <span class="album-definition-date">{{ album.releaseDate | date("d.m") }}</span>
+                <h1 class="album-definition-artist">{{ album.artist }}</h1>
+                <h2 class="album-definition-title">{{ album.title }}</h2>
+
+                <input type="checkbox" id="toggle" class="album-definition-contentToggle-box">
+                <label class="album-definition-contentToggle" for="toggle">
+                    <i></i><i></i><i></i>
+                </label>
+
+                <div class="album-definition-content">
+                    <p class="album-definition-text">
+                        {{ album.text1 }}
+                    </p>
+
+                    <p class="album-definition-text">
+                        {{ album.text2 }}
+                    </p>
+
+                    {% if album.iTunes.get() or album.googlePlay.get() %}
+                    <div class="album-definition-btns">
+                        {% if album.iTunes.get() %}
+                            <a href="{{ album.iTunes }}" class="btn" target="_blank">
+                                {{"КУПИТИ НА ITUNES"|translate}}
+                            </a>
+                        {% else %}
+                            <span class="btn btn--disabled">
+                                {{"КУПИТИ НА ITUNES"|translate}}
+                            </span>
+                        {% endif %}
+                        {% if album.googlePlay.get() %}
+                            <a href="{{ album.googlePlay }}" class="btn" target="_blank">
+                                {{"КУПИТИ НА GOOGLE PLAY"|translate}}
+                            </a>
+                        {% else %}
+                            <span class="btn btn--disabled">
+                                {{"КУПИТИ НА GOOGLE PLAY"|translate}}
+                            </span>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div class="album-list">
+
+        <div class="album-list-cover">
+            <div class="cover" style="background-image: url('{{ album.cover }}')"></div>
+        </div>
+
+        <ol class="tracks" style="background-color: {{ album.colorInside }}">
+            {% for track in album.tracks.get() %}
+            <li class="tracks-track js-track" data-track-id="{{ track.id }}">
+                <div class="tracks-track-name">{{ track.name }}</div>
+                <a class="tracks-track-btn tracks-track-playPause">
+                    <i class="icon-font-play"></i>
+                    <i class="icon-font-pause"></i>
+                </a>
+                <span class="tracks-time">{{ track.duration }}</span>
+                <a class="tracks-share">
+                    <i class="icon-font-share"></i>
+                </a>
+                <div class="tracks-track-share"
+                     data-image="http://{{ request().getHost() }}/{{ album.shareImage() }}"
+                     data-title="{{ track.name }}"
+                     data-description="{{ album.title }} — {{ album.artist }}"
+                     data-twitter-description="{{ album.title }} — {{ album.artist }}"
+                    >
+                    <a target="_blank" class="tracks-track-share-link tracks-track-share-link--facebook js-share-facebook">
+                        <i class="icon-font icon-font-facebook"></i>
+                    </a>
+                    <a target="_blank" class="tracks-track-share-link tracks-track-share-link--twitter js-share-twitter">
+                        <i class="icon-font icon-font-twitter"></i>
+                    </a>
+                    <a target="_blank" class="tracks-track-share-link tracks-track-share-link--vkontakte js-share-vkontakte">
+                        <i class="icon-font icon-font-vkontakte"></i>
+                    </a>
+                </div>
+            </li>
+            {% endfor %}
+        </ol>
+
+        <div class="album-list-btns">
+            {% if album.iTunes.get() or album.googlePlay.get() %}
+                {% if album.iTunes.get() %}
+                    <a href="{{ album.iTunes }}" class="btn" target="_blank">
+                        {{"КУПИТИ НА ITUNES"|translate}}
+                    </a>
+                {% else %}
+                    <span class="btn btn--disabled">
+                        {{"КУПИТИ НА ITUNES"|translate}}
+                    </span>
+                {% endif %}
+                {% if album.googlePlay.get() %}
+                    <a href="{{ album.googlePlay }}" class="btn" target="_blank">
+                        {{"КУПИТИ НА GOOGLE PLAY"|translate}}
+                    </a>
+                {% else %}
+                    <span class="btn btn--disabled">
+                        {{"КУПИТИ НА GOOGLE PLAY"|translate}}
+                    </span>
+                {% endif %}
+            {% endif %}
+
+            <label class="btn btn--translucent album-btn-share-hover">
+                <span class="icon-font icon-font-share"></span>
+                {{"ПОДІЛИТИСЬ"|translate}}
+            </label>
+
+            <div class="album-social"
+                 data-image="http://{{ request().getHost() }}/{{ album.shareImage() }}"
+                 data-title="{{ album.shareTitle() }}"
+                 data-description="{{ album.shareDescription() }}"
+            >
+                {{ viewlet("album-social-link", { link: "https://www.facebook.com/comma.com.ua", class: "facebook", counter: counters.facebook }) | raw }}
+                {{ viewlet("album-social-link", { link: "https://twitter.com/comma_com_ua", class: "twitter", counter: counters.twitter }) | raw }}
+                {{ viewlet("album-social-link", { link: "https://vk.com/commacomua", class: "vkontakte", counter: counters.vkontakte }) | raw }}
+            </div>
+        </div>
+
+    </div>
+
+    {#
+    <section class="scroller">
+        <h3 class="headline headline--black scroller-headline">Інші релізи</h3>
+
+        <a href="#" class="scroller-nav scroller-nav--prev">
+            <span class="icon-font icon-font-arrow-left"></span>
+        </a>
+        <a href="#" class="scroller-nav scroller-nav--next">
+            <span class="icon-font icon-font-arrow-right"></span>
+        </a>
+
+        <div class="scroller-line">
+            <a style="background-image: url('http://i.ytimg.com/vi/OnuFYYJHaY0/maxresdefault.jpg')" class="scroller-img"></a>
+            <a style="background-image: url('http://abcnewsradioonline.com/storage/music-news-images/M_RollingStonesDoomandGloom630_100912.jpg?__SQUARESPACE_CACHEVERSION=1351205831095')" class="scroller-img"></a>
+            <a style="background-image: url('http://i.ytimg.com/vi/EFjEp79zaNw/maxresdefault.jpg')" class="scroller-img"></a>
+        </div>
+    </section>
+    #}
+
+    <h3 class="headline headline--white">
+        {{"Коментарі"|translate}}
+    </h3>
+
+    <section class="comments">
+
+        <div id="disqus_thread" class="comments-content"></div>
+        <script>
+            (function() {  // DON'T EDIT BELOW THIS LINE
+                var d = document, s = d.createElement('script');
+                s.src = '//comma-records.disqus.com/embed.js';
+                s.setAttribute('data-timestamp', +new Date());
+                (d.head || d.body).appendChild(s);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+    </section>
+
+</section>
+
+<section class="footer">
+    <div class="footer-container">
+        <div class="footer-copyright">{{"© Comma"|translate}}</div>
+
+        <a href="http://comma.com.ua" class="icon icon-comma-white"></a>
+
+        <div class="footer-socials">
+            <a href="https://www.facebook.com/comma.com.ua" target="_blank" class="footer-link">
+                <i class="icon-font icon-font-facebook"></i>
+            </a>
+            <a href="https://twitter.com/comma_com_ua" target="_blank" class="footer-link">
+                <i class="icon-font icon-font-twitter"></i>
+            </a>
+            <a href="https://vk.com/commacomua" target="_blank" class="footer-link">
+                <i class="icon-font icon-font-vkontakte"></i>
+            </a>
+        </div>
+    </div>
+</section>

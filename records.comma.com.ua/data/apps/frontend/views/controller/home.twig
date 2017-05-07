@@ -1,0 +1,36 @@
+<section class="content list">
+
+    {% for album in albums %}
+    <div class="list-item {% if loop.first %}list-item--active{% endif %}">
+        <div class="list-image">
+            <div class="list-image-container" style="background-image: url({{ album.fullImage }})"></div>
+        </div>
+
+        <div class="list-description" style="background-color: {{ album.color }}">
+
+            <a href="{{ path("album", { album: album }) }}" class="list-description-main listen">
+                <span class="list-description-date">{{ album.releaseDate | date("d.m") }}</span>
+                <h1 class="list-description-artist">{{ album.artist }}</h1>
+                <h2 class="list-description-title">{{ album.title }}</h2>
+
+                <p class="list-description-text">{{ album.forward }}</p>
+
+                <span class="list-description-listen">
+                    <i class="listen-icon" style="color: {{ album.color(-30) }}"><i></i><i></i><i></i></i>
+                    {{"Слухати"|translate}}
+                </span>
+            </a>
+
+            <nav class="list-nav">
+                <a class="list-nav-link {% if loop.last %}list-nav-link--disable{% else %}js-link-next{% endif %}">
+                    <i class="icon-font icon-font-arrow-down"></i>
+                </a>
+                <a class="list-nav-link {% if loop.first %}list-nav-link--disable{% else %}js-link-prev{% endif %}">
+                    <i class="icon-font icon-font-arrow-up"></i>
+                </a>
+            </nav>
+        </div>
+    </div>
+    {% endfor %}
+
+</section>

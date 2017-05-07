@@ -1,0 +1,4 @@
+database: 
+  dsn: mysql:host=comma.cokehadd6xln.eu-central-1.rds.amazonaws.com;dbname=commarecords;charset=utf8
+  user: comma
+  pass: veryhardpassword

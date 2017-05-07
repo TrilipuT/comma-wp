@@ -1,0 +1,398 @@
+.header
+  height: 100px
+  line-height: 100px
+  left: 0
+  top: 0
+  width: 100%
+  position: fixed
+  z-index: 10
+  background-color: white
+
+.header-menu
+  display: inline-block
+  padding: 35px
+  vertical-align: middle
+
+  &:hover
+    > i
+      background-color: #5e6e81
+
+  > i
+    content: ''
+    display: block
+    height: 3px
+    background-color: black
+    transition: transform $ease, background-color $ease
+    width: 24px
+
+    + i
+      margin-top: 5px
+
+.header-logo
+  display: inline-block
+  vertical-align: middle
+  font-weight: 600
+  font-size: 12px
+  text-align: center
+  line-height: 1
+  width: icon-width("comma") + 4
+  letter-spacing: 10px
+
+  .icon
+    display: block
+    position: relative
+    z-index: 1
+    margin-bottom: 7px
+
+.header-sections
+  position: absolute
+  right: 0
+  top: 0
+  display: flex
+
+  .icon-font
+    color: #bdbdbd
+    text-decoration: none
+    font-size: 15px
+    transition: color $ease
+    line-height: 1
+    display: inline-block
+
+.header-logo
+  text-decoration: none
+  color: black
+
+.header-section--socialLinks
+  padding: 0
+
+  .icon-font
+    vertical-align: -1px
+    padding: 13px
+
+  .icon-font-comma
+    display: none
+
+  .icon-font-facebook:hover
+    color: #3b5998
+
+  .icon-font-twitter:hover
+    color: #5fa9de
+
+  .icon-font-vkontakte:hover
+    color: #4c76a4
+
+  .icon-font-comma:hover
+    color: #41728e
+
+.header-section
+  padding: 0 34px
+
+.header-section--language
+  color: #858585
+  text-decoration: none
+  font-size: 14px
+  transition: color $ease
+  min-width: 30px
+  text-align: center
+
+  &:hover
+    color: #5e6e81
+
+.header-section--comma
+  font-size: 12px
+  color: #858585
+  text-decoration: none
+  transition: color $ease
+
+  .icon-font
+    margin-right: 3px
+    vertical-align: -2px
+
+  &:hover, &:hover .icon-font
+    color: #41728e
+
+.header-section + .header-section
+  border-left: 1px solid #e8e8e8
+
+.header-section--player
+  display: inline-block
+  white-space: nowrap
+  padding-right: 0
+
+  .icon-font
+    vertical-align: -7px
+    color: #707070
+    transition: color $ease
+    font-size: 16px
+
+    &:hover
+      color: #4f7185
+
+.header-player-track
+  display: inline-block
+  width: 340px
+  line-height: 1
+  vertical-align: middle
+  text-align: center
+  padding-bottom: 18px
+  padding-top: 14px
+  position: relative
+
+.header-player-track-time, .header-player-track-total
+  position: absolute
+  font-size: 12px
+  bottom: 2px
+
+.header-player-track-time
+  left: 0
+  color: #de5851
+
+.header-player-track-total
+  right: 0
+  color: #adadad
+
+.header-player-volume
+  display: inline-block
+  text-align: center
+  width: 90px
+  cursor: pointer
+  position: relative
+
+  &:hover .icon-font
+    color: #4f7185
+
+  .icon-font
+    font-size: 18px
+
+
+.header-player-volume-bar
+  position: absolute
+  left: 50%
+  right: 0
+  width: 45px
+  margin-left: -22px
+  margin-top: -20px
+  top: 100%
+  background-color: white
+  height: 130px
+  user-select: none
+  max-height: 0
+  overflow: hidden
+  transition: opacity $ease, max-height $ease
+  opacity: 0
+
+.header-player-volume--active,
+.header-player-volume:hover .header-player-volume-bar
+  max-height: 130px
+  opacity: 1
+
+.header-player-volume-line
+  width: 2px
+  top: 15px
+  position: absolute
+  bottom: 20px
+  left: 50%
+  margin-left: -1px
+  background-color: #e2e2e2
+
+.header-player-volume-value
+  width: 2px
+  height: 70%
+  position: absolute
+  bottom: 0
+  left: 0
+  background-color: #59717f
+
+.header-player-volume-value:after
+  content: ''
+  width: 12px
+  height: 12px
+  top: -6px
+  left: -5px
+  background-color: #acbcc6
+  position: absolute
+  border-radius: 100%
+
+.header-player-progress
+  height: 14px
+  margin-top: 3px
+  position: relative
+  cursor: pointer
+
+  &:hover
+    .header-player-progress-line
+      height: 4px
+      top: 4px
+      left: -1px
+      right: -1px
+
+.header-player-progress-line
+  position: absolute
+  left: 0
+  top: 5px
+  right: 0
+  height: 2px
+  background-color: #c1c1c1
+
+.header-player-progress-value
+  height: 2px
+  left: 0
+  top: 5px
+  position: absolute
+  background-color: #de5851
+  width: 0
+
+.header-player-controls
+  display: inline-block
+  margin-right: 20px
+
+  .icon-font
+    padding: 12px
+
+@media screen and (max-width: 980px)
+  .header-section
+    padding: 0 25px
+
+  .header-section--player
+    padding-right: 0
+
+  .header-section--socialLinks
+    .icon-font
+      padding: 10px
+
+  .header-section--player + .header-section--language
+    display: none
+
+  .header-player-track
+    max-width: 30vw
+
+  .header-player-volume
+    width: 60px
+
+  .header-player-controls
+    font-size: 1px
+
+    .icon-font
+      padding: 10px
+
+.header-title
+  display: none
+
+@media screen and (max-width: 700px)
+  .header-section--comma
+    display: none
+
+  .header-section--socialLinks
+    .icon-font-comma
+      display: inline
+
+  .header-menu
+    padding: 35px 20px
+
+@media screen and (max-width: 600px)
+  .header
+    height: 50px
+    line-height: 50px
+    overflow: visible
+
+  .header-title
+    display: block
+    position: absolute
+    left: 100px
+    right: 0
+    top: 0
+    text-align: center
+
+  .header-section
+    padding: 0 10px
+
+  .header-player
+    .header-sections
+      position: absolute
+      left: 0
+      top: 50px
+      right: 0
+      height: 30px
+      background-color: white
+
+  .header-player-track-time,
+  .header-player-track-total
+    bottom: 6px
+
+  .header-player-volume
+    width: 60px
+    flex-grow: 0
+    margin-right: -10px
+    padding: 0
+
+  .header-section--player
+    width: 100%
+    padding: 0 10px
+    box-sizing: border-box
+    display: flex
+    justify-content: space-between
+    line-height: 15px
+
+    .icon-font
+      font-size: 12px
+      vertical-align: 0
+      padding: 0 10px
+
+  .header-player-progress
+    margin-top: 0
+
+  .header-player-track
+    flex-grow: 1
+    flex-shrink: 1
+    max-width: none
+    width: 100px
+    padding-top: 0
+
+  .header-player-track-name
+    display: none
+
+  .header-player-controls
+    margin-right: 10px
+
+  .header-player-volume-bar
+    margin-top: -15px
+    width: 38px
+
+  .header-player-volume-line
+    top: 10px
+
+  .header-section--socialLinks
+    .icon-font
+      font-size: 12px
+
+  .header-logo
+    width: icon-width("comma-small")
+    letter-spacing: 3px
+    font-size: 8px
+
+    .icon-comma
+      +icon("comma-small", true)
+      margin-bottom: 2px
+
+  .header-menu
+    padding: 10px
+
+    > i
+      height: 2px
+      width: 16px
+
+      + i
+        margin-top: 2px
+
+
+@media screen and ( max-width: 360px )
+  .header-player
+    .header-logo
+      display: none
+
+    .header-title
+      left: 40px
+      right: 40px
+
+  .header-player-volume
+    display: none

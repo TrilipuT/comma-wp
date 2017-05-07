@@ -1,0 +1,4 @@
+build:
+
+  script:
+  - "/home/gitlab_ci/build comma records"

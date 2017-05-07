@@ -1,0 +1,5 @@
+<a href="{{ link }}" target="_blank"
+   class="album-social-link album-social-link--{{ class }} {% if counter > 0 %}album-social-link--counter{% endif %} js-share-{{ class }}">
+    <i class="icon-font icon-font-{{ class }}"></i>
+    {% if counter > 0 %}<span class="album-social-link-text">{{ counter }}</span>{% endif %}
+</a>

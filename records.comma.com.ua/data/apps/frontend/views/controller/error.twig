@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+<html lang="{{ lang }}">
+    <head>
+        <meta charset="utf-8">
+
+        <title>{{ this.getTitle() }} {% if this.getTitle() %}—{% endif %} {{"siteTitle"|translate}}</title>
+
+        {% for sheet in this.getCss() %}
+            <link rel="stylesheet" href="{{ sheet.href }}" {% if sheet.media %}media="{{ sheet.media }}"{% endif %}/>
+        {% endfor %}
+
+        <meta name="viewport" content="width=device-width">
+
+        <meta name="twitter:card" content="summary_large_image">
+
+        <meta property="og:title" content="{{ shareTitle }}" />
+        <meta name="twitter:title" content="{{ shareTitle }}" />
+
+        <meta name="description" content="{{ shareDescription }}" />
+        <meta property="og:description" content="{{ shareDescription }}" />
+        <meta name="twitter:description" content="{{ shareDescription }}" />
+
+        <meta property="og:image" content="http://{{ request().getHost() }}{{ shareImage }}" />
+        <meta name="twitter:image:src" content="http://{{ request().getHost() }}{{ shareImage }}">
+    </head>
+    <body>
+        {{ header | raw }}
+        {{ body | raw }}
+    </body>
+</html>
