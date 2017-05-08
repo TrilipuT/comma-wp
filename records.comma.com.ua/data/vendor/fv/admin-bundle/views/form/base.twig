@@ -1,0 +1,10 @@
+<h3>{{ this.getLabel() }}</h3>
+<form method="post" action="{{ this.getSubmitUrl() }}" class="forms">
+    {% for field in fields %}
+        {{ field | raw }}
+    {% endfor %}
+
+    <div class="actions">
+        <input type="submit" name="send" class="btn" value="{{ this.getSubmitButtonLabel() }}">
+    </div>
+</form>

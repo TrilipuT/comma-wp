@@ -1,0 +1,46 @@
+<label for="{{ this.getId() }}" class="file">
+    {{ this.getLabel() }}
+
+    {% if this.getValidators('required') %}
+        <span class="req">*</span>
+    {% endif %}
+
+    <br/>
+
+    <span class="progress">
+        <span></span>
+    </span>
+
+    <span class="btn btn-file">
+        <i class="fa fa-upload"></i> Загрузить
+        <input type="file" name="file" accept="{{ this.getAccept() }}"/>
+    </span>
+
+    {% set hidden = '' %}
+    {% if not this.getValue() %}
+        {% set hidden = 'style="display: none"' %}
+    {% endif %}
+
+    {% block btns %}
+        <a href="{{ this.getPath() }}" target="_blank" class="btn btn-small file-preview" {{ hidden | raw }}>
+            <i class="fa fa-search"></i>
+        </a>
+    {% endblock %}
+
+    <a href="" class="btn btn-small btn-orange file-remove" {{ hidden | raw }}>
+        <i class="fa fa-trash-o"></i>
+    </a>
+
+    <br/>
+
+    <input
+            id="{{ this.getId() }}"
+            name="{{ this.getName() }}"
+            type="hidden"
+            value="{{ this.getValue() }}"
+            />
+</label>
+
+{% if not this.isValid() %}
+    <span class="error">{{ this.getValidationMessage() }}</span>
+{% endif %}

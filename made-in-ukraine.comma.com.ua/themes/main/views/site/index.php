@@ -34,11 +34,11 @@
                         </div>
                     <?php endif;?>
                     <div class="item-text">
-                        <? if ($mainArticle->main_title): ?>
+                        <?php if ($mainArticle->main_title): ?>
                         <?= $mainArticle->main_title ?>
-                        <? else: ?>
+                        <?php else: ?>
                         <?= $mainArticle->transfer->name?>
-                        <? endif; ?>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <a href="<?=$mainArticle->getItemUrl()?>"  class="item-link"></a>

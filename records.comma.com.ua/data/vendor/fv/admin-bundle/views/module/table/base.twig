@@ -1,0 +1,30 @@
+<div
+     class="table-edit base"
+     one="{{ this.getOneUrl() }}"
+     edit="{{ this.getEditUrl() }}"
+     remove="{{ this.getRemoveUrl() }}"
+     create="{{ this.getCreateUrl() }}"
+>
+
+    <table class="width-100 table-striped">
+        <thead>
+        <tr>
+            <th>
+                {% if this.option('create', true) %}
+                <div>
+                    <a class="create">
+                        <i class="fa fa-plus-square"></i>
+                    </a>
+                </div>
+                {% endif %}
+            </th>
+            {% for field in this.getColumns() %}
+            <th>{{ field }}</th>
+            {% endfor %}
+        </tr>
+        </thead>
+        <tbody class="data">
+            {{ list | raw }}
+        </tbody>
+    </table>
+</div>

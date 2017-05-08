@@ -1,0 +1,19 @@
+<label for="{{ this.getId() }}">
+    {{ this.getLabel() }}
+    {% if this.getValidators('required') %}
+        <span class="req">*</span>
+    {% endif %}
+
+    <input
+        class="{% if not this.isValid() %}input-error{% endif %}"
+        id="{{ this.getId() }}"
+        name="{{ this.getName() }}"
+        type="{{ this.getType() }}"
+        value="{{ this.getValue() }}"
+        placeholder="{{ this.getPlaceholder() }}"
+        {% if this.isDisabled() %}disabled="disabled"{% endif %}
+    />
+</label>
+{% if not this.isValid() %}
+    <span class="error">{{ this.getValidationMessage() }}</span>
+{% endif %}

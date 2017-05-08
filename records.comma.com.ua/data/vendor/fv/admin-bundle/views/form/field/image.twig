@@ -1,0 +1,14 @@
+{% extends "file.twig" %}
+
+{% block btns %}
+    <a href="{{ this.getPath() }}" target="_blank" class="btn btn-small file-preview image-preview" {{ hidden | raw }}>
+        <i class="fa fa-search"></i>
+    </a>
+
+    <a class="btn btn-small image-crop" {{ hidden | raw }}
+       href="{{ this.getPath() }}"
+       data-url="{{ path("fv:crop") }}"
+       data-src="{{ this.getValue() }}">
+        <i class="fa fa-crop"></i>
+    </a>
+{% endblock %}

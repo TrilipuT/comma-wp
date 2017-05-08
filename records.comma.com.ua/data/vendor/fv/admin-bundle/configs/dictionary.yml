@@ -1,0 +1,5 @@
+dictionary:
+  class: config
+  params:
+    autosave: true
+    file: apps/backend/configs/dictionary.translation.yml

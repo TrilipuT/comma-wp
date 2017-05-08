@@ -11,7 +11,7 @@ class <?php echo $modelClass; ?> extends <?php echo $this->baseClass; ?> {
 			array('<?php echo implode(', ', array_keys($columns)); ?>', 'safe'),
 		);
 	}
-<?  
+<?php
 
 	$_tmp  = explode('Has', $modelClass); 
 	$array = array_keys($columns);

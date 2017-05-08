@@ -1,0 +1,14 @@
+{% set view = this.getListView() %}
+
+{% for entity in this.getEntities() %}
+    {{ view.setEntity(entity).render() | raw }}
+{% endfor %}
+
+{% if this.hasMore() %}
+    <tr class="pager">
+        <td></td>
+        <td colspan="900">
+            <a class="btn more btn-small" href="{{ this.getBase().getOffsetUrl() }}"><i class="fa fa-arrow-down"></i></a>
+        </td>
+    </tr>
+{% endif %}

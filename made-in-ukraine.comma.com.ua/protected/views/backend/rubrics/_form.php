@@ -32,7 +32,7 @@
  	<div class="row-top">  
 
  
-<? /*
+<?php /*
 		<div class="block">
             <?php echo $form->label($model ,'gallery_id'); ?>
             <?php echo $form->dropDownList($model ,'gallery_id', 

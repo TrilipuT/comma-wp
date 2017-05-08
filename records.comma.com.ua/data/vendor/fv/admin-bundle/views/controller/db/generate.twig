@@ -1,0 +1,19 @@
+<form action="{{ this.path("generate") }}" method="post">
+    <table>
+    {% for entity, entityAction in actions %}
+        <tr>
+            <th><h3>{{ entity }}</h3></th>
+            <td>
+                {% for action in entityAction %}
+                <pre class="code">{{ this.highlight(action) | raw }}</pre>
+                {% endfor %}
+                <input type="hidden" name="entities[]" value="{{ entity }}"/>
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+
+    <input type="hidden" name="perform" value="1"/>
+
+    <button class="btn">Агов</button>
+</form>

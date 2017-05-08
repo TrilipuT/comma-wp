@@ -1,0 +1,12 @@
+siteName: %Название сайта%
+
+menu:
+  admins:
+    icon: user-md
+    name: Администрирование // 0 // Администраторы
+    link: moduleDefault:list/module=admins
+
+  dictionary:
+    icon: book
+    name: Администрирование // 0 // Словарь
+    link: moduleDefault:list/module=dictionary

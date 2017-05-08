@@ -1,0 +1,13 @@
+
+<div class="container">
+    <h1><img src="{{ path("favicon:index") }}" style="width: 16px"> {{ request().getHost() | capitalize }}</h1>
+    <h2 class="subheader">Административная панель</h2>
+    <hr>
+
+    {{ menu | raw }}
+
+    <br/>
+    <hr/>
+
+    <p class="color-gray-light" style="text-align: center"><small>{{ this.giveMeAdvice() }}</small></p>
+</div>

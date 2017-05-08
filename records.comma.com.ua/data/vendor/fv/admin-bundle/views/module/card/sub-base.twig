@@ -1,0 +1,16 @@
+<div
+        class="entity-list"
+        one="{{ this.getOneUrl() }}"
+        edit="{{ this.getEditUrl() }}"
+        remove="{{ this.getRemoveUrl() }}"
+        create="{{ this.getCreateUrl() }}"
+        >
+
+    <h2>
+        {{ this.option('name') }}
+    </h2>
+
+    <div class="data">
+        {{ list | raw }}
+    </div>
+</div>

@@ -1,0 +1,13 @@
+<h1>
+    {{ this.getModule().option('name', 'Дефолтный модуль') }}
+    <small><a href="{{ path('index:index') }}"><i class="fa fa-angle-left"></i> <span>назад</span></a></small>
+
+    <span class="btn-group">
+        <input type="text" name="foo" class="input-search" value="{{ this.getRequest().getRequestParameter("search") }}"/>
+        <button class="btn btn-round search-button"><i class="fa fa-search"></i></button>
+    </span>
+</h1>
+
+<hr>
+
+{{ module | raw }}

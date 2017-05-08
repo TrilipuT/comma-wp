@@ -37,7 +37,7 @@
 
                 <div class="how-content">
                     <?php $cnt = 1; foreach ($result['items'] as $a ): ?>
-                    <div class="item <? if ( $cnt % 4 > 1 ) { ?> reverse <? } ?>">
+                    <div class="item <?php if ( $cnt % 4 > 1 ) { ?> reverse <?php } ?>">
                         <div class="item-img">
                             <img src="<?=Article::ICON480x480.$a->image_filename;?>" alt=""/>
                             <div><a href="<?=$a->getItemUrl()?>" target="_self">Читать дальше<b></b></a></div>

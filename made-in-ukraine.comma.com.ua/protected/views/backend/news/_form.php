@@ -42,7 +42,7 @@
         <div class="tab-content">
 
         	<div class="tab-pane fade in active" id="tabs-info" style="height1: 400px;"> 
-        		<? /*
+        		<?php /*
         		<div class="block admin-image">
 					<?php echo $form->label($model,'gif_filename'); ?>
 
@@ -94,7 +94,7 @@
 
                     <?php echo $form->fileField($model,'shareimage'); ?>
                 </div>
-		<? /*
+		<?php /*
 				<div class="block">
 		            <?php echo $form->label($model ,'gallery_id'); ?>
 		            <?php echo $form->dropDownList($model ,'gallery_id', 

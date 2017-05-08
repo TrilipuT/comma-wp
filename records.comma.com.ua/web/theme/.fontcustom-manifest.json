@@ -1,0 +1,99 @@
+{
+  "checksum": {
+    "previous": "5b696de5ef34233a5d8c1222cacb78f32da28b59821a2dd8e72eb1f5af5c3daf",
+    "current": "5b696de5ef34233a5d8c1222cacb78f32da28b59821a2dd8e72eb1f5af5c3daf"
+  },
+  "fonts": [
+    "/Users/cah4a/work/www/comma/records/web/theme/fonts/font_5b696de5ef34233a5d8c1222cacb78f3.ttf",
+    "/Users/cah4a/work/www/comma/records/web/theme/fonts/font_5b696de5ef34233a5d8c1222cacb78f3.svg",
+    "/Users/cah4a/work/www/comma/records/web/theme/fonts/font_5b696de5ef34233a5d8c1222cacb78f3.woff",
+    "/Users/cah4a/work/www/comma/records/web/theme/fonts/font_5b696de5ef34233a5d8c1222cacb78f3.eot"
+  ],
+  "glyphs": {
+    "arrow-down": {
+      "codepoint": 61696,
+      "source": "images/font/arrow-down.svg"
+    },
+    "arrow-left": {
+      "codepoint": 61697,
+      "source": "images/font/arrow-left.svg"
+    },
+    "arrow-right": {
+      "codepoint": 61698,
+      "source": "images/font/arrow-right.svg"
+    },
+    "arrow-up": {
+      "codepoint": 61699,
+      "source": "images/font/arrow-up.svg"
+    },
+    "comma": {
+      "codepoint": 61700,
+      "source": "images/font/comma.svg"
+    },
+    "facebook": {
+      "codepoint": 61701,
+      "source": "images/font/facebook.svg"
+    },
+    "fast-backward": {
+      "codepoint": 61702,
+      "source": "images/font/fast-backward.svg"
+    },
+    "fast-forward": {
+      "codepoint": 61703,
+      "source": "images/font/fast-forward.svg"
+    },
+    "pause": {
+      "codepoint": 61704,
+      "source": "images/font/pause.svg"
+    },
+    "play": {
+      "codepoint": 61705,
+      "source": "images/font/play.svg"
+    },
+    "twitter": {
+      "codepoint": 61706,
+      "source": "images/font/twitter.svg"
+    },
+    "vkontakte": {
+      "codepoint": 61707,
+      "source": "images/font/vkontakte.svg"
+    },
+    "volume": {
+      "codepoint": 61708,
+      "source": "images/font/volume.svg"
+    }
+  },
+  "options": {
+    "autowidth": true,
+    "config": false,
+    "css_selector": ".icon-{{glyph}}",
+    "debug": false,
+    "font_ascent": 448,
+    "font_descent": 64,
+    "font_design_size": 16,
+    "font_em": 512,
+    "font_name": "font",
+    "fonts": [
+
+    ],
+    "force": false,
+    "input": {
+      "templates": "images/font",
+      "vectors": "images/font"
+    },
+    "no_hash": false,
+    "output": {
+      "css": "/Users/cah4a/work/www/comma/records/web/theme/fonts",
+      "fonts": "/Users/cah4a/work/www/comma/records/web/theme/fonts",
+      "preview": "/Users/cah4a/work/www/comma/records/web/theme/fonts"
+    },
+    "preprocessor_path": null,
+    "quiet": true,
+    "templates": [
+
+    ]
+  },
+  "templates": [
+
+  ]
+}

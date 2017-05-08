@@ -1,0 +1,3 @@
+app:
+  middleWares:
+    \AdminBundle\MiddleWare\Security:

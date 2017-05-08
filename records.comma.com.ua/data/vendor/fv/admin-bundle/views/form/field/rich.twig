@@ -1,0 +1,16 @@
+<label for="{{ this.getId() }}" xmlns="http://www.w3.org/1999/html">
+    {{ this.getLabel() }}
+    {% if this.getValidators('required') %}
+        <span class="req">*</span>
+    {% endif %}
+
+    <textarea
+            class="rich {% if not this.isValid() %}input-error{% endif %} width-100"
+            id="{{ this.getId() }}"
+            name="{{ this.getName() }}"
+            {% if this.isDisabled() %}disabled="disabled"{% endif %}
+            >{{ this.getValue() }}</textarea>
+</label>
+{% if not this.isValid() %}
+    <span class="error">{{ this.getValidationMessage() }}</span>
+{% endif %}

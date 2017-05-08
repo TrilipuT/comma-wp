@@ -1,0 +1,16 @@
+<form method="post" action="{{ this.getSubmitUrl() }}" class="forms">
+    {% for field in fields %}
+        {{ field | raw }}
+    {% endfor %}
+
+    <div class="actions">
+        {% if not this.getEntity().isNew() and remove %}
+        <button class="btn remove btn-red" type="button">Удалить</button>
+        {% endif %}
+
+        <div class="right">
+            <button class="btn cancel" type="button">Отменить</button>
+            <button class="btn ok btn-black" type="submit">Сохранить</button>
+        </div>
+    </div>
+</form>

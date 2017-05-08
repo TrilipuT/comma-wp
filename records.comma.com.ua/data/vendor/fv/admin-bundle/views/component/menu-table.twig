@@ -1,0 +1,25 @@
+<div class="modules-list">
+    {% for group, groupItems in this.getItems() %}
+        <h2>{{ group }}</h2>
+        <nav class="nav-h">
+            <ul>
+                {% for sectionItems in groupItems.submenu %}
+                    {% for name, module in sectionItems.submenu %}
+                        <li>
+                            <a href="{{ module.item.path() }}">
+                                <i class="fa fa-{{ module.item.getIcon() }}"></i>
+                                {{ module.item.title() }}
+
+                                {% set label = this.getLabel( module.item ) %}
+                                {% if label %}
+                                    <i class="label label-{{ label.color() }}">{{ label }}</i>
+                                {% endif %}
+                            </a>
+                        </li>
+                    {% endfor %}
+                    {% if not loop.last %}<li class="divider">/</li>{% endif %}
+                {% endfor %}
+            </ul>
+        </nav>
+    {% endfor %}
+</div>

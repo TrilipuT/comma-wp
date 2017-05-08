@@ -1,0 +1,14 @@
+<tr id="{{ entity.getId() }}">
+    <td>
+        <div>
+            <a class="edit"><i class="fa fa-pencil-square"></i></a>
+            {% if remove %}
+            <a class="remove"><i class="fa fa-times-circle"></i></a>
+            {% endif %}
+        </div>
+    </td>
+
+    {% for field in columns %}
+        <td>{{ entity.getValue(field) }}</td>
+    {% endfor %}
+</tr>

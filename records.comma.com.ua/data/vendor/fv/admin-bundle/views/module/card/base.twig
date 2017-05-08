@@ -1,0 +1,47 @@
+<div
+        class="entity-list base"
+        one="{{ this.getOneUrl() }}"
+        edit="{{ this.getEditUrl() }}"
+        remove="{{ this.getRemoveUrl() }}"
+        create="{{ this.getCreateUrl() }}"
+        >
+
+    <p class="sort">
+        {% set sortFields = this.getSortFields() %}
+        {% set selectedSortFields = request().getRequestParameter('sort') %}
+        {% for sortField, direction in selectedSortFields %}
+        {% set tempKeys = [] %}
+        <nobr>
+            <select>
+                <option></option>
+                {% for field in sortFields %}
+                    <option value="{{ field }}" {% if field == sortField %}selected{% endif %}>{{ this.getFieldTranslation(field) }}</option>
+
+                    {% if field != sortField %}
+                        {% set tempKeys = tempKeys|merge([field]) %}
+                    {% endif %}
+                {% endfor %}
+            </select>
+
+            <a class="fa fa-sort-amount-{% if direction < 0 %}desc{% else %}asc{% endif %}"></a>
+        </nobr>
+        {% set sortFields = tempKeyss %}
+        {% endfor %}
+
+        {% if selectedSortFields|length < 3 %}
+            <nobr>
+                <select>
+                    <option></option>
+                    {% for field in sortFields %}
+                        <option value="{{ field }}">{{ this.getFieldTranslation(field) }}</option>
+                    {% endfor %}
+                </select>
+                <a class="fa fa-sort-amount-asc"></a>
+            </nobr>
+        {% endif %}
+    </p>
+
+    <div class="data">
+        {{ list | raw }}
+    </div>
+</div>

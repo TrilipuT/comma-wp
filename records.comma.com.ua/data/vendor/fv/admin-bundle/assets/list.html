@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>admin</title>
+
+    <link rel="stylesheet" href="/assets/libs/kube110/css/kube.min.css"/>
+    <link rel="stylesheet" href="/assets/libs/font-awesome/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="/assets/backend/backend.css"/>
+
+    <script type="text/javascript" src="/assets/libs/jquery/jquery-1.8.3.min.js"></script>
+    <script type="text/javascript" src="/assets/libs/jquery/plugins/jquery.mousewheel.js"></script>
+    <script type="text/javascript" src="/assets/backend/backend.js"></script>
+    <script type="text/javascript" src="/assets/libs/kube110/js/kube.buttons.js"></script>
+    <script type="text/javascript" src="/assets/libs/kube110/js/kube.tabs.js"></script>
+</head>
+<body>
+
+    <div class="header">
+        <div class="container">
+            <ul>
+                <li>
+                    <a href="#">Администрирование <i class="icon-chevron-down"></i></a>
+
+                    <ul class="drop-down">
+                        <li><a href="">Пользователи</a></li>
+                        <li><a href="">Администраторы</a></li>
+                        <li class="divider"></li>
+                        <li><a href="">Статистика</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#">Настройки <i class="icon-chevron-down"></i></a>
+
+                    <ul class="drop-down">
+                        <li><a href="">Языки сайта</a></li>
+                        <li><a href="">Словарь</a></li>
+                        <li><a href="">Картинки</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#">Содержание <i class="icon-chevron-down"></i></a>
+
+                    <ul class="drop-down">
+                        <li><a href="">Foo</a></li>
+                        <li><a href="">Bar</a></li>
+                        <li class="divider"></li>
+                        <li><a href="">FooBar</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+            <ul>
+                <li>
+                    <a href="#">user@email.com <i class="icon-chevron-down"></i></a>
+
+                    <ul class="drop-down">
+                        <li><a href="">Смена пароля</a></li>
+                        <li class="divider"></li>
+                        <li><a href="">Выйти</a></li>
+                    </ul>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+
+    <div class="container">
+
+        <h1>
+            %EntityName%
+            <small><a href="/backend"><i class="icon-angle-left"></i> <span>назад</span></a></small>
+
+            <span class="btn-group">
+                <input type="text" name="foo" class="input-search" />
+                <button class="btn btn-round"><i class="icon-search"></i></button>
+            </span>
+        </h1>
+
+        <hr>
+
+        <div class="entity-list">
+            <p class="sort">
+                <nobr>
+                    <select>
+                        <option></option>
+                        <option>Помеченно</option>
+                        <option selected>Дата создания</option>
+                        <option>Дата изменения</option>
+                        <option>Название</option>
+                    </select>
+                    <a class="icon-sort-by-alphabet"></a>
+                </nobr>
+
+                <nobr class="not-selected">
+                    <select>
+                        <option selected></option>
+                        <option>Помеченно</option>
+                        <option>Дата создания</option>
+                        <option>Дата изменения</option>
+                        <option>Название</option>
+                    </select>
+                    <a class="icon-sort-by-alphabet-alt"></a>
+                </nobr>
+            </p>
+
+            <div class="entities" style="left: -400px; position: relative">
+                <div class="highlight">
+                    <div class="img no-img">&times;</div>
+
+                    <a href="#" class="favorite"><i class="icon-star-empty"></i></a>
+
+                    <div class="info">
+                        <i class="icon-eye-open">
+                            <span class="tooltip">Выводиться</span>
+                        </i>
+                        <i class="icon-retweet">
+                            <span class="tooltip">02.01.2013 <small>22:33</small></span>
+                        </i>
+                        <i class="icon-reply">
+                            <span class="tooltip">02.01.2013 <small>22:33</small></span>
+                        </i>
+                    </div>
+
+                    <div>
+                        <h3>%Name or Title%</h3>
+                        <div class="text">%Description or Caption or Text%</div>
+                    </div>
+                </div>
+                <div>
+                    <img class="img" src="//nicenicejpg.com/128/128" alt=""/>
+
+                    <a href="#" class="favorite"><i class="icon-star"></i></a>
+
+                    <div class="info">
+                        <i class="icon-eye-close">
+                            <span class="tooltip">Не выводиться</span>
+                        </i>
+                        <i class="icon-retweet">
+                            <span class="tooltip">02.01.2013 <small>22:33</small></span>
+                        </i>
+                        <i class="icon-reply">
+                            <span class="tooltip">02.01.2013 <small>22:33</small></span>
+                        </i>
+                    </div>
+
+                    <div>
+                        <h3>%Name or Title%</h3>
+                        <div class="text">%Description or Caption or Text%</div>
+                    </div>
+                </div>
+                <div>
+                    <img class="img" src="//nicenicejpg.com/128/128" alt=""/>
+
+                    <a href="#" class="favorite"><i class="icon-star"></i></a>
+
+                    <div class="info">
+                        <i class="icon-eye-close">
+                            <span class="tooltip">Не выводиться</span>
+                        </i>
+                        <i class="icon-retweet">
+                            <span class="tooltip">02.01.2013 <small>22:33</small></span>
+                        </i>
+                        <i class="icon-reply">
+                            <span class="tooltip">02.01.2013 <small>22:33</small></span>
+                        </i>
+                    </div>
+
+                    <div>
+                        <h3>%Name or Title%</h3>
+                        <div class="text">%Description or Caption or Text%</div>
+                    </div>
+                </div>
+                <div>
+                    <img class="img" src="//nicenicejpg.com/128/128" alt=""/>
+
+                    <a href="#" class="favorite"><i class="icon-star"></i></a>
+
+                    <div class="info">
+                        <i class="icon-eye-close">
+                            <span class="tooltip">Не выводиться</span>
+                        </i>
+                        <i class="icon-retweet">
+                            <span class="tooltip">02.01.2013 <small>22:33</small></span>
+                        </i>
+                        <i class="icon-reply">
+                            <span class="tooltip">02.01.2013 <small>22:33</small></span>
+                        </i>
+                    </div>
+
+                    <div>
+                        <h3>%Name or Title%</h3>
+                        <div class="text">%Description or Caption or Text%</div>
+                    </div>
+                </div>
+                <div>
+                    <img class="img" src="//nicenicejpg.com/128/128" alt=""/>
+
+                    <a href="#" class="favorite"><i class="icon-star"></i></a>
+
+                    <div class="info">
+                        <i class="icon-eye-close">
+                            <span class="tooltip">Не выводиться</span>
+                        </i>
+                        <i class="icon-retweet">
+                            <span class="tooltip">02.01.2013 <small>22:33</small></span>
+                        </i>
+                        <i class="icon-reply">
+                            <span class="tooltip">02.01.2013 <small>22:33</small></span>
+                        </i>
+                    </div>
+
+                    <div>
+                        <h3>%Name or Title%</h3>
+                        <div class="text">%Description or Caption or Text%</div>
+                    </div>
+                </div>
+                <div>
+                    <img class="img" src="//nicenicejpg.com/128/128" alt=""/>
+
+                    <a href="#" class="favorite"><i class="icon-star"></i></a>
+
+                    <div class="info">
+                        <i class="icon-eye-close">
+                            <span class="tooltip">Не выводиться</span>
+                        </i>
+                        <i class="icon-retweet">
+                            <span class="tooltip">02.01.2013 <small>22:33</small></span>
+                        </i>
+                        <i class="icon-reply">
+                            <span class="tooltip">02.01.2013 <small>22:33</small></span>
+                        </i>
+                    </div>
+
+                    <div>
+                        <h3>%Name or Title%</h3>
+                        <div class="text">%Description or Caption or Text%</div>
+                    </div>
+                </div>
+                <div>
+                    <img class="img" src="//nicenicejpg.com/128/128" alt=""/>
+
+                    <a href="#" class="favorite"><i class="icon-star"></i></a>
+
+                    <div class="info">
+                        <i class="icon-eye-close">
+                            <span class="tooltip">Не выводиться</span>
+                        </i>
+                        <i class="icon-retweet">
+                            <span class="tooltip">02.01.2013 <small>22:33</small></span>
+                        </i>
+                        <i class="icon-reply">
+                            <span class="tooltip">02.01.2013 <small>22:33</small></span>
+                        </i>
+                    </div>
+
+                    <div>
+                        <h3>%Name or Title%</h3>
+                        <div class="text">%Description or Caption or Text%</div>
+                    </div>
+                </div>
+                <div>
+                    <img class="img" src="//nicenicejpg.com/128/128" alt=""/>
+
+                    <a href="#" class="favorite"><i class="icon-star"></i></a>
+
+                    <div class="info">
+                        <i class="icon-eye-close">
+                            <span class="tooltip">Не выводиться</span>
+                        </i>
+                        <i class="icon-retweet">
+                            <span class="tooltip">02.01.2013 <small>22:33</small></span>
+                        </i>
+                        <i class="icon-reply">
+                            <span class="tooltip">02.01.2013 <small>22:33</small></span>
+                        </i>
+                    </div>
+
+                    <div>
+                        <h3>%Name or Title%</h3>
+                        <div class="text">%Description or Caption or Text%</div>
+                    </div>
+                </div>
+                <div>
+                    <img class="img" src="//nicenicejpg.com/128/128" alt=""/>
+
+                    <a href="#" class="favorite"><i class="icon-star"></i></a>
+
+                    <div class="info">
+                        <i class="icon-eye-close">
+                            <span class="tooltip">Не выводиться</span>
+                        </i>
+                        <i class="icon-retweet">
+                            <span class="tooltip">02.01.2013 <small>22:33</small></span>
+                        </i>
+                        <i class="icon-reply">
+                            <span class="tooltip">02.01.2013 <small>22:33</small></span>
+                        </i>
+                    </div>
+
+                    <div>
+                        <h3>%Name or Title%</h3>
+                        <div class="text">%Description or Caption or Text%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pager">
+                <span class="btn-group">
+                    <a href="#" class="btn btn-small btn-active">1</a>
+                    <a href="#" class="btn btn-small">2</a>
+                    <a href="#" class="btn btn-small">3</a>
+                    <span class="btn btn-small btn-disabled">...</span>
+                    <a href="#" class="btn btn-small">100</a>
+                </span>
+            </div>
+
+            <div class="entity-edit" style="top: 98px; left: 100px">
+                <a href="/backend" class="hide"><i class="icon-angle-left"></i> <span>назад</span></a>
+
+                <div class="entity-form">
+                    <form method="post" action="" class="forms">
+                        <ul>
+                            <li>
+                                <label for="user_email" class="bold">Email</label>
+                                <input type="email" name="user_email" id="user_email" />
+                            </li>
+                            <li>
+                                <label for="user_name" class="bold">Name</label>
+                                <input type="text" name="user_name" id="user_name" />
+                            </li>
+                            <li>
+                                <hr>
+                                <button class="btn ok" type="submit">Сохранить</button>
+                                <button class="btn cancel" type="submit">Отменить</button>
+                            </li>
+                        </ul>
+                    </form>
+                </div>
+
+                <div class="entity-list">
+                    <h3>%Entity%</h3>
+
+                    <div class="entities">
+                        <div class="highlight">
+                            <div class="img no-img">&times;</div>
+
+                            <a href="#" class="favorite"><i class="icon-star-empty"></i></a>
+
+                            <div class="info">
+                                <i class="icon-eye-open">
+                                    <span class="tooltip">Выводиться</span>
+                                </i>
+                                <i class="icon-retweet">
+                                    <span class="tooltip">02.01.2013 <small>22:33</small></span>
+                                </i>
+                                <i class="icon-reply">
+                                    <span class="tooltip">02.01.2013 <small>22:33</small></span>
+                                </i>
+                            </div>
+
+                            <div>
+                                <h3>%Name or Title%</h3>
+                                <div class="text">%Description or Caption or Text%</div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <img class="img" src="//nicenicejpg.com/128/128" alt=""/>
+
+                            <a href="#" class="favorite"><i class="icon-star"></i></a>
+
+                            <div class="info">
+                                <i class="icon-eye-close">
+                                    <span class="tooltip">Не выводиться</span>
+                                </i>
+                                <i class="icon-retweet">
+                                    <span class="tooltip">02.01.2013 <small>22:33</small></span>
+                                </i>
+                                <i class="icon-reply">
+                                    <span class="tooltip">02.01.2013 <small>22:33</small></span>
+                                </i>
+                            </div>
+
+                            <div>
+                                <h3>%Name or Title%</h3>
+                                <div class="text">%Description or Caption or Text%</div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <img class="img" src="//nicenicejpg.com/128/128" alt=""/>
+
+                            <a href="#" class="favorite"><i class="icon-star"></i></a>
+
+                            <div class="info">
+                                <i class="icon-eye-close">
+                                    <span class="tooltip">Не выводиться</span>
+                                </i>
+                                <i class="icon-retweet">
+                                    <span class="tooltip">02.01.2013 <small>22:33</small></span>
+                                </i>
+                                <i class="icon-reply">
+                                    <span class="tooltip">02.01.2013 <small>22:33</small></span>
+                                </i>
+                            </div>
+
+                            <div>
+                                <h3>%Name or Title%</h3>
+                                <div class="text">%Description or Caption or Text%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="entity-edit" style="top: 50px">
+                        <div class="entity-form">
+                            <form method="post" action="" class="forms">
+                                <ul>
+                                    <li>
+                                        <label for="user_email" class="bold">Email</label>
+                                        <input type="email" name="user_email" id="user_email" />
+                                    </li>
+                                    <li>
+                                        <label for="user_name" class="bold">Name</label>
+                                        <input type="text" name="user_name" id="user_name" />
+                                    </li>
+                                    <li>
+                                        <hr>
+                                        <button class="btn ok" type="submit">Сохранить</button>
+                                        <button class="btn cancel" type="submit">Отменить</button>
+                                    </li>
+                                </ul>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+</body>
+</html>

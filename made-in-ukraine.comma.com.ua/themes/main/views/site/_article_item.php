@@ -78,11 +78,11 @@
             <?php endif;?>
 
             <div class="item-text">
-                   <? if ($Article->main_title): ?>
+                   <?php if ($Article->main_title): ?>
                         <?= $Article->main_title ?>
-                        <? else: ?>
+                        <?php else: ?>
                         <?= $Article->transfer->name?>
-                        <? endif; ?>
+                        <?php endif; ?>
 
             </div>
             <a href="<?=$Article->getItemUrl()?>" class="item-link">

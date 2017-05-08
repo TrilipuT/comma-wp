@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    {% include 'head.twig' %}
+</head>
+<body>
+<div class="page">
+    {{ header|raw }}
+
+    <div class="container">
+        {{ body|raw }}
+    </div>
+
+    <div class="footer-space"></div>
+</div>
+
+<div class="footer">
+    <i class="fa fa-gears"></i> <br/>
+    fv framework <br/>
+    <small>{{ this.getFvVersion() }}</small>
+</div>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<div id="{{ id }}">
+
+    {% if image is not null %}
+        {% if image %}
+            <img class="img" src="{{ image }}" alt=""/>
+        {% else %}
+            <div class="img no-img">&times;</div>
+        {% endif %}
+    {% endif %}
+
+    <div class="info">
+        {% if icons or ctime or mtime or isActive is not null %}
+        <div>
+            {% if icons %}
+                {{ icons | raw }}
+            {% endif %}
+
+            {% if isActive is not null %}
+                {% if icons %}/{% endif %}
+
+                {% if isActive %}
+                    <i class="fa fa-eye">
+                        <span class="tooltip">Выводиться</span>
+                    </i>
+                {% else %}
+                    <i class="fa fa-eye-slash">
+                        <span class="tooltip">Не выводиться</span>
+                    </i>
+                {% endif %}
+            {% endif %}
+
+            {% if ctime %}
+                {% if isActive is not null or icons %}/{% endif %}
+
+                <i class="fa fa-plus">
+                    <span class="tooltip">{{ ctime | date("d.m.Y") }} <small>{{ ctime | date("H:i") }}</small></span>
+                </i>
+
+                {% if mtime %}/{% endif %}
+            {% endif %}
+
+            {% if mtime %}
+                <i class="fa fa-pencil">
+                    <span class="tooltip">{{ mtime | date("d.m.Y") }} <small>{{ mtime | date("H:i") }}</small></span>
+                </i>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <div>
+            #<b>{{ id }}</b>
+        </div>
+    </div>
+
+    <div>
+        {% if name is not null %}
+            <h3>{{ name }}</h3>
+        {% endif %}
+        {% if description is not null %}
+            {% set description = description | striptags %}
+            <div class="text">{{ description | slice(0, 200) | raw }} {% if description|length > 200 %}…{% endif %}</div>
+        {% endif %}
+    </div>
+
+</div>

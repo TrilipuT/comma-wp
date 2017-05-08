@@ -1,0 +1,13 @@
+<meta charset="utf-8">
+
+<title>{{ request().getHost() | capitalize  }}</title>
+
+{% for stylesheet in this.getCss() %}
+    <link rel="stylesheet" href="{{ stylesheet.href }}"/>
+{% endfor %}
+
+{% for script in this.getJs() %}
+    <script type="text/javascript" src="{{ script }}"></script>
+{% endfor %}
+
+<link rel="icon" type="image/jpg" href="{{ path("favicon") }}" />

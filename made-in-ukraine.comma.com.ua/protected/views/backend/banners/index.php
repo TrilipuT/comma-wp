@@ -40,7 +40,7 @@
 							<td><?=$item->date_end;?></td>
 						 	<td><?=$item->views_num;?></td>  
 
-						 	<? /*
+						 	<?php /*
 						 	<td>
 						 		<?php if($item->created_by > 0):
 				 					$Editors = Editors::model()->findByPk($item->created_by);

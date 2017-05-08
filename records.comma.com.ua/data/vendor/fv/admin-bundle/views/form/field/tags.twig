@@ -1,0 +1,28 @@
+<label for="{{ this.getId() }}">
+    {{ this.getLabel() }}
+    {% if this.getValidators('required') %}
+        <span class="req">*</span>
+    {% endif %}
+
+    <select
+            {% if this.isMultiple() %}multiple="multiple"{% endif %}
+            class="tags {% if not this.isValid() %}input-error{% endif %}"
+            id="{{ this.getId() }}"
+            {% if this.isDisabled() %}disabled="disabled"{% endif %}
+            {% if lazy %}
+                data-lazy="1"
+                data-url="{{ path("moduleDefault:search/entity=" ~ entityName) }}"
+            {% endif %}
+            name="{{ this.getName() }}"
+            >
+        {% if this.isNullable() and not this.isMultiple() %}
+            <option value="">(не указано)</option>
+        {% endif %}
+        {% for key, name in this.getRenderValues() %}
+            <option value="{{ key }}" {% if this.isSelected( key ) %}selected="selected"{% endif %}>{{ name }}</option>
+        {% endfor %}
+    </select>
+</label>
+{% if not this.isValid() %}
+    <span class="error">{{ this.getValidationMessage() }}</span>
+{% endif %}

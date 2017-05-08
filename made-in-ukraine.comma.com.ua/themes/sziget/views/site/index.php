@@ -108,9 +108,9 @@
 	<div class="wrapper">
 		<div class="partner">
 			<ul>
-				<? /* <li><a href="http://comma.com.ua" target="_blank"><img src="/content/spons4.png" alt="comma.com.ua" /></a></li>*/?>
+				<?php /* <li><a href="http://comma.com.ua" target="_blank"><img src="/content/spons4.png" alt="comma.com.ua" /></a></li>*/?>
 				<li><a href="http://afisha.bigmir.net" target="_blank"><img src="/content/spons5.png" alt="afisha.bigmir.net" /></a></li>
-				<? /* <li><a href="http://aristocrats.fm" target="_blank"><img src="/content/spons6.png" alt="aristocrats.fm" /></a></li> */?>
+				<?php /* <li><a href="http://aristocrats.fm" target="_blank"><img src="/content/spons6.png" alt="aristocrats.fm" /></a></li> */?>
 				<li><a href="http://maxxi.tv" target="_blank"><img src="/content/spons7.png" alt="maxxi.tv" /></a></li>
 				<li><a href=" http://inspired.com.ua" target="_blank"><img src="/content/spons8.png" alt="inspired.com.ua" /></a></li>
 			</ul>

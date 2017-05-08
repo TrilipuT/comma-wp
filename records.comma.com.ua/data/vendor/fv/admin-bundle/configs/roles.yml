@@ -1,0 +1,8 @@
+roles:
+  master: *
+  admin: [ *, -db ]
+  default: [ *, -db, -admins ]
+
+subroles:
+  master: *
+  admin: [ admin, default ]

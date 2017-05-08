@@ -1,0 +1,51 @@
+<div class="header">
+    <div class="container">
+        <ul>
+            <li class="home">
+                {% set home = path("index:index") %}
+                {% if request().getUri() == home %}
+                    <span><i class="fa fa-home"></i></span>
+                {% else %}
+                    <a href="{{ home }}"><i class="fa fa-home"></i></a>
+                {% endif %}
+            </li>
+
+            {% for group, groupItems in this.getItems() %}
+            <li>
+                <a>{{ group }} <i class="fa fa-angle-down"></i></a>
+
+                <ul class="drop-down">
+                    {% for sectionItems in groupItems.submenu %}
+                        {% for name, module in sectionItems.submenu %}
+                            <li>
+                                <a href="{{ module.item.path() }}"><i class="fa fa-{{ module.item.getIcon() }}"></i> {{ module.item.title() }}</a>
+                            </li>
+                        {% endfor %}
+                        {% if not loop.last %}<li class="divider"></li>{% endif %}
+                    {% endfor %}
+                </ul>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <ul>
+            <li>
+                <a>
+                    {% if session().getAdmin().name.get() %}
+                        {{ session().getAdmin().name }}
+                    {% else %}
+                        {{ session().getAdmin().login }}
+                    {% endif %}
+                    <i class="fa fa-angle-down"></i>
+                </a>
+
+                <ul class="drop-down">
+                    {#<li><a href="">Смена пароля</a></li>#}
+                    {#<li class="divider"></li>#}
+                    <li><a href="{{ path("auth:sign-out") }}"><i class="fa fa-sign-out"></i>Выйти</a></li>
+                </ul>
+            </li>
+
+        </ul>
+    </div>
+</div>

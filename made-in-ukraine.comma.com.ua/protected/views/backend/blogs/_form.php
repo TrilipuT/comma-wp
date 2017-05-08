@@ -159,7 +159,7 @@
 		            <?php echo $form->error($model ,'bloger_id'); ?> 
 		        </div>
 
-				<? /*
+				<?php /*
 				<div class="block"> 
 					<?php echo CHtml::dropDownList(get_class($model).'[authors][]',  											
 													CHtml::listData(ArticleHasAuthors::model()->withArticle($model->id)->findAll(), 'id', 'authors_id'),

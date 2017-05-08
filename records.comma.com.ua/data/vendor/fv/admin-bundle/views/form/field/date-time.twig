@@ -1,0 +1,33 @@
+<label class="datetime">
+    {{ this.getLabel() }}
+    {% if this.getValidators('required') %}
+        <span class="req">*</span>
+    {% endif %}
+
+    <br/>
+
+    <input
+        class="{% if not this.isValid() %}input-error{% endif %} date"
+        id="{{ this.getId() }}"
+        name="{{ this.getName() }}[date]"
+        type="text"
+        {% if this.isDisabled() %}disabled="disabled"{% endif %}
+        value="{% if this.getValue() %}{{ this.getValue() | date("d.m.Y") }}{% endif %}"
+        placeholder="{{ this.getPlaceholder() }}"
+    />
+
+    <span>
+        <input
+            type="text"
+            name="{{ this.getName() }}[time]"
+            {% if this.isDisabled() %}disabled="disabled"{% endif %}
+            class="{% if not this.isValid() %}input-error{% endif %} time"
+            value="{% if this.getValue() %}{{ this.getValue() | date("H:i") }}{% endif %}"
+            />
+    </span>
+
+</label>
+
+{% if not this.isValid() %}
+    <span class="error">{{ this.getValidationMessage() }}</span>
+{% endif %}

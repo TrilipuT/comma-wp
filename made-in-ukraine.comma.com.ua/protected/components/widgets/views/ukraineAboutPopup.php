@@ -12,23 +12,23 @@
                         </div>
                         <div class="people">
                             <?php foreach ( $authors as $author ): ?>
-                            <? if ( $author->photographer == 0 ): ?>
+                            <?php if ( $author->photographer == 0 ): ?>
                             <div class="item">
                                 <div class="item-img"><a href="http://comma.com.ua<?=$author->getItemUrl()?>"><img src="<?= Authors::PATH_IMAGE_SMALL.$author->image_filename?>" alt=""/></a></div>
                                 <div class="item-name"><a href="http://comma.com.ua<?=$author->getItemUrl()?>"><?=$author->transfer->name ?><br/><?=$author->transfer->last_name?></a></div>
-                                <div class="item-job"><?php if ( $author->photographer == 0 ): ?>автор<? else: ?>фотограф<? endif; ?></div>
+                                <div class="item-job"><?php if ( $author->photographer == 0 ): ?>автор<?php else: ?>фотограф<?php endif; ?></div>
                             </div>
-                            <? endif; ?>
-                            <? endforeach; ?>
+                            <?php endif; ?>
+                            <?php endforeach; ?>
                             <?php foreach ( $authors as $author ): ?>
-                            <? if ( $author->photographer == 1 ): ?>
+                            <?php if ( $author->photographer == 1 ): ?>
                             <div class="item">
                                 <div class="item-img"><a href="http://comma.com.ua<?=$author->getPhotografUrl()?>"><img src="<?= Authors::PATH_IMAGE_SMALL.$author->image_filename?>" alt=""/></a></div>
                                 <div class="item-name"><a href="http://comma.com.ua<?=$author->getPhotografUrl()?>"><?=$author->transfer->name ?><br/><?=$author->transfer->last_name?></a></div>
-                                <div class="item-job"><?php if ( $author->photographer == 0 ): ?>автор<? else: ?>фотограф<? endif; ?></div>
+                                <div class="item-job"><?php if ( $author->photographer == 0 ): ?>автор<?php else: ?>фотограф<?php endif; ?></div>
                             </div>
-                            <? endif; ?>
-                            <? endforeach; ?>
+                            <?php endif; ?>
+                            <?php endforeach; ?>
                         </div>
                         <div class="text">
                             <?= $text ?>

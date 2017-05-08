@@ -72,7 +72,7 @@
 </header>
 <section class="main">
 	<?=$content;?>
-	<section class="video_about"> <? // https://www.youtube.com/embed/k_JqgPOJBpA?rel=0&amp;controls=0&amp;showinfo=0?>
+	<section class="video_about"> <?php // https://www.youtube.com/embed/k_JqgPOJBpA?rel=0&amp;controls=0&amp;showinfo=0?>
 		<a class="fancybox-media" href="https://vimeo.com/114012466">
 			<span class="hover_video">
 				<span class="play"></span>

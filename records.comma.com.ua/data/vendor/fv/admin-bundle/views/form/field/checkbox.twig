@@ -1,0 +1,17 @@
+<label for="{{ this.getId() }}">
+    <input type="checkbox"
+           class="{% if not this.isValid() %}input-error{% endif %}"
+           id="{{ this.getId() }}"
+           name="{{ this.getName() }}"
+           {% if this.getValue() %}checked{% endif %}
+           {% if this.isDisabled() %}disabled="disabled"{% endif %}
+    />
+
+    {{ this.getLabel() }}
+    {% if this.getValidators('required') %}
+        <span class="req">*</span>
+    {% endif %}
+</label>
+{% if not this.isValid() %}
+    <span class="error">{{ this.getValidationMessage() }}</span>
+{% endif %}

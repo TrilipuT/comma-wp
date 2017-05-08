@@ -1,0 +1,24 @@
+<label for="{{ this.getId() }}">
+    {{ this.getLabel() }}
+    {% if this.getValidators('required') %}
+        <span class="req">*</span>
+    {% endif %}
+
+    <select
+        {% if this.isMultiple() %}multiple="multiple"{% endif %}
+        class="{% if not this.isValid() %}input-error{% endif %}"
+        id="{{ this.getId() }}"
+        name="{{ this.getName() }}"
+        {% if this.isDisabled() %}disabled="disabled"{% endif %}
+    >
+        {% if this.isNullable() %}
+        <option value=""></option>
+        {% endif %}
+        {% for key, name in this.getValues() %}
+            <option value="{{ key }}" {% if this.isSelected( key ) %}selected="selected"{% endif %}>{{ name }}</option>
+        {% endfor %}
+    </select>
+</label>
+{% if not this.isValid() %}
+    <span class="error">{{ this.getValidationMessage() }}</span>
+{% endif %}

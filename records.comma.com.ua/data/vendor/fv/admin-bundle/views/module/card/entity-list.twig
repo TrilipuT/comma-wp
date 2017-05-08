@@ -1,0 +1,20 @@
+<div class="entities">
+    {% if create %}
+        <div class="new">
+            <span class="fa fa-plus-circle"></span> Создать
+        </div>
+    {% endif %}
+
+    {% set view = this.getListView() %}
+    {% for entity in this.getEntities() %}
+        {{ view.setEntity(entity).render() | raw }}
+    {% endfor %}
+
+    {% if this.hasMore() %}
+        <span class="pager">
+            <a class="btn more btn-small" href="{{ this.getBase().getOffsetUrl() }}"><i class="fa fa-arrow-down"></i></a>
+        </span>
+    {% endif %}
+</div>
+
+<div class="entity-edit"></div>

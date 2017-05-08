@@ -38,7 +38,7 @@
 
 
 
-<? /*<ul>
+<?php /*<ul>
                             <li><a href="/search.html<?=($q ? '?q='.$q : '')?>" <?=($category == '' ? 'class="is-active"' : ($all_num == 0 ? 'class="is-inactive"' : ''))?>><?=Yii::t('app','search_category_all')?> (<?=$all_num?>)</a></li>
                             <li><a href="/search/news.html<?=($q ? '?q='.$q : '')?>" <?=($category == 'news' ? 'class="is-active"' : ($news_num == 0 ? 'class="is-inactive"' : ''))?>><?=Yii::t('app','search_category_news')?> (<?=$news_num?>)</a></li>
                             <li><a href="/search/videos.html<?=($q ? '?q='.$q : '')?>" <?=($category == 'videos' ? 'class="is-active"' : ($videos_num == 0 ? 'class="is-inactive"' : ''))?>><?=Yii::t('app','search_category_videos')?> (<?=$videos_num?>)</a></li>

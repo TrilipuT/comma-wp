@@ -1,0 +1,29 @@
+modules:
+  admins:
+    name: Администраторы
+    entity: Admin
+    listClass:  AdminBundle\EntityList\Admin
+    form:
+      class: AdminBundle\Form\Admin
+
+  users:
+    name: Пользователи
+    entity: User
+    form:
+      options:
+        exclude: [ password, netId ]
+    listView:
+      class: AdminBundle\ItemView\User
+
+  dictionary:
+    template: dictionary
+    name: Словарь
+    entity: Dictionary
+    create: false
+    listView:
+      options:
+        description: keyword
+        name: translation
+    form:
+      options:
+        fields: [ translation ]

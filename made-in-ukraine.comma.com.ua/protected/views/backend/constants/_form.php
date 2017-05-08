@@ -100,7 +100,7 @@
 						</div>  
 
 					
-						<? /*<div class="row-elements">
+						<?php /*<div class="row-elements">
 							<?php echo $form->label($model_transfer,'description'); ?>
 							<?php echo $form->textArea($model_transfer,'description['.$lang_id.']',array('rows'=>10, 'cols'=>60 , 'maxlength'=>255,   'value' => $model_transfer->description )); ?>
 							<?php echo $form->error($model_transfer,'description'); ?>

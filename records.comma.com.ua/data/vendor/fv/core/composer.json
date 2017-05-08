@@ -1,0 +1,6 @@
+{
+    "name": "fv/core",
+    "autoload": {
+        "classmap" : [ "classes/" ]
+    }
+}

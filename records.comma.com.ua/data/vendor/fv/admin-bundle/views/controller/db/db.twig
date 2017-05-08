@@ -1,0 +1,17 @@
+<h1>Choose Your Destiny</h1>
+
+<form action="{{ this.path("generate") }}" method="post">
+    <table>
+    {% for entity in entities %}
+        <tr>
+            <td><input name="entities[]" id="f{{ entity }}" value="{{ entity }}" type="checkbox"/></td>
+            <td>
+                <label for="f{{ entity }}">{{ entity }}</label>
+            </td>
+            <td>{{ this.status(entity) | raw }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+
+    <button class="btn">Попробуем</button>
+</form>
