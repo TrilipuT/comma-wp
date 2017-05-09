@@ -18,7 +18,7 @@
     "host": "http://s3-eu-central-1.amazonaws.com"
   },
   {
-    "local_folder": "records.comma.com.ua/web/uploads",
+    "local_folder": "records.comma.com.ua/web/upload",
     "bucket": "records-comma-uploads",
     "cache_folder": "/tmp",
     "gid": "498",
