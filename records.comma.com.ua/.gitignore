@@ -1,6 +1,7 @@
 #data/vendor
 .idea
 node/node_modules
+web/upload
 #web/theme/stylesheets
 #web/theme/fonts/font*
 #web/theme/.fontcustom-manifest.json
