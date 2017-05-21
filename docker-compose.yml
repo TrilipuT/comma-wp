@@ -32,8 +32,8 @@ services:
       WP_DEBUG: 'true'
       AWS_CLOUDFRONT_DOMAIN: 'comma.dev/wp-content/uploads'
     volumes:
-      - ./:/var/www/html
-#      - d4d-unison-sync:/var/www/html # Docker-sync for macOS users
+      - ./:/var/www/html:rw
+#      - docker-sync-unison:/var/www/html # will be mounted on /var/www
 
   nginx:
     image: wodby/wordpress-nginx:4-1.10-2.1.0
@@ -44,8 +44,8 @@ services:
       NGINX_SERVER_ROOT: /var/www/html/
 
     volumes:
-      - ./:/var/www/html
-#      - d4d-unison-sync:/var/www/html # Docker-sync for macOS users
+      - ./:/var/www/html:rw
+#      - docker-sync-unison:/var/www/html # will be mounted on /var/www
     depends_on:
       - php
     labels:
@@ -99,9 +99,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
 # Docker-sync for macOS users
-#volumes:
-#  docker-sync-unison:
-#    external: true
+volumes:
+  docker-sync-unison:
+    external: true
 
 #volumes:
 #  codebase:
