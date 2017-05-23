@@ -1,7 +1,13 @@
 <!DOCTYPE html>
-<html lang="<?=Yii::app()->language?>">
+<html lang="<?= Yii::app()->language ?>">
 <head>
-	<html lang="<?=Yii::app()->language?>">
+	<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+	<script>
+	  (adsbygoogle = window.adsbygoogle || []).push({
+	    google_ad_client: "ca-pub-1615225355601278",
+	    enable_page_level_ads: true
+	  });
+	</script>
 	<meta name="robots" content="index, follow">
     <meta charset="utf-8" />
     <link href="/favicon.ico" rel="shortcut icon" type="image/x-icon" />
@@ -19,7 +25,7 @@
     <meta name="SKYPE_TOOLBAR" content="SKYPE_TOOLBAR_PARSER_COMPATIBLE">
 
     <script type="text/javascript">
-        var lang = '<?=Yii::app()->language?>';
+        var lang = '<?= Yii::app()->language ?>';
     </script>
 
     <link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
