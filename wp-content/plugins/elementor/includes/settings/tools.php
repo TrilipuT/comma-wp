@@ -1,13 +1,21 @@
 <?php
 namespace Elementor;
 
-use Elementor\Plugin;
-
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
 
 class Tools {
 
 	const PAGE_ID = 'elementor-tools';
+
+	public function __construct() {
+		add_action( 'admin_menu', [ $this, 'register_admin_menu' ], 205 );
+		add_action( 'admin_init', [ $this, 'register_settings_fields' ], 20 );
+
+		if ( ! empty( $_POST ) ) {
+			add_action( 'wp_ajax_elementor_clear_cache', [ $this, 'ajax_elementor_clear_cache' ] );
+			add_action( 'wp_ajax_elementor_replace_url', [ $this, 'ajax_elementor_replace_url' ] );
+		}
+	}
 
 	public static function get_url() {
 		return admin_url( 'admin.php?page=' . self::PAGE_ID );
@@ -65,6 +73,32 @@ class Tools {
 				'desc' => __( 'Elementor Library automatically updates on a daily basis. You can also manually update it by clicking on the sync button.', 'elementor' ),
 			]
 		);
+
+		$field_id = 'elementor_css_print_method';
+		add_settings_field(
+			$field_id,
+			__( 'CSS Print Method', 'elementor' ),
+			[ $controls_class_name, 'render' ],
+			self::PAGE_ID,
+			$tools_section,
+			[
+				'id'      => $field_id,
+				'class'   => $field_id,
+				'type'    => 'select',
+				'options' => [
+					'external' => __( 'External File', 'elementor' ),
+					'internal' => __( 'Internal Embedding', 'elementor' ),
+				],
+				'desc'    => '<div class="elementor-css-print-method-description" data-value="external" style="display: none">' .
+				             __( 'Use external CSS files for all generated stylesheets. Choose this setting for better performance (recommended).', 'elementor' ) .
+				             '</div>' .
+				             '<div class="elementor-css-print-method-description" data-value="internal" style="display: none">' .
+				             __( 'Use internal CSS that is embedded in the head of the page. For troubleshooting server configuration conflicts and managing development environments.', 'elementor' ) .
+				             '</div>',
+			]
+		);
+
+		register_setting( Tools::PAGE_ID, $field_id, [ $validations_class_name, 'clear_cache' ] );
 
 		$replace_url_section = 'elementor_replace_url_section';
 
@@ -178,16 +212,6 @@ class Tools {
 		} else {
 			Plugin::$instance->posts_css_manager->clear_cache();
 			wp_send_json_success( sprintf( __( '%d Rows Affected', 'elementor' ), $rows_affected ) );
-		}
-	}
-
-	public function __construct() {
-		add_action( 'admin_menu', [ $this, 'register_admin_menu' ], 205 );
-		add_action( 'admin_init', [ $this, 'register_settings_fields' ], 20 );
-
-		if ( ! empty( $_POST ) ) {
-			add_action( 'wp_ajax_elementor_clear_cache', [ $this, 'ajax_elementor_clear_cache' ] );
-			add_action( 'wp_ajax_elementor_replace_url', [ $this, 'ajax_elementor_replace_url' ] );
 		}
 	}
 }

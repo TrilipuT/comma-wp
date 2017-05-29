@@ -14,31 +14,26 @@ abstract class CSS_File {
 	const CSS_STATUS_INLINE = 'inline';
 
 	const CSS_STATUS_EMPTY = 'empty';
-
-	/**
-	 * @var string
-	 */
-	private $path;
-
-	/**
-	 * @var string
-	 */
-	private $url;
-
-	/**
-	 * @var string
-	 */
-	private $css;
-
-	/**
-	 * @var array
-	 */
-	private $fonts = [];
-
 	/**
 	 * @var Stylesheet
 	 */
 	protected $stylesheet_obj;
+	/**
+	 * @var string
+	 */
+	private $path;
+	/**
+	 * @var string
+	 */
+	private $url;
+	/**
+	 * @var string
+	 */
+	private $css;
+	/**
+	 * @var array
+	 */
+	private $fonts = [];
 
 	/**
 	 * CSS_File constructor.
@@ -49,41 +44,30 @@ abstract class CSS_File {
 		$this->init_stylesheet();
 	}
 
-	public function update() {
-		$this->parse_css();
+	private function set_path_and_url() {
+		$wp_upload_dir = wp_upload_dir( null, false );
 
-		$meta = [
-			'time' => time(),
-			'fonts' => array_unique( $this->fonts ),
-		];
+		$relative_path = sprintf( self::FILE_NAME_PATTERN, self::FILE_BASE_DIR, $this->get_file_name() );
 
-		if ( empty( $this->css ) ) {
-			$this->delete();
+		$this->path = $wp_upload_dir['basedir'] . $relative_path;
 
-			$meta['status'] = self::CSS_STATUS_EMPTY;
-			$meta['css'] = '';
-		} else {
-			$file_created = false;
-
-			if ( wp_is_writable( dirname( $this->path ) ) ) {
-				$file_created = file_put_contents( $this->path, $this->css );
-			}
-
-			if ( $file_created ) {
-				$meta['status'] = self::CSS_STATUS_FILE;
-			} else {
-				$meta['status'] = self::CSS_STATUS_INLINE;
-				$meta['css'] = $this->css;
-			}
-		}
-
-		$this->update_meta( $meta );
+		$this->url = set_url_scheme( $wp_upload_dir['baseurl'] . $relative_path );
 	}
 
-	public function delete() {
-		if ( file_exists( $this->path ) ) {
-			unlink( $this->path );
-		}
+	/**
+	 * @return string
+	 */
+	abstract protected function get_file_name();
+
+	private function init_stylesheet() {
+		$this->stylesheet_obj = new Stylesheet();
+
+		$breakpoints = Responsive::get_breakpoints();
+
+		$this->stylesheet_obj
+			->add_device( 'mobile', 0 )
+			->add_device( 'tablet', $breakpoints['md'] )
+			->add_device( 'desktop', $breakpoints['lg'] );
 	}
 
 	public function enqueue() {
@@ -112,6 +96,103 @@ abstract class CSS_File {
 				Plugin::$instance->frontend->enqueue_font( $font );
 			}
 		}
+	}
+
+	public function get_meta( $property = null ) {
+		$defaults = [
+			'status' => '',
+			'time'   => 0,
+		];
+
+		$meta = array_merge( $defaults, (array) $this->load_meta() );
+
+		if ( $property ) {
+			return isset( $meta[ $property ] ) ? $meta[ $property ] : null;
+		}
+
+		return $meta;
+	}
+
+	/**
+	 * @return array
+	 */
+	abstract protected function load_meta();
+
+	/**
+	 * @return bool
+	 */
+	protected function is_update_required() {
+		return false;
+	}
+
+	public function update() {
+		$this->parse_css();
+
+		$meta = [
+			'time' => time(),
+			'fonts' => array_unique( $this->fonts ),
+		];
+
+		if ( empty( $this->css ) ) {
+			$this->delete();
+
+			$meta['status'] = self::CSS_STATUS_EMPTY;
+			$meta['css'] = '';
+		} else {
+			$file_created     = false;
+			$is_external_file = ( 'internal' !== get_option( 'elementor_css_print_method' ) );
+
+			if ( $is_external_file && wp_is_writable( dirname( $this->path ) ) ) {
+				$file_created = file_put_contents( $this->path, $this->css );
+			}
+
+			if ( $file_created ) {
+				$meta['status'] = self::CSS_STATUS_FILE;
+			} else {
+				$meta['status'] = self::CSS_STATUS_INLINE;
+				$meta['css'] = $this->css;
+			}
+		}
+
+		$this->update_meta( $meta );
+	}
+
+	private function parse_css() {
+		$this->render_css();
+
+		$this->css = $this->stylesheet_obj->__toString();
+	}
+
+	abstract protected function render_css();
+
+	public function delete() {
+		if ( file_exists( $this->path ) ) {
+			unlink( $this->path );
+		}
+	}
+
+	/**
+	 * @param string $meta
+	 */
+	abstract protected function update_meta( $meta );
+
+	/**
+	 * @return string
+	 */
+	protected function get_inline_dependency() {
+		return '';
+	}
+
+	/**
+	 * @return string
+	 */
+	abstract protected function get_file_handle_id();
+
+	/**
+	 * @return array
+	 */
+	protected function get_enqueue_dependencies() {
+		return [];
 	}
 
 	/**
@@ -219,90 +300,5 @@ abstract class CSS_File {
 	 */
 	public function get_stylesheet() {
 		return $this->stylesheet_obj;
-	}
-
-	public function get_meta( $property = null ) {
-		$defaults = [
-			'status' => '',
-			'time' => 0,
-		];
-
-		$meta = array_merge( $defaults, (array) $this->load_meta() );
-
-		if ( $property ) {
-			return isset( $meta[ $property ] ) ? $meta[ $property ] : null;
-		}
-
-		return $meta;
-	}
-
-	/**
-	 * @return array
-	 */
-	abstract protected function load_meta();
-
-	/**
-	 * @param string $meta
-	 */
-	abstract protected function update_meta( $meta );
-
-	/**
-	 * @return string
-	 */
-	abstract protected function get_file_handle_id();
-
-	abstract protected function render_css();
-
-	/**
-	 * @return string
-	 */
-	abstract protected function get_file_name();
-
-	/**
-	 * @return array
-	 */
-	protected function get_enqueue_dependencies() {
-		return [];
-	}
-
-	/**
-	 * @return string
-	 */
-	protected function get_inline_dependency() {
-		return '';
-	}
-
-	/**
-	 * @return bool
-	 */
-	protected function is_update_required() {
-		return false;
-	}
-
-	private function init_stylesheet() {
-		$this->stylesheet_obj = new Stylesheet();
-
-		$breakpoints = Responsive::get_breakpoints();
-
-		$this->stylesheet_obj
-			->add_device( 'mobile', 0 )
-			->add_device( 'tablet', $breakpoints['md'] )
-			->add_device( 'desktop', $breakpoints['lg'] );
-	}
-
-	private function set_path_and_url() {
-		$wp_upload_dir = wp_upload_dir( null, false );
-
-		$relative_path = sprintf( self::FILE_NAME_PATTERN, self::FILE_BASE_DIR, $this->get_file_name() );
-
-		$this->path = $wp_upload_dir['basedir'] . $relative_path;
-
-		$this->url = set_url_scheme( $wp_upload_dir['baseurl'] . $relative_path );
-	}
-
-	private function parse_css() {
-		$this->render_css();
-
-		$this->css = $this->stylesheet_obj->__toString();
 	}
 }
