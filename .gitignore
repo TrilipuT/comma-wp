@@ -1,6 +1,7 @@
 .idea
 .DS_Store
 mariadb
+*.log
 wp-content/uploads
 wp-content/themes/*
 # Elastic Beanstalk Files

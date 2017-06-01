@@ -1,7 +1,12 @@
 version: "2"
 
 syncs:
-  docker-sync-unison:
+  comma-app: # tip: add -sync and you keep consistent names as a convention
     src: './'
     sync_userid: '82'
-    sync_excludes: ['.gitignore', '.git/', '.idea/', '*.tar', 'mariadb/', '.mariadb', 'node_modules/']
+    watch_excludes: ['.*/.git', '.*/node_modules', '.*/bower_components', '.*/sass-cache', '.*/.sass-cache', '.*/.sass-cache', '.gitignore', 'mariadb/']
+#    sync_excludes: ['.gitignore', '.DS_Store', '.git', '.idea', '*.tar', '.mariadb', 'node_modules']
+    sync_excludes: ['mariadb/', 'Gemfile.lock', 'Gemfile', 'config.rb', '*.tar','.idea','.sass-cache/', 'sass/', 'sass-cache/', 'composer.json' , 'bower.json', 'package.json', 'Gruntfile*', 'bower_components/', 'node_modules/', '.gitignore', '.git/', '*.coffee', '*.scss', '*.sass']
+
+  mariadb:
+    src: './mariadb'

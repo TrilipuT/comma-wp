@@ -11,6 +11,7 @@ services:
     volumes:
 #      - ./mariadb-init:/docker-entrypoint-initdb.d # Place init .sql file(s) here.
       - ./mariadb:/var/lib/mysql # I want to manage volumes manually.
+#      - mariadb:/var/lib/mysql:rw # I want to manage volumes manually.
     ports:
       - '3306:3306'
 
@@ -33,6 +34,7 @@ services:
       AWS_CLOUDFRONT_DOMAIN: 'comma.dev/wp-content/uploads'
     volumes:
       - ./:/var/www/html:rw
+#      - comma-app:/var/www/html:rw
 #      - docker-sync-unison:/var/www/html # will be mounted on /var/www
 
   nginx:
@@ -45,6 +47,7 @@ services:
 
     volumes:
       - ./:/var/www/html:rw
+#      - comma-app:/var/www/html:nocopy
 #      - docker-sync-unison:/var/www/html # will be mounted on /var/www
     depends_on:
       - php
@@ -100,8 +103,10 @@ services:
 
 # Docker-sync for macOS users
 volumes:
-  docker-sync-unison:
+  comma-app:
     external: true
+#  mariadb:
+#    external: true
 
 #volumes:
 #  codebase:
