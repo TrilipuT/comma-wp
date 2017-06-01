@@ -71,15 +71,6 @@ class AIOSEOP_Updates {
 		$this->do_feature_updates();
 	}
 
-	function aioseop_welcome(){
-		if ( get_transient( '_aioseop_activation_redirect' ) ) {
-			delete_transient( '_aioseop_activation_redirect' );
-			$aioseop_welcome = new aioseop_welcome();
-			$aioseop_welcome->init( TRUE );
-		}
-
-	}
-
 	/**
 	 * Updates version.
 	 *
@@ -138,10 +129,6 @@ class AIOSEOP_Updates {
 		}
 	}
 
-	/*
-	 * Functions for specific version milestones.
-	 */
-
 	/**
 	 * Remove 'yandex' entry. This is a major Russian search engine, and no longer needs to be blocked.
 	 *
@@ -163,6 +150,10 @@ class AIOSEOP_Updates {
 			$aiosp->update_class_option( $aioseop_options );
 		}
 	}
+
+	/*
+	 * Functions for specific version milestones.
+	 */
 
 	/**
 	 * Remove 'SeznamBot' entry.
@@ -213,5 +204,14 @@ class AIOSEOP_Updates {
 				apply_filters( 'aioseop_update_check_time', 3600 * 6 )
 			);
 		}
+	}
+
+	function aioseop_welcome() {
+		if ( get_transient( '_aioseop_activation_redirect' ) ) {
+			delete_transient( '_aioseop_activation_redirect' );
+			$aioseop_welcome = new aioseop_welcome();
+			$aioseop_welcome->init( true );
+		}
+
 	}
 }
