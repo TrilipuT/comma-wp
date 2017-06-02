@@ -23,7 +23,8 @@ function imagemin_optimize_png( $filename ) {
 
 	$command  = escapeshellarg( $command );
 	$filename = escapeshellarg( $filename );
-	@exec( "$command --quality=75-80 $filename --output $filename --force" );
+
+//	@exec( "$command --quality=75-80 $filename --output $filename --force" );
 
 	return true;
 }
