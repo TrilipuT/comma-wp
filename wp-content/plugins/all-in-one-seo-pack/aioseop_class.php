@@ -1247,8 +1247,8 @@ class All_in_One_SEO_Pack extends All_in_One_SEO_Pack_Module {
 
 		$args['value']   = sprintf( $args['value'], $title, esc_url( $url ), esc_attr( $description ) );
 		$extra_title_len = (int) $extra_title_len;
-		$args['value']   .= "<script>var aiosp_title_extra = {$extra_title_len};</script>";
-		$buf             = $this->get_option_row( $args['name'], $args['options'], $args );
+		$args['value'] .= "<script>var aiosp_title_extra = {$extra_title_len};</script>";
+		$buf = $this->get_option_row( $args['name'], $args['options'], $args );
 
 		return $buf;
 	}
@@ -3725,58 +3725,6 @@ class All_in_One_SEO_Pack extends All_in_One_SEO_Pack_Module {
         }
     }
 
-	/**
-	 * @param $description
-	 *
-	 * @return mixed|string
-	 */
-	function trim_description( $description ) {
-		$description = trim( wp_strip_all_tags( $description ) );
-		$description = str_replace( '"', '&quot;', $description );
-		$description = str_replace( "\r\n", ' ', $description );
-		$description = str_replace( "\n", ' ', $description );
-
-		return $description;
-	}
-
-	/**
-	 * @param $description
-	 * @param null $post
-	 *
-	 * @return mixed
-	 */
-	function apply_description_format( $description, $post = null ) {
-		global $aioseop_options;
-		$description_format = $aioseop_options['aiosp_description_format'];
-		if ( ! isset( $description_format ) || empty( $description_format ) ) {
-			$description_format = '%description%';
-		}
-		$description = str_replace( '%description%', apply_filters( 'aioseop_description_override', $description ), $description_format );
-		if ( strpos( $description, '%blog_title%' ) !== false ) {
-			$description = str_replace( '%blog_title%', get_bloginfo( 'name' ), $description );
-		}
-		if ( strpos( $description, '%blog_description%' ) !== false ) {
-			$description = str_replace( '%blog_description%', get_bloginfo( 'description' ), $description );
-		}
-		if ( strpos( $description, '%wp_title%' ) !== false ) {
-			$description = str_replace( '%wp_title%', $this->get_original_title(), $description );
-		}
-		if ( strpos( $description, '%post_title%' ) !== false ) {
-			$description = str_replace( '%post_title%', $this->get_aioseop_title( $post ), $description );
-		}
-		if ( strpos( $description, '%current_date%' ) !== false ) {
-			$description = str_replace( '%current_date%', date_i18n( get_option( 'date_format' ) ), $description );
-		}
-
-		/*this was intended to make attachment descriptions unique if pulling from the parent... let's remove it and see if there are any problems
-		*on the roadmap is to have a better hierarchy for attachment description pulling
-		* if ($aioseop_options['aiosp_can']) $description = $this->make_unique_att_desc($description);
-		*/
-		$description = $this->apply_cf_fields( $description );
-
-		return $description;
-	}
-
 	function wp_head() {
 
 		// Check if we're in the main query to support bad themes and plugins.
@@ -4037,6 +3985,57 @@ class All_in_One_SEO_Pack extends All_in_One_SEO_Pack_Module {
 				}
 			}
 		}
+	}
+
+	/**
+	 * @param $description
+	 *
+	 * @return mixed|string
+	 */
+	function trim_description( $description ) {
+		$description = trim( wp_strip_all_tags( $description ) );
+		$description = str_replace( '"', '&quot;', $description );
+		$description = str_replace( "\r\n", ' ', $description );
+		$description = str_replace( "\n", ' ', $description );
+
+		return $description;
+	}
+
+	/**
+	 * @param $description
+	 * @param null $post
+	 *
+	 * @return mixed
+	 */
+	function apply_description_format( $description, $post = null ) {
+		global $aioseop_options;
+		$description_format = $aioseop_options['aiosp_description_format'];
+		if ( ! isset( $description_format ) || empty( $description_format ) ) {
+			$description_format = '%description%';
+		}
+		$description = str_replace( '%description%', apply_filters( 'aioseop_description_override', $description ), $description_format );
+		if ( strpos( $description, '%blog_title%' ) !== false ) {
+			$description = str_replace( '%blog_title%', get_bloginfo( 'name' ), $description );
+		}
+		if ( strpos( $description, '%blog_description%' ) !== false ) {
+			$description = str_replace( '%blog_description%', get_bloginfo( 'description' ), $description );
+		}
+		if ( strpos( $description, '%wp_title%' ) !== false ) {
+			$description = str_replace( '%wp_title%', $this->get_original_title(), $description );
+		}
+		if ( strpos( $description, '%post_title%' ) !== false ) {
+			$description = str_replace( '%post_title%', $this->get_aioseop_title( $post ), $description );
+		}
+		if ( strpos( $description, '%current_date%' ) !== false ) {
+			$description = str_replace( '%current_date%', date_i18n( get_option( 'date_format' ) ), $description );
+		}
+
+		/*this was intended to make attachment descriptions unique if pulling from the parent... let's remove it and see if there are any problems
+		*on the roadmap is to have a better hierarchy for attachment description pulling
+		* if ($aioseop_options['aiosp_can']) $description = $this->make_unique_att_desc($description);
+		*/
+		$description = $this->apply_cf_fields($description);
+		return $description;
 	}
 
 	/**
@@ -4532,22 +4531,21 @@ EOF;
 				if ( ! empty( $blog_page ) ) {
 					$post = $blog_page;
 				}
-				// Don't show if we're on the home page and the home page is the latest posts.
+							// Don't show if we're on the home page and the home page is the latest posts.
 				if ( ! is_home() || ( ! is_front_page() && ! is_home() ) ) {
 					global $wp_the_query;
 					$current_object = $wp_the_query->get_queried_object();
 
-					if ( ! empty( $current_object ) && ! empty( $current_object->post_type ) ) {
+					if ( ! empty( $current_object ) && ! empty( $current_object->post_type ) ){
 						// Try the main query.
 						$edit_post_link = get_edit_post_link( $current_object->ID );
-						echo $edit_post_link;
 						$wp_admin_bar->add_menu( array(
 							'id'     => 'aiosp_edit_' . $current_object->ID,
 							'parent' => AIOSEOP_PLUGIN_DIRNAME,
-							'title'  => 'Edit SEO',
-							'href'   => $edit_post_link . '#aiosp'
+							'title' => 'Edit SEO',
+							'href' => $edit_post_link . '#aiosp'
 						) );
-					} else {
+					}else{
 						// Try the post object.
 						$wp_admin_bar->add_menu( array(
 							'id'     => 'aiosp_edit_' . $post->ID,
@@ -4849,7 +4847,7 @@ EOF;
 	 *
 	 * @return string
 	 */
-	public function filter_description( $value ) {
+	public function filter_description( $value) {
 		// Decode entities
 		$value = html_entity_decode( $value );
 		$value = preg_replace(
@@ -4865,7 +4863,6 @@ EOF;
 		$value = wp_strip_all_tags( $value );
 		// Internal whitespace trim.
 		$value = preg_replace( '/\s\s+/u', ' ', $value );
-
 		// External trim.
 		return trim( $value );
 	}

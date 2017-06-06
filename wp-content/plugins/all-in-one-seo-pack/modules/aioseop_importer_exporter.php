@@ -493,7 +493,7 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Importer_Exporter' ) ) {
 							}
 						} catch ( Exception $e ) {
 							// Shows only one warning when compromised file is imported
-							$this->warnings   = array();
+							$this->warnings = array();
 							$this->warnings[] = $e->getMessage();
 							add_action(
 								$this->prefix . 'settings_header_errors',

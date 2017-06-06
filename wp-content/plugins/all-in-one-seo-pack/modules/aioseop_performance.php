@@ -79,7 +79,7 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Performance' ) ) {
 			);
 
 			$system_status = array(
-				'status'     => array( 'default' => '', 'type' => 'html', 'label' => 'none', 'save' => false ),
+				'status' => array( 'default' => '', 'type' => 'html', 'label' => 'none', 'save' => false ),
 				'send_email' => array( 'default' => '', 'type' => 'html', 'label' => 'none', 'save' => false ),
 			);
 
@@ -151,7 +151,7 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Performance' ) ) {
 		}
 
 		function settings_page_init() {
-			$this->default_options['status']['default']     = $this->get_serverinfo();
+			$this->default_options['status']['default'] = $this->get_serverinfo();
 			$this->default_options['send_email']['default'] = $this->get_email_input();
 		}
 
@@ -241,12 +241,12 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Performance' ) ) {
 			$perm_struct    = get_option( 'permalink_structure' );
 
 			$debug_info                   = array(
-				__( 'Operating System', 'all-in-one-seo-pack' )         => PHP_OS,
-				__( 'Server', 'all-in-one-seo-pack' )                   => $_SERVER['SERVER_SOFTWARE'],
-				__( 'Memory usage', 'all-in-one-seo-pack' )             => $memory_usage,
-				__( 'MYSQL Version', 'all-in-one-seo-pack' )            => $sqlversion,
-				__( 'SQL Mode', 'all-in-one-seo-pack' )                 => $sql_mode,
-				__( 'PHP Version', 'all-in-one-seo-pack' )              => PHP_VERSION,
+				__( 'Operating System', 'all-in-one-seo-pack' )            => PHP_OS,
+				__( 'Server', 'all-in-one-seo-pack' )                      => $_SERVER['SERVER_SOFTWARE'],
+				__( 'Memory usage', 'all-in-one-seo-pack' )                => $memory_usage,
+				__( 'MYSQL Version', 'all-in-one-seo-pack' )               => $sqlversion,
+				__( 'SQL Mode', 'all-in-one-seo-pack' )                    => $sql_mode,
+				__( 'PHP Version', 'all-in-one-seo-pack' )                 => PHP_VERSION,
 				__( 'PHP Allow URL fopen', 'all-in-one-seo-pack' )         => $allow_url_fopen,
 				__( 'PHP Memory Limit', 'all-in-one-seo-pack' )            => $memory_limit,
 				__( 'PHP Max Upload Size', 'all-in-one-seo-pack' )         => $upload_max,
@@ -254,18 +254,18 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Performance' ) ) {
 				__( 'PHP Max Script Execute Time', 'all-in-one-seo-pack' ) => $max_execute,
 				__( 'PHP Exif support', 'all-in-one-seo-pack' )            => $exif,
 				__( 'PHP IPTC support', 'all-in-one-seo-pack' )            => $iptc,
-				__( 'PHP XML support', 'all-in-one-seo-pack' )          => $xml,
-				__( 'Site URL', 'all-in-one-seo-pack' )                 => $siteurl,
-				__( 'Home URL', 'all-in-one-seo-pack' )                 => $homeurl,
-				__( 'WordPress Version', 'all-in-one-seo-pack' )        => $wp_version,
-				__( 'WordPress DB Version', 'all-in-one-seo-pack' )     => $db_version,
-				__( 'Multisite', 'all-in-one-seo-pack' )                => $ms,
-				__( 'Active Theme', 'all-in-one-seo-pack' )             => $theme['Name'] . ' ' . $theme['Version'],
-				__( 'Site Title', 'all-in-one-seo-pack' )               => $site_title,
-				__( 'Site Language', 'all-in-one-seo-pack' )            => $language,
-				__( 'Front Page Displays', 'all-in-one-seo-pack' )      => $front_displays === 'page' ? $front_displays . ' [ID = ' . $page_on_front . ']' : $front_displays,
-				__( 'Search Engine Visibility', 'all-in-one-seo-pack' ) => $blog_public,
-				__( 'Permalink Setting', 'all-in-one-seo-pack' )        => $perm_struct,
+				__( 'PHP XML support', 'all-in-one-seo-pack' )             => $xml,
+				__( 'Site URL', 'all-in-one-seo-pack' )                    => $siteurl,
+				__( 'Home URL', 'all-in-one-seo-pack' )                    => $homeurl,
+				__( 'WordPress Version', 'all-in-one-seo-pack' )           => $wp_version,
+				__( 'WordPress DB Version', 'all-in-one-seo-pack' )        => $db_version,
+				__( 'Multisite', 'all-in-one-seo-pack' )                   => $ms,
+				__( 'Active Theme', 'all-in-one-seo-pack' )                => $theme['Name'] . ' ' . $theme['Version'],
+				__( 'Site Title', 'all-in-one-seo-pack' )                  => $site_title,
+				__( 'Site Language', 'all-in-one-seo-pack' )               => $language,
+				__( 'Front Page Displays', 'all-in-one-seo-pack' )         => $front_displays === 'page' ? $front_displays . ' [ID = ' . $page_on_front . ']' : $front_displays,
+				__( 'Search Engine Visibility', 'all-in-one-seo-pack' )    => $blog_public,
+				__( 'Permalink Setting', 'all-in-one-seo-pack' )           => $perm_struct,
 			);
 			$debug_info['Active Plugins'] = null;
 			$active_plugins               = $inactive_plugins = array();
@@ -313,8 +313,8 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Performance' ) ) {
 					}
 					if ( $email ) {
 						$attachments = array();
-						$upload_dir  = wp_upload_dir();
-						$dir         = $upload_dir['basedir'] . '/aiosp-log/';
+						$upload_dir = wp_upload_dir();
+						$dir = $upload_dir['basedir'] . '/aiosp-log/';
 						if ( wp_mkdir_p( $dir ) ) {
 							$file_path = $dir . 'settings_aioseop-' . date( 'Y-m-d' ) . '-' . time() . '.ini';
 							if ( ! file_exists( $file_path ) ) {
@@ -325,14 +325,8 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Performance' ) ) {
 										) . "\n";
 
 									// Adds all settings and posts data to settings file
-									add_filter( 'aioseop_export_settings_exporter_post_types', array(
-										$this,
-										'get_exporter_post_types'
-									) );
-									add_filter( 'aioseop_export_settings_exporter_choices', array(
-										$this,
-										'get_exporter_choices'
-									) );
+									add_filter( 'aioseop_export_settings_exporter_post_types', array( $this, 'get_exporter_post_types' ) );
+									add_filter( 'aioseop_export_settings_exporter_choices', array( $this, 'get_exporter_choices' ) );
 
 									$buf = $aiosp->settings_export( $buf );
 									$buf = apply_filters( 'aioseop_export_settings', $buf );
@@ -353,7 +347,7 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Performance' ) ) {
 					}
 				}
 			} while ( 0 ); // Control structure for use with break.
-			$buf = "<ul class='sfwd_debug_settings'>\n{$page_text}\n</ul>\n";
+			$buf   = "<ul class='sfwd_debug_settings'>\n{$page_text}\n</ul>\n";
 
 			return $buf;
 		}

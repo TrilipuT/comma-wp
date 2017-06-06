@@ -729,7 +729,7 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Opengraph' ) ) {
 		}
 
 		function filter_settings( $settings, $location, $current ) {
-			global $aiosp, $post;
+            global $aiosp, $post;
 			if ( $location == 'opengraph' || $location == 'settings' ) {
 				$prefix = $this->get_prefix( $location ) . $location . '_';
 				if ( $location == 'opengraph' ) {
@@ -760,25 +760,24 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Opengraph' ) ) {
 					$info = $aiosp->get_page_snippet_info();
 					extract( $info );
 
-					// Description options
-					if ( is_object( $post ) ) // Always show excerpt
-					{
-						$description = empty( $this->options['aiosp_opengraph_generate_descriptions'] )
-							? $aiosp->trim_excerpt_without_filters(
-								$aiosp->internationalize( preg_replace( '/\s+/', ' ', $post->post_excerpt ) ),
-								1000
-							)
-							: $aiosp->trim_excerpt_without_filters(
-								$aiosp->internationalize( preg_replace( '/\s+/', ' ', $post->post_content ) ),
-								1000
-							);
-					}
+                    // Description options
+					if ( is_object( $post ) )
+                    	// Always show excerpt
+                    	$description = empty( $this->options['aiosp_opengraph_generate_descriptions'] )
+                    		? $aiosp->trim_excerpt_without_filters(
+	                            $aiosp->internationalize( preg_replace( '/\s+/', ' ', $post->post_excerpt ) ),
+	                            1000
+	                        )
+                    		: $aiosp->trim_excerpt_without_filters(
+	                            $aiosp->internationalize( preg_replace( '/\s+/', ' ', $post->post_content ) ),
+	                            1000
+	                        );
 
-					// Add filters
+          // Add filters
 					$description = apply_filters( 'aioseop_description', $description );
 					// Add placholders
-
-					$settings["{$prefix}title"]['placeholder'] = $title;
+          
+          $settings["{$prefix}title"]['placeholder'] = $title;
 					$settings["{$prefix}desc"]['placeholder']  = $description;
 				}
 				if ( isset( $current[ $prefix . 'setmeta' ] ) && $current[ $prefix . 'setmeta' ] ) {

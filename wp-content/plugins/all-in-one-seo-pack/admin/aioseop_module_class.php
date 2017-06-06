@@ -503,12 +503,12 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Module' ) ) {
 			$regex = '';
 			$cont  = 0;
 			foreach ( $list as $l ) {
-				$trim_l = trim( $l );
+				$trim_l = trim ( $l );
 				if ( ! empty( $trim_l ) ) {
 					if ( $cont ) {
 						$regex .= '|';
 					}
-					$cont  = 1;
+					$cont = 1;
 					$regex .= preg_quote( trim( $l ), $quote );
 				}
 			}
@@ -957,7 +957,7 @@ if ( ! class_exists( 'All_in_One_SEO_Pack_Module' ) ) {
 				$buf .= $this->post_data_export( '_aioseop', array(
 					'posts_per_page' => - 1,
 					'post_type'      => $post_types,
-					'post_status'    => array( 'publish', 'pending', 'draft', 'future', 'private', 'inherit' ),
+					'post_status' => array( 'publish', 'pending', 'draft', 'future', 'private', 'inherit' ),
 				) );
 			}
 
