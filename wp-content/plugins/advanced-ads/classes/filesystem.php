@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @since 1.7.17
  */
@@ -10,9 +9,6 @@ class Advanced_Ads_Filesystem {
 	 * @var Advanced_Ads_Filesystem
 	 */
 	protected static $instance;
-
-	private function __construct() {
-	}
 
 	/**
 	 * Return an instance of Advanced_Ads_Filesystem
@@ -27,12 +23,13 @@ class Advanced_Ads_Filesystem {
 		return self::$instance;
 	}
 
+	private function __construct() {}
+
 	/**
 	 * Connect to the filesystem.
 	 *
-	 * @param array $directories A list of directories. If any of these do
+	 * @param array $directories                  A list of directories. If any of these do
 	 *                                            not exist, a WP_Error object will be returned.
-	 *
 	 * @return bool|WP_Error True if able to connect, false or a WP_Error otherwise.
 	 */
 	public function fs_connect( $directories = array() ) {
@@ -57,34 +54,30 @@ class Advanced_Ads_Filesystem {
 			ob_start();
 			request_filesystem_credentials( '', '', $error, $directories[0] );
 			ob_end_clean();
-
 			return false;
 		}
 
-		if ( ! is_object( $wp_filesystem ) ) {
+		if ( ! is_object( $wp_filesystem) ) {
 			return new WP_Error( 'fs_unavailable', __( 'Could not access filesystem.', 'advanced-ads' ) );
 		}
 
 		if ( is_wp_error( $wp_filesystem->errors ) && $wp_filesystem->errors->get_error_code() ) {
-			return new WP_Error( 'fs_error', __( 'Filesystem error.' ), $wp_filesystem->errors );
+			return new WP_Error( 'fs_error', __( 'Filesystem error.', 'advanced-ads' ), $wp_filesystem->errors);
 		}
 
 		foreach ( (array) $directories as $dir ) {
 			switch ( $dir ) {
 				case ABSPATH:
-					if ( ! $wp_filesystem->abspath() ) {
+					if ( ! $wp_filesystem->abspath() )
 						return new WP_Error( 'fs_no_root_dir', __( 'Unable to locate WordPress root directory.', 'advanced-ads' ) );
-					}
 					break;
 				case WP_CONTENT_DIR:
-					if ( ! $wp_filesystem->wp_content_dir() ) {
+					if ( ! $wp_filesystem->wp_content_dir() )
 						return new WP_Error( 'fs_no_content_dir', __( 'Unable to locate WordPress content directory (wp-content).', 'advanced-ads' ) );
-					}
 					break;
 				default:
-					if ( ! $wp_filesystem->find_folder( $dir ) ) {
-						return new WP_Error( 'fs_no_folder', sprintf( __( 'Unable to locate needed folder (%s).', 'advanced-ads' ), esc_html( basename( $dir ) ) ) );
-					}
+					if ( ! $wp_filesystem->find_folder( $dir ) )
+						return new WP_Error( 'fs_no_folder', sprintf( __( 'Unable to locate needed folder (%s).', 'advanced-ads' ) , esc_html( basename( $dir ) ) ) );
 					break;
 			}
 		}
@@ -97,12 +90,10 @@ class Advanced_Ads_Filesystem {
 	 * Check https://codex.wordpress.org/Filesystem_API for info
 	 *
 	 * @param    string  existing path
-	 *
 	 * @return   string  normalized path
 	 */
 	public function normalize_path( $path ) {
 		global $wp_filesystem;
-
 		return str_replace( ABSPATH, $wp_filesystem->abspath(), $path );
 	}
 
@@ -110,10 +101,6 @@ class Advanced_Ads_Filesystem {
 	 * Print the filesystem credentials modal when needed.
 	 */
 	public function print_request_filesystem_credentials_modal() {
-		if ( function_exists( 'wp_print_request_filesystem_credentials_modal' ) ) {
-			return wp_print_request_filesystem_credentials_modal();
-		}
-
 		$filesystem_method = get_filesystem_method();
 		ob_start();
 		$filesystem_credentials_are_stored = request_filesystem_credentials( self_admin_url() );
@@ -123,16 +110,14 @@ class Advanced_Ads_Filesystem {
 			return;
 		}
 		?>
-        <div id="request-filesystem-credentials-dialog"
-             class="notification-dialog-wrap request-filesystem-credentials-dialog">
-            <div class="notification-dialog-background"></div>
-            <div class="notification-dialog" role="dialog" aria-labelledby="request-filesystem-credentials-title"
-                 tabindex="0">
-                <div class="request-filesystem-credentials-dialog-content">
+		<div id="advanced-ads-rfc-dialog" class="notification-dialog-wrap request-filesystem-credentials-dialog">
+			<div class="notification-dialog-background"></div>
+			<div class="notification-dialog" role="dialog" aria-labelledby="request-filesystem-credentials-title" tabindex="0">
+				<div class="request-filesystem-credentials-dialog-content">
 					<?php request_filesystem_credentials( site_url() ); ?>
-                </div>
-            </div>
-        </div>
+				</div>
+			</div>
+		</div>
 		<?php
 	}
 }

@@ -8,11 +8,10 @@
  * return ad content
  *
  * @since 1.0.0
- *
  * @param int $id id of the ad (post)
  * @param arr $args additional arguments
  */
-function get_ad( $id = 0, $args = array() ) {
+function get_ad($id = 0, $args = array()){
 	if ( defined( 'ADVANCED_ADS_DISABLE_CHANGE' ) && ADVANCED_ADS_DISABLE_CHANGE ) {
 		$args = array();
 	}
@@ -24,11 +23,10 @@ function get_ad( $id = 0, $args = array() ) {
  * echo an ad
  *
  * @since 1.0.0
- *
  * @param int $id id of the ad (post)
  * @param arr $args additional arguments
  */
-function the_ad( $id = 0, $args = array() ) {
+function the_ad($id = 0, $args = array()){
 	echo get_ad( $id, $args );
 }
 
@@ -36,7 +34,6 @@ function the_ad( $id = 0, $args = array() ) {
  * return an ad from an ad group based on ad weight
  *
  * @since 1.0.0
- *
  * @param int $id id of the ad group (taxonomy)
  *
  */
@@ -44,7 +41,6 @@ function get_ad_group( $id = 0, $args = array() ) {
 	if ( defined( 'ADVANCED_ADS_DISABLE_CHANGE' ) && ADVANCED_ADS_DISABLE_CHANGE ) {
 		$args = array();
 	}
-
 	return Advanced_Ads_Select::get_instance()->get_ad_by_method( $id, 'group', $args );
 }
 
@@ -52,10 +48,9 @@ function get_ad_group( $id = 0, $args = array() ) {
  * echo an ad from an ad group
  *
  * @since 1.0.0
- *
  * @param int $id id of the ad (post)
  */
-function the_ad_group( $id = 0 ) {
+function the_ad_group($id = 0){
 	echo get_ad_group( $id );
 }
 
@@ -63,7 +58,6 @@ function the_ad_group( $id = 0 ) {
  * return content of an ad placement
  *
  * @since 1.1.0
- *
  * @param string $id slug of the ad placement
  *
  */
@@ -71,7 +65,6 @@ function get_ad_placement( $id = '', $args = array() ) {
 	if ( defined( 'ADVANCED_ADS_DISABLE_CHANGE' ) && ADVANCED_ADS_DISABLE_CHANGE ) {
 		$args = array();
 	}
-
 	return Advanced_Ads_Select::get_instance()->get_ad_by_method( $id, 'placement', $args );
 }
 
@@ -79,10 +72,9 @@ function get_ad_placement( $id = '', $args = array() ) {
  * return content of an ad placement
  *
  * @since 1.1.0
- *
  * @param string $id slug of the ad placement
  */
-function the_ad_placement( $id = '' ) {
+function the_ad_placement($id = ''){
 	echo get_ad_placement( $id );
 }
 
@@ -92,6 +84,6 @@ function the_ad_placement( $id = '' ) {
  * @since 1.4.9
  * @return bool, true if ads can be displayed
  */
-function advads_can_display_ads() {
-	return Advanced_Ads::get_instance()->can_display_ads();
+function advads_can_display_ads(){
+    return Advanced_Ads::get_instance()->can_display_ads();
 }

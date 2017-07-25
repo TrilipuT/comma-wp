@@ -1,5 +1,5 @@
 <?php
-defined( 'ABSPATH' ) || exit;
+defined( 'ABSPATH'  ) || exit;
 
 class Advanced_Ads_Admin_Menu {
 	/**
@@ -19,11 +19,11 @@ class Advanced_Ads_Admin_Menu {
 
 	private function __construct() {
 		// Add menu items
-		add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
+		add_action( 'admin_menu', array($this, 'add_plugin_admin_menu') );
 		add_action( 'admin_head', array( $this, 'highlight_menu_item' ) );
 
 		$this->plugin_slug = Advanced_Ads::get_instance()->get_plugin_slug();
-		$this->post_type   = constant( 'Advanced_Ads::POST_TYPE_SLUG' );
+		$this->post_type = constant( 'Advanced_Ads::POST_TYPE_SLUG' );
 	}
 
 	/**
@@ -49,63 +49,38 @@ class Advanced_Ads_Admin_Menu {
 
 		// add main menu item with overview page
 		add_menu_page(
-			__( 'Overview', 'advanced-ads' ), 'Advanced Ads', Advanced_Ads_Plugin::user_cap( 'advanced_ads_see_interface' ), $this->plugin_slug, array(
-			$this,
-			'display_overview_page'
-		), 'dashicons-chart-line', '58.74'
+			__( 'Overview', 'advanced-ads' ), 'Advanced Ads', Advanced_Ads_Plugin::user_cap( 'advanced_ads_see_interface'), $this->plugin_slug, array($this, 'display_overview_page'), 'dashicons-chart-line', '58.74'
 		);
 
+		// forward Ads link to new-ad page when there is no ad existing yet.
+		// the target to post-new.php needs the extra "new" or any other attribute, since the original add-ad link was removed by CSS using the exact href attribute as a selector
+		$target = ( ! Advanced_Ads::get_number_of_ads() ) ? 'post-new.php?post_type=' . Advanced_Ads::POST_TYPE_SLUG . '&new=new' : 'edit.php?post_type=' . Advanced_Ads::POST_TYPE_SLUG;
 		add_submenu_page(
-			$this->plugin_slug, __( 'Ads', 'advanced-ads' ), __( 'Ads', 'advanced-ads' ), Advanced_Ads_Plugin::user_cap( 'advanced_ads_edit_ads' ), 'edit.php?post_type=' . Advanced_Ads::POST_TYPE_SLUG
+			$this->plugin_slug, __( 'Ads', 'advanced-ads' ), __( 'Ads', 'advanced-ads' ), Advanced_Ads_Plugin::user_cap( 'advanced_ads_edit_ads'), $target
 		);
 
 		// hidden by css; not placed in 'options.php' in order to highlight the correct item, see the 'highlight_menu_item()'
 		if ( ! current_user_can( 'edit_posts' ) ) {
 			add_submenu_page(
-				$this->plugin_slug, __( 'Add New Ad', 'advanced-ads' ), __( 'New Ad', 'advanced-ads' ), Advanced_Ads_Plugin::user_cap( 'advanced_ads_edit_ads' ), 'post-new.php?post_type=' . Advanced_Ads::POST_TYPE_SLUG
+				$this->plugin_slug, __( 'Add New Ad', 'advanced-ads' ), __( 'New Ad', 'advanced-ads' ), Advanced_Ads_Plugin::user_cap( 'advanced_ads_edit_ads'), 'post-new.php?post_type=' . Advanced_Ads::POST_TYPE_SLUG
 			);
 		}
 
 		$this->ad_group_hook_suffix = add_submenu_page(
-			$this->plugin_slug, __( 'Ad Groups', 'advanced-ads' ), __( 'Groups', 'advanced-ads' ), Advanced_Ads_Plugin::user_cap( 'advanced_ads_edit_ads' ), $this->plugin_slug . '-groups', array(
-				$this,
-				'ad_group_admin_page'
-			)
+			$this->plugin_slug, __( 'Ad Groups', 'advanced-ads' ), __( 'Groups', 'advanced-ads' ), Advanced_Ads_Plugin::user_cap( 'advanced_ads_edit_ads'), $this->plugin_slug . '-groups', array($this, 'ad_group_admin_page')
 		);
 
 		// add placements page
 		add_submenu_page(
-			$this->plugin_slug, __( 'Ad Placements', 'advanced-ads' ), __( 'Placements', 'advanced-ads' ), Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_placements' ), $this->plugin_slug . '-placements', array(
-				$this,
-				'display_placements_page'
-			)
+			$this->plugin_slug, __( 'Ad Placements', 'advanced-ads' ), __( 'Placements', 'advanced-ads' ), Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_placements'), $this->plugin_slug . '-placements', array($this, 'display_placements_page')
 		);
 		// add settings page
 		Advanced_Ads_Admin::get_instance()->plugin_screen_hook_suffix = add_submenu_page(
-			$this->plugin_slug, __( 'Advanced Ads Settings', 'advanced-ads' ), __( 'Settings', 'advanced-ads' ), Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options' ), $this->plugin_slug . '-settings', array(
-				$this,
-				'display_plugin_settings_page'
-			)
-		);
-		add_submenu_page(
-			'options.php', __( 'Advanced Ads Debugging', 'advanced-ads' ), __( 'Debug', 'advanced-ads' ), Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options' ), $this->plugin_slug . '-debug', array(
-				$this,
-				'display_plugin_debug_page'
-			)
-		);
-		// intro page
-		add_submenu_page(
-			'options.php', __( 'Advanced Ads Intro', 'advanced-ads' ), __( 'Advanced Ads Intro', 'advanced-ads' ), Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options' ), $this->plugin_slug . '-intro', array(
-				$this,
-				'display_plugin_intro_page'
-			)
+			$this->plugin_slug, __( 'Advanced Ads Settings', 'advanced-ads' ), __( 'Settings', 'advanced-ads' ), Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options'), $this->plugin_slug . '-settings', array($this, 'display_plugin_settings_page')
 		);
 		// add support page
 		add_submenu_page(
-			$this->plugin_slug, __( 'Support', 'advanced-ads' ), __( 'Support', 'advanced-ads' ), Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options' ), $this->plugin_slug . '-support', array(
-				$this,
-				'display_support_page'
-			)
+			$this->plugin_slug, __( 'Support', 'advanced-ads' ), __( 'Support', 'advanced-ads' ), Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options'), $this->plugin_slug . '-support', array($this, 'display_support_page')
 		);
 
 		// allows extensions to insert sub menu pages
@@ -119,7 +94,7 @@ class Advanced_Ads_Admin_Menu {
 	public function highlight_menu_item() {
 		global $parent_file, $submenu_file, $post_type;
 		if ( $post_type === $this->post_type ) {
-			$parent_file  = $this->plugin_slug;
+			$parent_file = $this->plugin_slug;
 			$submenu_file = 'edit.php?post_type=' . $this->post_type;
 		}
 	}
@@ -158,40 +133,12 @@ class Advanced_Ads_Admin_Menu {
 	 */
 	public function display_placements_page() {
 		$placement_types = Advanced_Ads_Placements::get_placement_types();
-		$placements      = Advanced_Ads::get_ad_placements_array(); // -TODO use model
-		$items           = Advanced_Ads_Placements::items_for_select();
+		$placements = Advanced_Ads::get_ad_placements_array(); // -TODO use model
+		$items = Advanced_Ads_Placements::items_for_select();
 		// load ads and groups for select field
 
 		// display view
 		include ADVADS_BASE_PATH . 'admin/views/placements.php';
-	}
-
-	/**
-	 * Render the debug page
-	 *
-	 * @since    1.0.1
-	 */
-	public function display_plugin_debug_page() {
-		// load array with ads by condition
-		$plugin         = Advanced_Ads::get_instance();
-		$plugin_options = $plugin->options();
-		$ad_placements  = Advanced_Ads::get_ad_placements_array(); // -TODO use model
-
-		include ADVADS_BASE_PATH . 'admin/views/debug.php';
-	}
-
-	/**
-	 * Render intro page
-	 *
-	 * @since    1.6.8.2
-	 */
-	public function display_plugin_intro_page() {
-		// load array with ads by condition
-
-		// remove intro message from queue
-		Advanced_Ads_Admin_Notices::get_instance()->remove_from_queue( 'nl_intro' );
-
-		include ADVADS_BASE_PATH . 'admin/views/intro.php';
 	}
 
 	/**
@@ -211,9 +158,9 @@ class Advanced_Ads_Admin_Menu {
 	 */
 	public function ad_group_admin_page() {
 
-		$taxonomy  = Advanced_Ads::AD_GROUP_TAXONOMY;
+		$taxonomy = Advanced_Ads::AD_GROUP_TAXONOMY;
 		$post_type = Advanced_Ads::POST_TYPE_SLUG;
-		$tax       = get_taxonomy( $taxonomy );
+		$tax = get_taxonomy( $taxonomy );
 
 		$action = Advanced_Ads_Admin::get_instance()->current_action();
 
@@ -223,39 +170,34 @@ class Advanced_Ads_Admin_Menu {
 			check_admin_referer( 'update-group_' . $group_id );
 
 			if ( ! current_user_can( $tax->cap->edit_terms ) ) {
-				wp_die( __( 'Sorry, you are not allowed to access this feature.', 'advanced-ads' ) );
-			}
+				wp_die( __( 'Sorry, you are not allowed to access this feature.', 'advanced-ads' ) ); }
 
 			// handle new groups
 			if ( 0 == $group_id ) {
 				$ret = wp_insert_term( $_POST['name'], $taxonomy, $_POST );
 				if ( $ret && ! is_wp_error( $ret ) ) {
-					$forced_message = 1;
-				} else {
-					$forced_message = 4;
-				}
+					$forced_message = 1; }
+				else {
+					$forced_message = 4; }
 				// handle group updates
 			} else {
 				$tag = get_term( $group_id, $taxonomy );
 				if ( ! $tag ) {
-					wp_die( __( 'You attempted to edit an ad group that doesn&#8217;t exist. Perhaps it was deleted?', 'advanced-ads' ) );
-				}
+					wp_die( __( 'You attempted to edit an ad group that doesn&#8217;t exist. Perhaps it was deleted?', 'advanced-ads' ) ); }
 
 				$ret = wp_update_term( $group_id, $taxonomy, $_POST );
 				if ( $ret && ! is_wp_error( $ret ) ) {
-					$forced_message = 3;
-				} else {
-					$forced_message = 5;
-				}
+					$forced_message = 3; }
+				else {
+					$forced_message = 5; }
 			}
 			// deleting items
-		} elseif ( $action == 'delete' ) {
+		} elseif ( $action == 'delete' ){
 			$group_id = (int) $_REQUEST['group_id'];
 			check_admin_referer( 'delete-tag_' . $group_id );
 
 			if ( ! current_user_can( $tax->cap->delete_terms ) ) {
-				wp_die( __( 'Sorry, you are not allowed to access this feature.', 'advanced-ads' ) );
-			}
+				wp_die( __( 'Sorry, you are not allowed to access this feature.', 'advanced-ads' ) ); }
 
 			wp_delete_term( $group_id, $taxonomy );
 
@@ -266,19 +208,19 @@ class Advanced_Ads_Admin_Menu {
 		switch ( $action ) {
 			case 'edit' :
 				$title = $tax->labels->edit_item;
-				if ( isset( $_REQUEST['group_id'] ) ) {
+				if ( isset($_REQUEST['group_id']) ) {
 					$group_id = absint( $_REQUEST['group_id'] );
-					$tag      = get_term( $group_id, $taxonomy, OBJECT, 'edit' );
+					$tag = get_term( $group_id, $taxonomy, OBJECT, 'edit' );
 				} else {
 					$group_id = 0;
-					$tag      = false;
+					$tag = false;
 				}
 
 				include ADVADS_BASE_PATH . 'admin/views/ad-group-edit.php';
 				break;
 
 			default :
-				$title         = $tax->labels->name;
+				$title = $tax->labels->name;
 				$wp_list_table = _get_list_table( 'WP_Terms_List_Table' );
 
 				// load template

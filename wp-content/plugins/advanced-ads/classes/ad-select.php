@@ -21,51 +21,40 @@ class Advanced_Ads_Select {
 	const GROUP = 'group';
 	const AD = 'id'; // alias of self::ID
 	const ID = 'id';
+
+	protected $methods;
+
+	private function __construct() {}
+
 	/**
 	 *
 	 * @var Advanced_Ads_Select
 	 */
 	private static $instance;
-	protected $methods;
-
-	private function __construct() {
-	}
 
 	/**
 	 *
 	 * @return Advanced_Ads_Select
 	 */
-	public static function get_instance() {
-		if ( ! isset( self::$instance ) ) {
+	public static function get_instance()
+	{
+		if ( ! isset(self::$instance) ) {
 			self::$instance = new self;
 		}
 
 		return self::$instance;
 	}
 
-	public function get_ad_by_method( $id, $method, $args = array() ) {
-
-		$methods = $this->get_methods();
-		if ( ! isset( $methods[ $method ] ) ) {
-			return;
-		}
-		if ( ! advads_can_display_ads() ) {
-			return;
-		}
-		$args = $this->get_ad_arguments( $method, $id, $args );
-
-		return call_user_func( $methods[ $method ], $args );
-	}
-
 	/**
 	 *
 	 * @return array
 	 */
-	public function get_methods() {
-		if ( ! isset( $this->methods ) ) {
+	public function get_methods()
+	{
+		if ( ! isset($this->methods) ) {
 			$methods = array(
-				self::AD        => array( $this, 'get_ad_by_id' ),
-				self::GROUP     => array( $this, 'get_ad_by_group' ),
+				self::AD => array( $this, 'get_ad_by_id' ),
+				self::GROUP => array( $this, 'get_ad_by_group' ),
 				self::PLACEMENT => array( $this, 'get_ad_by_placement' ),
 			);
 
@@ -83,15 +72,14 @@ class Advanced_Ads_Select {
 	 *
 	 * @return array
 	 */
-	public function get_ad_arguments( $method, $id, $args = array() ) {
+	public function get_ad_arguments( $method, $id, $args = array() )
+	{
 		$args = (array) $args;
 
-		$args['previous_method'] = isset( $args['method'] ) ? $args['method'] : null;
-		$args['previous_id']     = isset( $args['id'] ) ? $args['id'] : null;
+		$args['previous_method'] = isset( $args['method'] ) ? $args['method']  : null;
+		$args['previous_id'] = isset( $args['id'] ) ? $args['id'] : null;		
 
-		if ( $id || ! isset( $args['id'] ) ) {
-			$args['id'] = $id;
-		}
+		if ( $id || ! isset( $args['id'] ) ) $args['id'] = $id;
 		$args['method'] = $method;
 
 		$args = apply_filters( 'advanced-ads-ad-select-args', $args, $method, $id );
@@ -99,14 +87,27 @@ class Advanced_Ads_Select {
 		return $args;
 	}
 
-	// internal
+	public function get_ad_by_method( $id, $method, $args = array() ) {
 
-	public function get_ad_by_id( $args ) {
-		if ( isset( $args['override'] ) ) {
+		$methods = $this->get_methods();
+		if ( ! isset($methods[ $method ]) ) {
+			return ;
+		}
+		if ( ! advads_can_display_ads() ) {
+			return ;
+		}
+		$args = $this->get_ad_arguments( $method, $id, $args );
+
+		return call_user_func( $methods[ $method ], $args );
+	}
+
+	// internal
+	public function get_ad_by_id($args) {
+		if ( isset($args['override']) ) {
 			return $args['override'];
 		}
-		if ( ! isset( $args['id'] ) || $args['id'] == 0 ) {
-			return;
+		if ( ! isset($args['id']) || $args['id'] == 0 ) {
+			return ;
 		}
 
 		// get ad
@@ -115,7 +116,7 @@ class Advanced_Ads_Select {
 		if ( false !== ( $override = apply_filters( 'advanced-ads-ad-select-override-by-ad', false, $ad, $args ) ) ) {
 			return $override;
 		}
-
+		
 		// check conditions
 		if ( $ad->can_display() ) {
 			return $ad->output();
@@ -123,20 +124,20 @@ class Advanced_Ads_Select {
 	}
 
 	// internal
-	public function get_ad_by_group( $args ) {
-		if ( isset( $args['override'] ) ) {
+	public function get_ad_by_group($args) {
+		if ( isset($args['override']) ) {
 			return $args['override'];
 		}
-		if ( ! isset( $args['id'] ) || $args['id'] == 0 ) {
+		if ( ! isset($args['id']) || $args['id'] == 0 ) {
 			return;
 		}
 
 		// get ad
-		$id             = (int) $args['id'];
-		$adgroup        = new Advanced_Ads_Group( $id, $args );
+		$id = (int) $args['id'];
+		$adgroup = new Advanced_Ads_Group( $id, $args );
 		$ordered_ad_ids = $adgroup->get_ordered_ad_ids();
 
-		if ( false !== ( $override = apply_filters( 'advanced-ads-ad-select-override-by-group', false, $adgroup, $ordered_ad_ids, $args ) ) ) {
+		if ( false !== ( $override = apply_filters( 'advanced-ads-ad-select-override-by-group', false, $adgroup, $ordered_ad_ids, $args ) ) ) {	
 			return $override;
 		}
 
@@ -144,12 +145,12 @@ class Advanced_Ads_Select {
 	}
 
 	// internal
-	public function get_ad_by_placement( $args ) {
-		if ( isset( $args['override'] ) ) {
+	public function get_ad_by_placement($args) {
+		if ( isset($args['override']) ) {
 			return $args['override'];
 		}
-		if ( ! isset( $args['id'] ) || $args['id'] == '' ) {
-			return;
+		if ( ! isset($args['id']) || $args['id'] == '' ) {
+			return ;
 		}
 
 		// check conditions
@@ -159,7 +160,6 @@ class Advanced_Ads_Select {
 
 		// get placement content
 		$id = $args['id'];
-
 		return Advanced_Ads_Placements::output( $id, $args );
 	}
 }

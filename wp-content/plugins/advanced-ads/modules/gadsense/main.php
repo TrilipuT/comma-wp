@@ -10,20 +10,19 @@ if ( class_exists( 'Advanced_Ads', false ) ) {
 	 *
 	 * "content" key must match the id
 	 */
-	function advads_add_ad_type_adsense( $types ) {
+	function advads_add_ad_type_adsense($types) {
 		$types['adsense'] = new Advanced_Ads_Ad_Type_Adsense();
-
 		return $types;
 	}
 
-	function gadsense_date_time( $time ) {
+	function gadsense_date_time($time) {
 		return date_i18n( get_option( 'date_format' ), $time ) . __( ' at ', 'advanced-ads' ) . date_i18n( get_option( 'time_format' ), $time );
 	}
 
 	Advanced_Ads_AdSense_Data::get_instance();
 	add_filter( 'advanced-ads-ad-types', 'advads_add_ad_type_adsense' );
 
-	if ( ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) && is_admin() ) {
+	if ( ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX) && is_admin() ) {
 		Advanced_Ads_AdSense_Admin::get_instance();
 	} else {
 		Advanced_Ads_AdSense_Public::get_instance();

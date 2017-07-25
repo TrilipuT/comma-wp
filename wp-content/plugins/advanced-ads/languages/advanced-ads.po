@@ -2511,7 +2511,7 @@ msgid "Resizing"
 msgstr ""
 
 #: ../modules/gadsense/admin/views/adsense-ad-parameters.php:72
-msgid "Copy the ad code from your AdSense account and paste it in the area below"
+msgid "Copy the ad code from your AdSense account and paste it into the area below"
 msgstr ""
 
 #: ../modules/gadsense/admin/views/adsense-ad-parameters.php:75

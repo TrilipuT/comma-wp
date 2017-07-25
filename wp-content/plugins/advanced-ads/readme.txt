@@ -1,10 +1,10 @@
 === Advanced Ads ===
 Contributors: webzunft
 Donate link:https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=5RRRCEBGN3UT2
-Tags: ads, ad injection, ad manager, adsense, amazon, dfp, doubleclick, geo targeting, monetization, tracking, responsive, ad widget
-Requires at least: WP 4.2, PHP 5.3
+Tags: ads, ad, ad inserter, ad injection, ad manager, ads manager, ad widget, adrotate, adsense, advertise, advertisements, advertising, adverts, advert, amazon, banner, banners, buysellads, chitika, clickbank, dfp, doubleclick, geotarget, geolocation, geo location, google dfp, monetization, widget
+Requires at least: 4.2
 Tested up to: 4.8
-Stable tag: 1.7.25
+Stable tag: 1.8.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -59,6 +59,7 @@ show ads based on conditions like
 
 * individual posts, pages and other post type
 * post type
+* post age
 * posts by category, tags, taxonomies
 * author
 * archive pages by category, tags, taxonomies
@@ -210,6 +211,46 @@ There is no revenue share. Advanced Ads doesn’t alter your ad codes in a way t
 
 == Changelog ==
 
+= 1.8.2 =
+
+* fixed Content Age condition
+* fixed group options not changing correctly when switching types
+
+= 1.8.1 =
+
+* added support for new AdSense InFeed and InArticle ad codes
+* create a new ad group on group page
+* add group wrapper even if the group was not edited on the group edit page
+* add the 'advanced-ads-output-wrapper-after-content-group' filter
+* removed unused MarketPress license code
+* removed debug page
+* removed license expires notice
+* updated composer
+* updated translation files
+* fixed issue with inheriting settings of ad group ad type
+* removed PHP notice in Import feature
+
+= 1.8 =
+
+This release is even larger under the hood than the following list. Please make sure to also update all [your add-ons](https://wpadvancedads.com/add-ons/) and let us know directly about any issues [here](https://wpadvancedads.com/support/).
+
+* new Content Age display condition added – display ads based on post age
+* allow to enable/disable ad label for each placement
+* complete rework of group and placement options
+* added Dummy ad type
+* show AdSense code form inline instead of in a popup
+* optimized workflow in wizard to show only relevant information
+* select draft, pending and future posts in the Specific Pages condition, too
+* warn if QuickStart ads from AdSense are loaded
+* show ads on AMP pages for all bots
+* properly escaped output of image ad title and alt attribute
+* removed description field from groups since we have never seen this being used, let us know when you need it though
+* updated all translation files
+* fixed wrong month names in translated versions of the ad overview list
+* fixed with small image ads not appearing on AMP pages
+* fixed missing and wrong textdomains
+* fixed search for single digit IDs in Specific Pages condition not working
+
 = 1.7.25 =
 
 * added explicit "link ads" AdSense type with normal and responsive format
@@ -341,6 +382,6 @@ There is no revenue share. Advanced Ads doesn’t alter your ad codes in a way t
 * restructured support page to reach helper more quickly
 * fixed header ad bug
 
-[Changelog Archive](http://wpadvancedads.com/codex/changelog-archive/)
+[Changelog Archive](https://wpadvancedads.com/codex/changelog-archive/)
 
 == Upgrade Notice ==

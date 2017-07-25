@@ -1,6 +1,6 @@
 <?php
-
-class Advanced_Ads_Ad_Blocker_Admin {
+class Advanced_Ads_Ad_Blocker_Admin
+{
 	/**
 	 * Singleton instance of the plugin
 	 *
@@ -57,7 +57,7 @@ class Advanced_Ads_Ad_Blocker_Admin {
 		}
 
 		// Get the most recent options values
-		$this->options    = Advanced_Ads_Ad_Blocker::get_instance()->options();
+		$this->options = Advanced_Ads_Ad_Blocker::get_instance()->options();
 		$this->upload_dir = $this->options['upload_dir'];
 
 		// add rebuild asset form
@@ -77,7 +77,8 @@ class Advanced_Ads_Ad_Blocker_Admin {
 	 */
 	public static function get_instance() {
 		// If the single instance hasn't been set, set it now.
-		if ( null === self::$instance ) {
+		if (null === self::$instance)
+		{
 			self::$instance = new self;
 		}
 
@@ -100,12 +101,12 @@ class Advanced_Ads_Ad_Blocker_Admin {
 	}
 
 	/**
-	 * Render setting to enable/disable adblocker.
-	 */
+	* Render setting to enable/disable adblocker.
+	*/
 	public function render_settings_use_adblocker() {
 		$advads_options = Advanced_Ads::get_instance()->options();
-		$is_main_site   = is_main_site( get_current_blog_id() );
-		$checked        = ( ! empty( $advads_options['use-adblocker'] ) ) ? 1 : 0;
+		$is_main_site = is_main_site( get_current_blog_id() );
+		$checked = ( ! empty( $advads_options['use-adblocker'] ) ) ? 1 : 0;
 
 		include ADVADS_AB_BASE_PATH . 'admin/views/setting-use-adblocker.php';
 	}
@@ -115,20 +116,18 @@ class Advanced_Ads_Ad_Blocker_Admin {
 	 *
 	 * @param str $_setting_tab_id - id of the tab
 	 */
-	public function add_asset_rebuild_form_wrap( $_setting_tab_id ) {
+	public function add_asset_rebuild_form_wrap( $_setting_tab_id  ) { 
 		if ( $_setting_tab_id == 'general' ) {
 			$advads_options = Advanced_Ads::get_instance()->options();
-			$use_adblocker  = isset( $advads_options['use-adblocker'] );
+			$use_adblocker = isset( $advads_options['use-adblocker'] );
 			?>
-            <div id="advads-adblocker-wrapper" <?php if ( ! $use_adblocker ) {
-				echo 'style="display:none"';
-			} ?>>
-				<?php
-				// not ajax yet, print the form
-				$button_attrs = array( 'disabled' => 'disabled', 'autocomplete' => 'off' );
-				include ADVADS_AB_BASE_PATH . 'admin/views/rebuild_form.php';
+			<div id="advads-adblocker-wrapper" <?php if ( ! $use_adblocker ) { echo 'style="display:none"'; } ?>>
+				<?php 
+					// not ajax yet, print the form 
+					$button_attrs = array( 'disabled' => 'disabled', 'autocomplete' => 'off' );
+					include ADVADS_AB_BASE_PATH . 'admin/views/rebuild_form.php';
 				?>
-            </div>
+			</div>
 			<?php
 		}
 	}
@@ -142,9 +141,7 @@ class Advanced_Ads_Ad_Blocker_Admin {
 		$success = false;
 		$message = '';
 
-		if ( ! isset( $_POST['advads_ab_form_submit'] ) ) {
-			return;
-		}
+		if ( ! isset( $_POST['advads_ab_form_submit'] ) ) { return; }
 		check_ajax_referer( 'advads_ab_form_nonce', 'security' );
 
 		$fs_connect = Advanced_Ads_Filesystem::get_instance()->fs_connect( $this->upload_dir['basedir'] );
@@ -178,7 +175,7 @@ class Advanced_Ads_Ad_Blocker_Admin {
 		// at this point we do not need ftp/ssh credentials anymore
 		$form_post_fields = array_intersect_key( $_POST, array( 'advads_ab_assign_new_folder' => false ) );
 
-		$this->create_dummy_plugin( $form_post_fields );
+		$this->create_dummy_plugin( $form_post_fields ); 
 
 		if ( $error_messages = $this->error_messages->get_error_messages() ) {
 			foreach ( $error_messages as $error_message ) {
@@ -192,10 +189,29 @@ class Advanced_Ads_Ad_Blocker_Admin {
 	}
 
 	/**
+	 * Catch the update options before it's submitted to the database
+	 *
+	 * @param array $new_options new values that need to be saved
+	 * @param array $old_options old values saved in database
+	 * @return array  - options to save
+	 */
+	public function sanitize_settings( $new_options, $old_options ) {
+		if ( is_array( $new_options ) ) {
+			$this->options = array_merge( $this->options, $new_options );
+			// Error, disable the ad-blocker script
+			if ( ! isset( $new_options['module_can_work'] ) ) {
+				unset( $this->options['module_can_work'] );
+			}
+		}
+
+		return $this->options;
+	}	
+
+
+	/**
 	 * Creates dummy plugin and return new options, that need to be stored in database
 	 *
 	 * @param   array $form_post_fields options, POST data sent by user
-	 *
 	 * @return  array $new_options - options, that need to be stored in database
 	 */
 	public function create_dummy_plugin( $form_post_fields = array() ) {
@@ -205,8 +221,7 @@ class Advanced_Ads_Ad_Blocker_Admin {
 
 		if ( ! $this->upload_dir ) {
 			$message = __( 'There is no writable upload folder', 'advanced-ads' );
-			$this->error_messages->add( 'create_dummy_1', $message );
-
+			$this->error_messages->add( 'create_dummy_1', $message);
 			return false;
 		}
 
@@ -216,7 +231,7 @@ class Advanced_Ads_Ad_Blocker_Admin {
 
 		$existing_files = @scandir( $this->upload_dir['basedir'] );
 		if ( $existing_files ) {
-			$existing_files = array_diff( $existing_files, array( '..', '.' ) );
+			$existing_files = array_diff(  $existing_files, array( '..', '.' ) );
 		} else {
 			$existing_files = array();
 		}
@@ -229,45 +244,42 @@ class Advanced_Ads_Ad_Blocker_Admin {
 			if ( $wp_filesystem->exists( $old_folder_normalized ) ) {
 
 				if ( $need_assign_new_name ) {
-					$existing_files[]      = (string) $new_options['folder_name'];
-					$new_folder_name       = $this->generate_unique_name( $existing_files );
+					$existing_files[] = (string) $new_options['folder_name'];
+					$new_folder_name = $this->generate_unique_name( $existing_files );
 					$new_folder_normalized = Advanced_Ads_Filesystem::get_instance()->normalize_path( trailingslashit( $this->upload_dir['basedir'] ) . $new_folder_name );
 
 					if ( ! $wp_filesystem->move( $old_folder_normalized, $new_folder_normalized ) ) {
 						$message = sprintf( __( 'Unable to rename "%s" directory', 'advanced-ads' ), $old_folder_normalized );
-						$this->error_messages->add( 'create_dummy_2', $message );
-
+						$this->error_messages->add( 'create_dummy_2', $message);
 						return false;
 					}
 					$new_options['folder_name'] = $new_options_error['folder_name'] = $new_folder_name;
 
-				}
+				} 
 
 				$is_rebuild_needed = count( $this->get_assets() );
 
 				// we have an error while the method is being executed
-				update_option( ADVADS_AB_SLUG, $new_options_error );
-
+				update_option( ADVADS_AB_SLUG, $new_options_error );					
+			   
 				if ( $is_rebuild_needed ) {
 					$lookup_table = $this->copy_assets( $new_options['folder_name'], $need_assign_new_name );
 					if ( ! $lookup_table ) {
 						$message = sprintf( __( 'Unable to copy assets to the "%s" directory', 'advanced-ads' ), $new_options['folder_name'] );
-						$this->error_messages->add( 'create_dummy_3', $message );
-
+						$this->error_messages->add( 'create_dummy_3', $message);                        
 						return false;
 					}
 					$new_options['lookup_table'] = $lookup_table;
 				}
-
+				
 			} else {
 				// we have an error while the method is being executed
-				update_option( ADVADS_AB_SLUG, $new_options_error );
-				// old folder does not exist, let's create it
-				$lookup_table = $this->copy_assets( $new_options['folder_name'] );
+				update_option( ADVADS_AB_SLUG, $new_options_error );	
+				// old folder does not exist, let's create it 
+				$lookup_table = $this->copy_assets( $new_options['folder_name'] ); 
 				if ( ! $lookup_table ) {
 					$message = sprintf( __( 'Unable to copy assets to the "%s" directory', 'advanced-ads' ), $new_options['folder_name'] );
-					$this->error_messages->add( 'create_dummy_4', $message );
-
+					$this->error_messages->add( 'create_dummy_4', $message);                    
 					return false;
 				}
 				$new_options['lookup_table'] = $lookup_table;
@@ -281,94 +293,17 @@ class Advanced_Ads_Ad_Blocker_Admin {
 			// we have an error while the  method is being executed
 			update_option( ADVADS_AB_SLUG, $new_options_error );
 			// Copy the assets
-			$lookup_table = $this->copy_assets( $new_options['folder_name'] );
+			$lookup_table = $this->copy_assets( $new_options['folder_name'] ); 
 			if ( ! $lookup_table ) {
 				$message = sprintf( __( 'Unable to copy assets to the "%s" directory', 'advanced-ads' ), $new_options['folder_name'] );
-				$this->error_messages->add( 'create_dummy_5', $message );
-
+				$this->error_messages->add( 'create_dummy_5', $message);                    
 				return false;
 			}
 			$new_options['lookup_table'] = $lookup_table;
 		}
 		// successful result, save options and rewrite previous error options
-		update_option( ADVADS_AB_SLUG, $new_options );
+		update_option( ADVADS_AB_SLUG, $new_options);
 		Advanced_Ads_Admin_Notices::get_instance()->remove_from_queue( 'assets_expired' );
-	}
-
-	/**
-	 * Generate unique name
-	 *
-	 * @param    array $haystack array to check, that the returned string does not exist in this array
-	 *
-	 * @return   string   unique name
-	 */
-	function generate_unique_name( $haystack = false ) {
-		if ( $haystack ) {
-			$i = 0;
-
-			do {
-				if ( ++ $i < 100 ) {
-					$needle = (string) mt_rand( 1, 999 );
-				} else {
-					$needle .= '_' . $i;
-				}
-			} while ( in_array( $needle, $haystack ) );
-		}
-
-		return (string) mt_rand( 1, 999 );
-	}
-
-	/**
-	 * Returns new or modified assets and their sizes
-	 *
-	 * @return array
-	 */
-	public function get_assets() {
-		$new_files_info = $this->recursive_search_assets( trailingslashit( WP_PLUGIN_DIR ) . 'advanced-ads*' );
-
-		if ( ! isset( $this->options['lookup_table'] ) || ! isset( $this->upload_dir['basedir'] ) || ! isset( $this->options['folder_name'] ) ) {
-			return $new_files_info;
-		}
-
-		$asset_path = trailingslashit( trailingslashit( $this->upload_dir['basedir'] ) . $this->options['folder_name'] );
-		$new_files  = array();
-
-		foreach ( $new_files_info as $abs_file => $size ) {
-			$rel_file = str_replace( WP_PLUGIN_DIR, '', $abs_file );
-
-			if ( ! isset( $this->options['lookup_table'][ $rel_file ]['size'] ) ||
-			     $this->options['lookup_table'][ $rel_file ]['size'] !== $size ||
-			     ! file_exists( $asset_path . $this->options['lookup_table'][ $rel_file ]['path'] )
-			) {
-				$new_files[ $abs_file ] = $size;
-			}
-		}
-
-		return $new_files;
-	}
-
-	/**
-	 * This function recursively searches for assets
-	 *
-	 * @param   string $dir The directory to search in
-	 *
-	 * @return  array with pairs: abs_filename => size
-	 */
-	public function recursive_search_assets( $dir ) {
-		$assets = array();
-
-		$tree = glob( rtrim( $dir, '/' ) . '/*' );
-		if ( is_array( $tree ) ) {
-			foreach ( $tree as $file ) {
-				if ( is_dir( $file ) && ! preg_match( $this->exclude_dir_pattern, $file ) ) {
-					$assets = array_merge( $assets, $this->recursive_search_assets( $file ) );
-				} elseif ( is_file( $file ) && preg_match( $this->search_file_pattern, $file ) ) {
-					$assets[ $file ] = @filesize( $file );
-				}
-			}
-		}
-
-		return $assets;
 	}
 
 	/**
@@ -376,7 +311,6 @@ class Advanced_Ads_Ad_Blocker_Admin {
 	 *
 	 * @param   string $folder_name destination folder
 	 * @param   bool $need_assign_new_name true if we need to assign new random names to assets
-	 *
 	 * @return  bool/array  - bool false on failure, array lookup table on success
 	 */
 	public function copy_assets( $folder_name, $need_assign_new_name = false ) {
@@ -384,7 +318,7 @@ class Advanced_Ads_Ad_Blocker_Admin {
 
 		// Are we completely rebuilding the assets folder?
 		$normalized_asset_path = Advanced_Ads_Filesystem::get_instance()->normalize_path( trailingslashit( $this->upload_dir['basedir'] ) . $folder_name );
-		$asset_path            = trailingslashit( $this->upload_dir['basedir'] ) . $folder_name;
+		$asset_path = trailingslashit( $this->upload_dir['basedir'] ) . $folder_name ;
 
 		// already saved associations (original name => replaced name)
 		$rand_asset_names = array();
@@ -395,20 +329,19 @@ class Advanced_Ads_Ad_Blocker_Admin {
 				// Remove the old directory and its contents
 				if ( ! $wp_filesystem->rmdir( trailingslashit( $normalized_asset_path ), true ) ) {
 					$message = sprintf( __( 'We do not have direct write access to the "%s" directory', 'advanced-ads' ), $normalized_asset_path );
-					$this->error_messages->add( 'copy_assets_1', $message );
-
+					$this->error_messages->add( 'copy_assets_1', $message);
 					return false;
 				}
 			}
 		} elseif ( isset( $this->options['lookup_table'] ) ) {
 			foreach ( $this->options['lookup_table'] as $orig_path => $replaced_info ) {
-				$replaced_path = is_array( $replaced_info ) ? $replaced_info['path'] : $replaced_info;
+				$replaced_path = is_array( $replaced_info ) ? $replaced_info['path']  : $replaced_info;
 
-				$orig_path_components     = preg_split( '/\//', $orig_path, - 1, PREG_SPLIT_NO_EMPTY );
-				$replaced_path_components = preg_split( '/\//', $replaced_path, - 1, PREG_SPLIT_NO_EMPTY );
+				$orig_path_components = preg_split('/\//', $orig_path, -1, PREG_SPLIT_NO_EMPTY);
+				$replaced_path_components = preg_split('/\//', $replaced_path, -1, PREG_SPLIT_NO_EMPTY);
 
-				foreach ( $orig_path_components as $k => $orig_path_part ) {
-					$rand_asset_names[ $orig_path_part ] = (string) $replaced_path_components[ $k ];
+				foreach ( $orig_path_components as $k=> $orig_path_part ) {
+					$rand_asset_names[ $orig_path_part] = (string) $replaced_path_components[$k];
 				}
 			}
 		}
@@ -416,8 +349,7 @@ class Advanced_Ads_Ad_Blocker_Admin {
 		if ( ! $wp_filesystem->exists( $normalized_asset_path ) ) {
 			if ( ! $wp_filesystem->mkdir( $normalized_asset_path ) ) {
 				$message = sprintf( __( 'We do not have direct write access to the "%s" directory', 'advanced-ads' ), $this->upload_dir['basedir'] );
-				$this->error_messages->add( 'copy_assets_2', $message );
-
+				$this->error_messages->add( 'copy_assets_2', $message);
 				return false;
 			}
 		}
@@ -433,28 +365,20 @@ class Advanced_Ads_Ad_Blocker_Admin {
 
 		/* Do not rename assets and folders. If, for example, some library uses in file.css something like this:
 		'background: url(/img/image.png)', you should add 'img') to this array */
-		$not_rename_assets = array(
-			'public',
-			'assets',
-			'js',
-			'css',
-			'fancybox',
-			'advanced.js',
-			'jquery.fancybox-1.3.4.css'
-		);
+		$not_rename_assets = array( 'public', 'assets', 'js', 'css', 'fancybox', 'advanced.js', 'jquery.fancybox-1.3.4.css'  );
 
 		// Loop through all the found assets
-		foreach ( $assets as $file => $filesize ) {
+		foreach( $assets as $file => $filesize ) {
 			if ( ! file_exists( $file ) ) {
 				continue;
 			}
 
-			$first_cleanup                = str_replace( WP_PLUGIN_DIR, '', $file );
-			$first_cleanup_dir            = dirname( $first_cleanup );
-			$first_cleanup_filename       = basename( $first_cleanup );
+			$first_cleanup = str_replace( WP_PLUGIN_DIR , '', $file );
+			$first_cleanup_dir = dirname( $first_cleanup );
+			$first_cleanup_filename = basename( $first_cleanup );
 			$first_cleanup_file_extension = pathinfo( $first_cleanup, PATHINFO_EXTENSION );
-			$path_components              = preg_split( '/\//', $first_cleanup_dir, - 1, PREG_SPLIT_NO_EMPTY );
-			$path_components_new          = array();
+			$path_components = preg_split('/\//', $first_cleanup_dir, -1, PREG_SPLIT_NO_EMPTY);
+			$path_components_new = array();
 
 			foreach ( $path_components as $k => $dir ) {
 				if ( in_array( $dir, $not_rename_assets ) ) {
@@ -462,25 +386,25 @@ class Advanced_Ads_Ad_Blocker_Admin {
 				} elseif ( array_key_exists( $dir, $rand_asset_names ) ) {
 					$path_components_new[ $k ] = $rand_asset_names[ $dir ];
 				} else {
-					$new_rand_folder_name      = $this->generate_unique_name( array_values( $rand_asset_names ) );
+					$new_rand_folder_name = $this->generate_unique_name( array_values( $rand_asset_names ) );
 					$path_components_new[ $k ] = $new_rand_folder_name;
-					$rand_asset_names[ $dir ]  = (string) $new_rand_folder_name;
+					$rand_asset_names[ $dir ] = (string) $new_rand_folder_name;
 				}
 			}
 
 			$new_dir_full = trailingslashit( $asset_path ) . trailingslashit( implode( '/', $path_components_new ) );
-			$new_dir      = trailingslashit( implode( '/', $path_components_new ) );
+			$new_dir = trailingslashit( implode( '/', $path_components_new ) );
 
 
 			if ( ! in_array( $first_cleanup_filename, $not_rename_assets ) && ( $first_cleanup_file_extension == 'js' || $first_cleanup_file_extension == 'css' ) ) {
 				if ( array_key_exists( $first_cleanup_filename, $rand_asset_names ) ) {
-					$new_abs_file = $new_dir_full . $rand_asset_names[ $first_cleanup_filename ];
-					$new_rel_file = $new_dir . $rand_asset_names[ $first_cleanup_filename ];
+					$new_abs_file = $new_dir_full . $rand_asset_names[$first_cleanup_filename];
+					$new_rel_file = $new_dir . $rand_asset_names[$first_cleanup_filename];
 				} else {
-					$new_filename                                = $this->generate_unique_name( array_values( $rand_asset_names ) ) . '.' . $first_cleanup_file_extension;
-					$rand_asset_names[ $first_cleanup_filename ] = (string) $new_filename;
-					$new_abs_file                                = $new_dir_full . $new_filename;
-					$new_rel_file                                = $new_dir . $new_filename;
+					$new_filename = $this->generate_unique_name( array_values( $rand_asset_names ) ) . '.' . $first_cleanup_file_extension;
+					$rand_asset_names[$first_cleanup_filename] = (string) $new_filename;
+					$new_abs_file = $new_dir_full . $new_filename;
+					$new_rel_file = $new_dir . $new_filename;
 				}
 			} else {
 				$new_abs_file = $new_dir_full . $first_cleanup_filename;
@@ -491,20 +415,18 @@ class Advanced_Ads_Ad_Blocker_Admin {
 				// Create the path if it doesn't exist (prevents the copy() function from failing)
 				if ( ! wp_mkdir_p( $new_dir_full ) ) {
 					$message = sprintf( __( 'Unable to create "%s" directory. Is its parent directory writable by the server?', 'advanced-ads' ), $asset_path );
-					$this->error_messages->add( 'copy_assets_4', $message );
-
+					$this->error_messages->add( 'copy_assets_4', $message);
 					return false;
 				}
 			}
 
-			$file         = Advanced_Ads_Filesystem::get_instance()->normalize_path( $file );
+			$file = Advanced_Ads_Filesystem::get_instance()->normalize_path( $file );
 			$new_abs_file = Advanced_Ads_Filesystem::get_instance()->normalize_path( $new_abs_file );
 
 			// Copy the file to our new magic directory
 			if ( ! $wp_filesystem->copy( $file, $new_abs_file, true, FS_CHMOD_FILE ) ) {
 				$message = sprintf( __( 'Unable to copy files to %s', 'advanced-ads' ), $normalized_asset_path );
-				$this->error_messages->add( 'copy_assets_5', $message );
-
+				$this->error_messages->add( 'copy_assets_5', $message);
 				return false;
 			}
 
@@ -518,23 +440,56 @@ class Advanced_Ads_Ad_Blocker_Admin {
 	}
 
 	/**
-	 * Catch the update options before it's submitted to the database
+	 * This function recursively searches for assets
 	 *
-	 * @param array $new_options new values that need to be saved
-	 * @param array $old_options old values saved in database
-	 *
-	 * @return array  - options to save
+	 * @param   string $dir The directory to search in
+	 * @return  array with pairs: abs_filename => size
 	 */
-	public function sanitize_settings( $new_options, $old_options ) {
-		if ( is_array( $new_options ) ) {
-			$this->options = array_merge( $this->options, $new_options );
-			// Error, disable the ad-blocker script
-			if ( ! isset( $new_options['module_can_work'] ) ) {
-				unset( $this->options['module_can_work'] );
+	public function recursive_search_assets( $dir ) {
+		$assets = array();
+
+		$tree = glob( rtrim( $dir, '/' ) . '/*' );
+		if ( is_array( $tree ) ) {
+			foreach( $tree as $file ) {
+				if ( is_dir( $file ) && ! preg_match( $this->exclude_dir_pattern, $file ) ) {
+					$assets = array_merge( $assets, $this->recursive_search_assets( $file ) );
+				}
+				elseif ( is_file( $file )  && preg_match( $this->search_file_pattern, $file ) ) {
+					$assets[$file] = @filesize( $file );
+				}
 			}
 		}
 
-		return $this->options;
+		return $assets;
+	}
+
+	/**
+	 * Returns new or modified assets and their sizes
+	 *
+	 * @return array
+	 */
+	public function get_assets() {
+		$new_files_info = $this->recursive_search_assets( trailingslashit( WP_PLUGIN_DIR ) . 'advanced-ads*' );
+
+		if ( ! isset( $this->options['lookup_table'] ) || ! isset( $this->upload_dir['basedir'] ) || ! isset( $this->options['folder_name'] ) ) {
+			return $new_files_info;
+		}
+
+		$asset_path = trailingslashit( trailingslashit( $this->upload_dir['basedir'] ) . $this->options['folder_name'] ) ;
+		$new_files = array();
+
+		foreach ( $new_files_info as $abs_file => $size ) {
+			$rel_file = str_replace( WP_PLUGIN_DIR , '', $abs_file );
+
+			if ( ! isset( $this->options['lookup_table'][$rel_file]['size'] ) ||
+				$this->options['lookup_table'][$rel_file]['size'] !== $size ||
+				! file_exists( $asset_path . $this->options['lookup_table'][$rel_file]['path'] )
+			) {
+		        $new_files[$abs_file] = $size;
+			}
+		}
+
+		return $new_files;
 	}
 
 	/**
@@ -544,10 +499,8 @@ class Advanced_Ads_Ad_Blocker_Admin {
 	public function process_auto_update() {
 		$advads_options = Advanced_Ads::get_instance()->options();
 		if ( ! isset( $advads_options['use-adblocker'] )
-		     || ! $this->upload_dir
-		) {
-			return;
-		}
+			|| ! $this->upload_dir
+		) { return; }
 
 		//if  module is working without errors and there are new assets
 		if ( ! empty( $this->options['module_can_work'] ) && count( $this->get_assets() ) ) {
@@ -557,8 +510,7 @@ class Advanced_Ads_Ad_Blocker_Admin {
 				// we can not update assets automatically. The user should visit the setting page and update assets manually
 				// disable module and show notice
 				unset( $this->options['module_can_work'] );
-				update_option( ADVADS_AB_SLUG, $this->options );
-
+				update_option( ADVADS_AB_SLUG, $this->options);
 				return;
 			}
 
@@ -575,19 +527,41 @@ class Advanced_Ads_Ad_Blocker_Admin {
 	}
 
 	/**
+	 * Generate unique name
+	 *
+	 * @param    array    $haystack array to check, that the returned string does not exist in this array
+	 * @return   string   unique name
+	 */
+	function generate_unique_name( $haystack = false ) {
+		if ( $haystack ) {
+			$i = 0;
+
+			do {
+				if ( ++$i < 100 ) {
+					$needle =  (string) mt_rand( 1, 999 );
+				} else {
+					$needle .= '_' . $i;
+				}
+			} while( in_array( $needle, $haystack ) );
+		}
+
+		return (string) mt_rand( 1, 999 );
+	}
+
+	/**
 	 * clear assets (on uninstall)
 	 */
 	function clear_assets() {
 		$advads_options = Advanced_Ads::get_instance()->options();
 
 		if ( ! empty( $advads_options['use-adblocker'] )
-		     && ! empty( $this->options['folder_name'] )
-		     && ! empty( $this->options['module_can_work'] )
-		     && $this->upload_dir
-		     && class_exists( 'WP_Filesystem_Direct', false )
+			&& ! empty( $this->options['folder_name'] )
+			&& ! empty( $this->options['module_can_work'] )
+			&& $this->upload_dir
+			&& class_exists( 'WP_Filesystem_Direct', false )
 		) {
 			$wp_filesystem = new WP_Filesystem_Direct( new StdClass() );
-			$path          = trailingslashit( $this->upload_dir['basedir'] ) . trailingslashit( $this->options['folder_name'] );
+			$path = trailingslashit( $this->upload_dir['basedir'] ) . trailingslashit( $this->options['folder_name'] );
 			$wp_filesystem->rmdir( $path, true );
 		}
 	}

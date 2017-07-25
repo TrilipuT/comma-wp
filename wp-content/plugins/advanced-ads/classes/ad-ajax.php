@@ -7,15 +7,17 @@
  */
 class Advanced_Ads_Ajax {
 
-	private static $instance;
-
-	private function __construct() {
+	private function __construct()
+	{
 		add_action( 'wp_ajax_advads_ad_select', array( $this, 'advads_ajax_ad_select' ) );
 		add_action( 'wp_ajax_nopriv_advads_ad_select', array( $this, 'advads_ajax_ad_select' ) );
 	}
 
-	public static function get_instance() {
-		if ( ! isset( self::$instance ) ) {
+	private static $instance;
+
+	public static function get_instance()
+	{
+		if ( ! isset(self::$instance) ) {
 			self::$instance = new self;
 		}
 
@@ -36,7 +38,7 @@ class Advanced_Ads_Ajax {
 		if ( is_string( $adIds ) ) {
 			$adIds = json_decode( $adIds, true );
 		}
-		if ( is_array( $adIds ) ) { // ads loaded previously and passed by query
+		if (is_array($adIds)) { // ads loaded previously and passed by query
 			Advanced_Ads::get_instance()->current_ads += $adIds;
 		}
 
@@ -45,9 +47,9 @@ class Advanced_Ads_Ajax {
 			$response = array();
 
 			foreach ( (array) $deferedAds as $request ) {
-				$result              = $this->select_one( $request );
+				$result = $this->select_one( $request );
 				$result['elementId'] = ! empty( $request['elementId'] ) ? $request['elementId'] : null;
-				$response[]          = $result;
+				$response[] = $result;
 			}
 			echo json_encode( $response );
 			die();
@@ -65,14 +67,14 @@ class Advanced_Ads_Ajax {
 	 */
 	private function select_one( $request ) {
 		// init handlers
-		$selector  = Advanced_Ads_Select::get_instance();
-		$methods   = $selector->get_methods();
-		$method    = isset( $request['ad_method'] ) ? (string) $request['ad_method'] : null;
-		$id        = isset( $request['ad_id'] ) ? (string) $request['ad_id'] : null;
+		$selector = Advanced_Ads_Select::get_instance();
+		$methods = $selector->get_methods();
+		$method = isset( $request['ad_method'] ) ? (string) $request['ad_method'] : null;
+		$id = isset( $request['ad_id'] ) ? (string) $request['ad_id'] : null;
 		$arguments = isset( $request['ad_args'] ) ? $request['ad_args'] : array();
-		if ( is_string( $arguments ) ) {
-			$arguments = stripslashes( $arguments );
-			$arguments = json_decode( $arguments, true );
+		if (is_string($arguments)) {
+			$arguments = stripslashes($arguments);
+			$arguments = json_decode($arguments, true);
 		}
 		if ( ! empty( $request['elementId'] ) ) {
 			$arguments['cache_busting_elementid'] = $request['elementId'];
@@ -81,19 +83,13 @@ class Advanced_Ads_Ajax {
 		$response = array();
 		if ( isset( $methods[ $method ] ) && isset( $id ) ) {
 			$advads = Advanced_Ads::get_instance();
-			$l      = count( $advads->current_ads );
+			$l = count( $advads->current_ads );
 
 			// build content
 			$content = $selector->get_ad_by_method( $id, $method, $arguments );
-			$adIds   = array_slice( $advads->current_ads, $l ); // ads loaded by this request
+			$adIds = array_slice( $advads->current_ads, $l ); // ads loaded by this request
 
-			return array(
-				'status' => 'success',
-				'item'   => $content,
-				'id'     => $id,
-				'method' => $method,
-				'ads'    => $adIds
-			);
+			return array( 'status' => 'success', 'item' => $content, 'id' => $id, 'method' => $method, 'ads' => $adIds );
 		} else {
 			// report error
 			return array( 'status' => 'error', 'message' => 'No valid ID or METHOD found.' );

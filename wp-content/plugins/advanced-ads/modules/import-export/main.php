@@ -4,7 +4,7 @@ class_exists( 'Advanced_Ads', false ) || exit();
 
 if ( is_admin() ) {
 	add_action( 'advanced-ads-submenu-pages', 'advads_add_import_export_submenu' );
-	Advanced_Ads_Export::get_instance();
+    Advanced_Ads_Export::get_instance();
 
 	/**
 	 * Add import & export page
