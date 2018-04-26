@@ -57,15 +57,14 @@ class Advanced_Ads_Ad_Type_Image extends Advanced_Ads_Ad_Type_Abstract{
 		</p>
 		<input type="hidden" name="advanced_ad[output][image_id]" value="<?php echo $id; ?>" id="advads-image-id"/>
 		<div id="advads-image-preview">
-		    <?php $this->create_image_tag( $id ); ?>
+		    <?php $this->create_image_tag( $id, $ad ); ?>
 		</div>
 
 		<?php // don’t show if tracking plugin enabled
 		if( ! defined( 'AAT_VERSION' )) : ?>
-			<span class="label"><?php _e( 'url', 'advanced-ads' ); ?></span>
+			<span class="label"><?php _e( 'URL', 'advanced-ads' ); ?></span>
 			<div>
-				<input type="url" name="advanced_ad[url]" id="advads-url" value="<?php echo $url; ?>" placeholder="<?php _e( 'Link to target site', 'advanced-ads' ); ?>" /></p>
-				<p><?php printf(__( 'Open this url in a new window and track impressions and clicks with the <a href="%s" target="_blank">Tracking add-on</a>', 'advanced-ads' ), ADVADS_URL . 'add-ons/tracking/#utm_source=advanced-ads&utm_medium=link&utm_campaign=edit-image-tracking'); ?></p>
+				<input type="url" name="advanced_ad[url]" id="advads-url" class="advads-ad-url" value="<?php echo $url; ?>" placeholder="<?php _e( 'Link to target site', 'advanced-ads' ); ?>" /></p>
 			</div><hr/><?php 
 		endif;
 	}
@@ -73,12 +72,15 @@ class Advanced_Ads_Ad_Type_Image extends Advanced_Ads_Ad_Type_Abstract{
 	/**
 	 * render image tag
 	 *
-	 * @param int $attachment_id post id of the image
+	 * @param int $attachment_id	post id of the image
+	 * @param obj $ad		ad object, since 1.8.21
 	 * @since 1.6.10
 	 */
-	public function create_image_tag( $attachment_id ){
+	public function create_image_tag( $attachment_id, $ad ){
 
 		$image = wp_get_attachment_image_src( $attachment_id, 'full' );
+		$style = '';
+		
 		if ( $image ) {
 			list( $src, $width, $height ) = $image;
 			$hwstring = image_hwstring($width, $height);
@@ -104,9 +106,17 @@ class Advanced_Ads_Ad_Type_Image extends Advanced_Ads_Ad_Type_Abstract{
 				}
 			}
 			
+			// add css rule to be able to center the ad
+			if( isset( $ad->output['position'] ) && 'center' === $ad->output['position'] ){
+			    $style .= 'display: inline-block;';
+			}
+			
+			$style = apply_filters( 'advanced-ads-ad-image-tag-style', $style );
+			$style = '' !== $style ? 'style="' . $style . '"' : '';
+			
 			$more_attributes = apply_filters( 'advanced-ads-ad-image-tag-attributes', $more_attributes );
 			
-			echo rtrim("<img $hwstring") . " src='$src' alt='$alt' title='$title' $more_attributes/>";
+			echo rtrim("<img $hwstring") . " src='$src' alt='$alt' title='$title' $more_attributes $style/>";
 		}
 	}
 	
@@ -152,10 +162,13 @@ class Advanced_Ads_Ad_Type_Image extends Advanced_Ads_Ad_Type_Abstract{
 
 		$id = ( isset( $ad->output['image_id'] ) ) ? absint( $ad->output['image_id'] ) : '';
 		$url =	    ( isset( $ad->url ) ) ? esc_url( $ad->url ) : '';
+		// get general target setting
+		$options = Advanced_Ads::get_instance()->options();
+		$target_blank =	!empty( $options['target-blank'] ) ? ' target="_blank"' : '';
 
 		ob_start();
-		if( ! defined( 'AAT_VERSION' ) && $url ){ echo '<a href="'. $url .'">'; }
-		echo $this->create_image_tag( $id );
+		if( ! defined( 'AAT_VERSION' ) && $url ){ echo '<a href="'. $url .'"'.$target_blank.'>'; }
+		echo $this->create_image_tag( $id, $ad );
 		if( ! defined( 'AAT_VERSION' ) && $url ){ echo '</a>'; }
 
 		return ob_get_clean();

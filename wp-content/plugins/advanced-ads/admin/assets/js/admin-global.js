@@ -7,19 +7,35 @@ jQuery( document ).ready(function () {
 	 * ADMIN NOTICES
 	 */
 	// close button
-	jQuery(document).on('click', '.advads-admin-notice button.notice-dismiss', function(){
+	// .advads-notice-dismiss class can be used to add a custom close button (e.g., link)
+	jQuery(document).on('click', '.advads-admin-notice button.notice-dismiss, .advads-admin-notice .advads-notice-dismiss', function(){
 	    var messagebox = jQuery(this).parents('.advads-admin-notice');
 	    if( messagebox.attr('data-notice') === undefined) return;
 
 	    var query = {
 		action: 'advads-close-notice',
-		notice: messagebox.attr('data-notice')
+		notice: messagebox.attr('data-notice'),
+		nonce: advadsglobal.ajax_nonce
 	    };
 	    // send query
 	    jQuery.post(ajaxurl, query, function (r) {
-		// messagebox.fadeOut();
+		messagebox.fadeOut();
 	    });
+	});
+	// hide notice for 7 days
+	jQuery(document).on('click', '.advads-admin-notice .advads-notice-hide', function(){
+	    var messagebox = jQuery(this).parents('.advads-admin-notice');
+	    if( messagebox.attr('data-notice') === undefined) return;
 
+	    var query = {
+		action: 'advads-hide-notice',
+		notice: messagebox.attr('data-notice'),
+		nonce: advadsglobal.ajax_nonce
+	    };
+	    // send query
+	    jQuery.post(ajaxurl, query, function (r) {
+		messagebox.fadeOut();
+	    });
 	});
 	// autoresponder button
 	jQuery('.advads-notices-button-subscribe').click(function(){
@@ -29,7 +45,8 @@ jQuery( document ).ready(function () {
 
 	    var query = {
 		action: 'advads-subscribe-notice',
-		notice: this.dataset.notice
+		notice: this.dataset.notice,
+		nonce: advadsglobal.ajax_nonce
 	    };
 	    // send and close message
 	    jQuery.post(ajaxurl, query, function (r) {
@@ -73,19 +90,16 @@ jQuery( document ).ready(function () {
 	// send form or close it
 	jQuery('#advanced-ads-feedback-content .button').click(function ( e ) {
 		e.preventDefault();
-		// check if "other" text field has content, or show error
-		if( 'other' === jQuery( '#advanced-ads-feedback-content input[type="radio"]:checked' ).val() &&
-			'' === jQuery( '.advanced_ads_disable_other_text' ).val() ){
-			jQuery( '.advanced_ads_disable_other_text' ).css( 'border-color', 'red' ).focus();
-			return false;
-		}
+		var self = jQuery( this );
 		// set cookie for 30 days
 		var exdate = new Date();
 		exdate.setSeconds( exdate.getSeconds() + 2592000 );
 		document.cookie = "advads_hide_deactivate_feedback=1; expires=" + exdate.toUTCString() + "; path=/";
+		// save if plugin should be disabled
+		var disable_plugin = self.hasClass('advanced-ads-feedback-not-deactivate') ? false : true;
 			
 		jQuery( '#advanced-ads-feedback-overlay' ).hide();
-		if ( 'advanced-ads-feedback-submit' === this.id ) {
+		if ( self.hasClass('advanced-ads-feedback-submit') ) {
 			// show text field if there is one
 			jQuery.ajax({
 			    type: 'POST',
@@ -93,12 +107,16 @@ jQuery( document ).ready(function () {
 			    dataType: 'json',
 			    data: {
 				action: 'advads_send_feedback',
+				feedback: self.hasClass('advanced-ads-feedback-not-deactivate') ? true : false,
 				formdata: jQuery( '#advanced-ads-feedback-content form' ).serialize()
 			    },
 			    complete: function (MLHttpRequest, textStatus, errorThrown) {
 				    // deactivate the plugin and close the popup
 				    jQuery( '#advanced-ads-feedback-overlay' ).remove();
-				    window.location.href = advads_deactivate_link_url;
+				    console.log( disable_plugin );
+				    if( disable_plugin ){
+					window.location.href = advads_deactivate_link_url;
+				    }
 
 			    }
 			});
@@ -107,9 +125,10 @@ jQuery( document ).ready(function () {
 			window.location.href = advads_deactivate_link_url;
 		}
 	});
-	// close form without doing anything
-	jQuery('.advanced-ads-feedback-not-deactivate').click(function ( e ) {
+	// close form and disable the plugin without doing anything
+	jQuery('.advanced-ads-feedback-only-deactivate').click(function ( e ) {
 		jQuery( '#advanced-ads-feedback-overlay' ).hide();
+		window.location.href = advads_deactivate_link_url;
 	});
 
 });
@@ -126,4 +145,28 @@ function advads_admin_get_cookie (name) {
 			return unescape( y );
 		}
 	}
+}
+
+/**
+ * load RSS widget on dashboard page using AJAX to not block rendering the rest of the page
+ */
+function advads_load_dashboard_rss_widget_content(){
+	jQuery.ajax({
+		type: 'POST',
+		url: ajaxurl,
+		data: {
+		    action: 'advads_load_rss_widget_content',
+		    nonce: advadsglobal.ajax_nonce
+		},
+		success: function (data, textStatus, XMLHttpRequest) {
+			if (data) {
+				jQuery( '#advads-dashboard-widget-placeholder' ).before( data );
+			}
+		},
+		complete: function (MLHttpRequest, textStatus, errorThrown) {
+			// remove the placeholder
+			jQuery( '#advads-dashboard-widget-placeholder' ).remove();
+
+		}
+	});
 }

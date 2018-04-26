@@ -1,26 +1,70 @@
 <?php
 namespace Elementor;
 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
+/**
+ * Elementor alert widget.
+ *
+ * Elementor widget that displays a collapsible display of content in an toggle
+ * style, allowing the user to open multiple items.
+ *
+ * @since 1.0.0
+ */
 class Widget_Alert extends Widget_Base {
 
+	/**
+	 * Get widget name.
+	 *
+	 * Retrieve alert widget name.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 *
+	 * @return string Widget name.
+	 */
 	public function get_name() {
 		return 'alert';
 	}
 
+	/**
+	 * Get widget title.
+	 *
+	 * Retrieve alert widget title.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 *
+	 * @return string Widget title.
+	 */
 	public function get_title() {
 		return __( 'Alert', 'elementor' );
 	}
 
+	/**
+	 * Get widget icon.
+	 *
+	 * Retrieve alert widget icon.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 *
+	 * @return string Widget icon.
+	 */
 	public function get_icon() {
 		return 'eicon-alert';
 	}
 
-	public function get_categories() {
-		return [ 'general-elements' ];
-	}
-
+	/**
+	 * Register alert widget controls.
+	 *
+	 * Adds different input fields to allow the user to change and customize the widget settings.
+	 *
+	 * @since 1.0.0
+	 * @access protected
+	 */
 	protected function _register_controls() {
 		$this->start_controls_section(
 			'section_alert',
@@ -49,8 +93,8 @@ class Widget_Alert extends Widget_Base {
 			[
 				'label' => __( 'Title & Description', 'elementor' ),
 				'type' => Controls_Manager::TEXT,
-				'placeholder' => __( 'Your Title', 'elementor' ),
-				'default' => __( 'This is Alert', 'elementor' ),
+				'placeholder' => __( 'Enter your title', 'elementor' ),
+				'default' => __( 'This is an Alert', 'elementor' ),
 				'label_block' => true,
 			]
 		);
@@ -60,8 +104,8 @@ class Widget_Alert extends Widget_Base {
 			[
 				'label' => __( 'Content', 'elementor' ),
 				'type' => Controls_Manager::TEXTAREA,
-				'placeholder' => __( 'Your Description', 'elementor' ),
-				'default' => __( 'I am description. Click edit button to change this text.', 'elementor' ),
+				'placeholder' => __( 'Enter your description', 'elementor' ),
+				'default' => __( 'I am a description. Click the edit button to change this text.', 'elementor' ),
 				'separator' => 'none',
 				'show_label' => false,
 			]
@@ -94,7 +138,7 @@ class Widget_Alert extends Widget_Base {
 		$this->start_controls_section(
 			'section_type',
 			[
-				'label' => __( 'Alert Type', 'elementor' ),
+				'label' => __( 'Alert', 'elementor' ),
 				'tab' => Controls_Manager::TAB_STYLE,
 			]
 		);
@@ -202,8 +246,16 @@ class Widget_Alert extends Widget_Base {
 
 	}
 
+	/**
+	 * Render alert widget output on the frontend.
+	 *
+	 * Written in PHP and used to generate the final HTML.
+	 *
+	 * @since 1.0.0
+	 * @access protected
+	 */
 	protected function render() {
-		$settings = $this->get_settings();
+		$settings = $this->get_settings_for_display();
 
 		if ( empty( $settings['alert_title'] ) ) {
 			return;
@@ -213,42 +265,62 @@ class Widget_Alert extends Widget_Base {
 			$this->add_render_attribute( 'wrapper', 'class', 'elementor-alert elementor-alert-' . $settings['alert_type'] );
 		}
 
-		echo '<div ' . $this->get_render_attribute_string( 'wrapper' ) . ' role="alert">';
-		$html = sprintf( '<span class="elementor-alert-title">%1$s</span>', $settings['alert_title'] );
+		$this->add_render_attribute( 'wrapper', 'role', 'alert' );
 
-		if ( ! empty( $settings['alert_description'] ) ) {
-			$html .= sprintf( '<span class="elementor-alert-description">%s</span>', $settings['alert_description'] );
-		}
+		$this->add_render_attribute( 'alert_title', 'class', 'elementor-alert-title' );
 
-		if ( ! empty( $settings['show_dismiss'] ) && 'show' === $settings['show_dismiss'] ) {
-			$html .= '<button type="button" class="elementor-alert-dismiss">X</button>';
-		}
+		$this->add_inline_editing_attributes( 'alert_title', 'none' );
+		?>
+		<div <?php echo $this->get_render_attribute_string( 'wrapper' ); ?>>
+			<span <?php echo $this->get_render_attribute_string( 'alert_title' ); ?>><?php echo $settings['alert_title']; ?></span>
+			<?php
+			if ( ! empty( $settings['alert_description'] ) ) :
+				$this->add_render_attribute( 'alert_description', 'class', 'elementor-alert-description' );
 
-		echo $html;
-
-		echo '</div>';
+				$this->add_inline_editing_attributes( 'alert_description' );
+				?>
+				<span <?php echo $this->get_render_attribute_string( 'alert_description' ); ?>><?php echo $settings['alert_description']; ?></span>
+			<?php endif; ?>
+			<?php if ( 'show' === $settings['show_dismiss'] ) : ?>
+				<button type="button" class="elementor-alert-dismiss">
+					<span aria-hidden="true">&times;</span>
+					<span class="elementor-screen-only"><?php echo __( 'Dismiss alert', 'elementor' ); ?></span>
+				</button>
+			<?php endif; ?>
+		</div>
+		<?php
 	}
 
+	/**
+	 * Render alert widget output in the editor.
+	 *
+	 * Written as a Backbone JavaScript template and used to generate the live preview.
+	 *
+	 * @since 1.0.0
+	 * @access protected
+	 */
 	protected function _content_template() {
 		?>
-		<#
-		var html = '<div class="elementor-alert elementor-alert-' + settings.alert_type + '" role="alert">';
-		if ( '' !== settings.title ) {
-			html += '<span class="elementor-alert-title">' + settings.alert_title + '</span>';
+		<# if ( settings.alert_title ) {
+			view.addRenderAttribute( {
+				alert_title: { class: 'elementor-alert-title' },
+				alert_description: { class: 'elementor-alert-description' }
+			} );
 
-			if ( '' !== settings.description ) {
-				html += '<span class="elementor-alert-description">' + settings.alert_description + '</span>';
-			}
-
-			if ( 'show' === settings.show_dismiss ) {
-				html += '<button type="button" class="elementor-alert-dismiss">X</button>';
-			}
-
-			html += '</div>';
-		
-			print( html );
-		}
-		#>
+			view.addInlineEditingAttributes( 'alert_title', 'none' );
+			view.addInlineEditingAttributes( 'alert_description' );
+			#>
+			<div class="elementor-alert elementor-alert-{{ settings.alert_type }}" role="alert">
+				<span {{{ view.getRenderAttributeString( 'alert_title' ) }}}>{{{ settings.alert_title }}}</span>
+				<span {{{ view.getRenderAttributeString( 'alert_description' ) }}}>{{{ settings.alert_description }}}</span>
+				<# if ( 'show' === settings.show_dismiss ) { #>
+					<button type="button" class="elementor-alert-dismiss">
+						<span aria-hidden="true">&times;</span>
+						<span class="elementor-screen-only"><?php echo __( 'Dismiss alert', 'elementor' ); ?></span>
+					</button>
+				<# } #>
+			</div>
+		<# } #>
 		<?php
 	}
 }

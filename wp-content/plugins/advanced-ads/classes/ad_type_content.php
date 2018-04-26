@@ -39,6 +39,7 @@ class Advanced_Ads_Ad_Type_Content extends Advanced_Ads_Ad_Type_Abstract{
 		);
 	}
 
+
 	/**
 	 * output for the ad parameters metabox
 	 *
@@ -72,7 +73,7 @@ class Advanced_Ads_Ad_Type_Content extends Advanced_Ads_Ad_Type_Abstract{
 				'drag_drop_upload' => true
 			);
 			wp_editor( $content, 'advanced-ad-parameters-content', $args );
-		} ?><br class="clear"/><?php
+		} ?><br class="clear"/> <input type="hidden" name="advanced_ad[output][allow_shortcodes]" value="1" /><?php
 		include ADVADS_BASE_PATH . 'admin/views/ad-info-after-textarea.php';
 	}
 
@@ -84,12 +85,12 @@ class Advanced_Ads_Ad_Type_Content extends Advanced_Ads_Ad_Type_Abstract{
 	 * @since 1.0.0
 	 */
 	public function sanitize_content($content = ''){
-
+		// use WordPress core content filter
+		$content = apply_filters( 'content_save_pre', $content );
+		
 		// remove slashes from content
 		$content = wp_unslash( $content );
-
-		// use WordPress core content filter
-		return $content = apply_filters( 'content_save_pre', $content );
+		return $content;
 	}
 
 	/**
@@ -125,7 +126,7 @@ class Advanced_Ads_Ad_Type_Content extends Advanced_Ads_Ad_Type_Abstract{
 		$output = convert_chars( $output );
 		$output = wpautop( $output );
 		$output = shortcode_unautop( $output );
-		$output = do_shortcode( $output );
+		$output = $this->do_shortcode( $output, $ad );
 		$output = prepend_attachment( $output );
 		// make included images responsive, since WordPress 4.4
 		if( ! defined( 'ADVADS_DISABLE_RESPONSIVE_IMAGES' ) && function_exists( 'wp_make_content_images_responsive' ) ){
@@ -134,5 +135,4 @@ class Advanced_Ads_Ad_Type_Content extends Advanced_Ads_Ad_Type_Abstract{
 
 		return $output;
 	}
-
 }

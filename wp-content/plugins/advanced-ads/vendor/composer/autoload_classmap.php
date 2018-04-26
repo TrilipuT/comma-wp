@@ -6,6 +6,7 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'ADVADS_SL_Plugin_Updater' => $baseDir . '/classes/EDD_SL_Plugin_Updater.php',
     'Advads_Ad' => $baseDir . '/classes/ad.php',
     'Advanced_Ads' => $baseDir . '/public/class-advanced-ads.php',
     'Advanced_Ads_Ad' => $baseDir . '/classes/ad.php',
@@ -42,5 +43,6 @@ return array(
     'Advanced_Ads_Utils' => $baseDir . '/classes/utils.php',
     'Advanced_Ads_Visitor_Conditions' => $baseDir . '/classes/visitor-conditions.php',
     'Advanced_Ads_Widget' => $baseDir . '/classes/widget.php',
-    'EDD_SL_Plugin_Updater' => $baseDir . '/classes/EDD_SL_Plugin_Updater.php',
+    'Yoast_I18n_WordPressOrg_v3' => $vendorDir . '/yoast/i18n-module/src/i18n-module-wordpressorg.php',
+    'Yoast_I18n_v3' => $vendorDir . '/yoast/i18n-module/src/i18n-module.php',
 );

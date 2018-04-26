@@ -1,26 +1,69 @@
 <?php
 namespace Elementor;
 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
+/**
+ * Elementor progress widget.
+ *
+ * Elementor widget that displays an escalating progress bar.
+ *
+ * @since 1.0.0
+ */
 class Widget_Progress extends Widget_Base {
 
+	/**
+	 * Get widget name.
+	 *
+	 * Retrieve progress widget name.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 *
+	 * @return string Widget name.
+	 */
 	public function get_name() {
 		return 'progress';
 	}
 
+	/**
+	 * Get widget title.
+	 *
+	 * Retrieve progress widget title.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 *
+	 * @return string Widget title.
+	 */
 	public function get_title() {
 		return __( 'Progress Bar', 'elementor' );
 	}
 
+	/**
+	 * Get widget icon.
+	 *
+	 * Retrieve progress widget icon.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 *
+	 * @return string Widget icon.
+	 */
 	public function get_icon() {
 		return 'eicon-skill-bar';
 	}
 
-	public function get_categories() {
-		return [ 'general-elements' ];
-	}
-
+	/**
+	 * Register progress widget controls.
+	 *
+	 * Adds different input fields to allow the user to change and customize the widget settings.
+	 *
+	 * @since 1.0.0
+	 * @access protected
+	 */
 	protected function _register_controls() {
 		$this->start_controls_section(
 			'section_progress',
@@ -69,18 +112,15 @@ class Widget_Progress extends Widget_Base {
 			]
 		);
 
-	    $this->add_control(
-	        'display_percentage',
-	        [
-	            'label' => __( 'Display Percentage', 'elementor' ),
-	            'type' => Controls_Manager::SELECT,
-	            'default' => 'show',
-	            'options' => [
-	                'show' => __( 'Show', 'elementor' ),
-	                'hide' => __( 'Hide', 'elementor' ),
-	            ],
-	        ]
-	    );
+		$this->add_control( 'display_percentage', [
+			'label' => __( 'Display Percentage', 'elementor' ),
+			'type' => Controls_Manager::SELECT,
+			'default' => 'show',
+			'options' => [
+				'show' => __( 'Show', 'elementor' ),
+				'hide' => __( 'Hide', 'elementor' ),
+			],
+		] );
 
 		$this->add_control(
 			'inner_text',
@@ -186,10 +226,25 @@ class Widget_Progress extends Widget_Base {
 		$this->end_controls_section();
 	}
 
+	/**
+	 * Render progress widget output on the frontend.
+	 *
+	 * Written in PHP and used to generate the final HTML.
+	 *
+	 * @since 1.0.0
+	 * @access protected
+	 */
 	protected function render() {
-		$settings = $this->get_settings();
+		$settings = $this->get_settings_for_display();
 
-		$this->add_render_attribute( 'wrapper', 'class', 'elementor-progress-wrapper' );
+		$this->add_render_attribute( 'wrapper', [
+			'class' => 'elementor-progress-wrapper',
+			'role' => 'progressbar',
+			'aria-valuemin' => '0',
+			'aria-valuemax' => '100',
+			'aria-valuenow' => $settings['percent']['size'],
+			'aria-valuetext' => $settings['inner_text'],
+		] );
 
 		if ( ! empty( $settings['progress_type'] ) ) {
 			$this->add_render_attribute( 'wrapper', 'class', 'progress-' . $settings['progress_type'] );
@@ -204,7 +259,7 @@ class Widget_Progress extends Widget_Base {
 			<span class="elementor-title"><?php echo $settings['title']; ?></span>
 		<?php } ?>
 
-		<div <?php echo $this->get_render_attribute_string( 'wrapper' ); ?> role="timer">
+		<div <?php echo $this->get_render_attribute_string( 'wrapper' ); ?>>
 			<div <?php echo $this->get_render_attribute_string( 'progress-bar' ); ?>>
 				<span class="elementor-progress-text"><?php echo $settings['inner_text']; ?></span>
 				<?php if ( 'hide' !== $settings['display_percentage'] ) { ?>
@@ -212,14 +267,34 @@ class Widget_Progress extends Widget_Base {
 				<?php } ?>
 			</div>
 		</div>
-	<?php }
+	<?php
+	}
 
+	/**
+	 * Render progress widget output in the editor.
+	 *
+	 * Written as a Backbone JavaScript template and used to generate the live preview.
+	 *
+	 * @since 1.0.0
+	 * @access protected
+	 */
 	protected function _content_template() {
 		?>
+		<#
+		view.addRenderAttribute( 'progressWrapper', {
+			'class': [ 'elementor-progress-wrapper', 'progress-' + settings.progress_type ],
+			'role': 'progressbar',
+			'aria-valuemin': '0',
+			'aria-valuemax': '100',
+			'aria-valuenow': settings.percent.size,
+			'aria-valuetext': settings.inner_text
+		} );
+		view.addInlineEditingAttributes( 'progressWrapper' );
+		#>
 		<# if ( settings.title ) { #>
 		<span class="elementor-title">{{{ settings.title }}}</span><#
 		} #>
-		<div class="elementor-progress-wrapper progress-{{ settings.progress_type }}" role="timer">
+		<div {{{ view.getRenderAttributeString( 'progressWrapper' ) }}}>
 			<div class="elementor-progress-bar" data-max="{{ settings.percent.size }}">
 				<span class="elementor-progress-text">{{{ settings.inner_text }}}</span>
 			<# if ( 'hide' !== settings.display_percentage ) { #>

@@ -2,14 +2,19 @@
 # This file is distributed under the same license as the Plugins - Regenerate Thumbnails - Development (trunk) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2016-11-01 14:37:55+0000\n"
+"PO-Revision-Date: 2017-09-17 21:08:28+0000\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: GlotPress/2.3.0-alpha\n"
+"X-Generator: GlotPress/2.4.0-alpha\n"
 "Language: ru\n"
 "Project-Id-Version: Plugins - Regenerate Thumbnails - Development (trunk)\n"
+
+#: regenerate-thumbnails.php:104 regenerate-thumbnails.php:158
+msgctxt "action of regenerate thumbnails"
+msgid "Regenerate Thumbnails"
+msgstr "Пересоздать миниатюры"
 
 #. Author of the plugin/theme
 msgid "Alex Mills (Viper007Bond)"
@@ -27,119 +32,119 @@ msgstr "Позволяет пересоздать миниатюры изобр�
 msgid "http://www.viper007bond.com/wordpress-plugins/regenerate-thumbnails/"
 msgstr "http://www.viper007bond.com/wordpress-plugins/regenerate-thumbnails/"
 
-#: regenerate-thumbnails.php:388
+#: regenerate-thumbnails.php:436
 msgid "&quot;%1$s&quot; (ID %2$s) failed to resize. The error message was: %3$s"
 msgstr "&quot;%1$s&quot; (ID %2$s) пересоздание не удалось. Ошибка: %3$s"
 
-#: regenerate-thumbnails.php:382
+#: regenerate-thumbnails.php:430
 msgid "&quot;%1$s&quot; (ID %2$s) was successfully resized in %3$s seconds."
 msgstr "Миниатюры для &quot;%1$s&quot; (ID %2$s) успешно пересозданы за %3$s сек."
 
-#: regenerate-thumbnails.php:377
+#: regenerate-thumbnails.php:425
 msgid "Unknown failure reason."
 msgstr "Неизвестная причина неудачи."
 
-#: regenerate-thumbnails.php:368
+#: regenerate-thumbnails.php:416
 msgid "The originally uploaded image file cannot be found at %s"
 msgstr "Оригинальное изображание не удалось найти в %s"
 
-#: regenerate-thumbnails.php:363
+#: regenerate-thumbnails.php:411
 msgid "Your user account doesn't have permission to resize images"
 msgstr "Ваша учетная запись не имеет прав для пересоздания миниатюр"
 
-#: regenerate-thumbnails.php:360
+#: regenerate-thumbnails.php:408
 msgid "Failed resize: %s is an invalid image ID."
 msgstr "Пересоздание не удалось: %s является неверным ID изображения."
 
-#: regenerate-thumbnails.php:336
+#: regenerate-thumbnails.php:384
 msgid "Regenerate All Thumbnails"
 msgstr "Пересоздать все миниатюры"
 
-#: regenerate-thumbnails.php:334
+#: regenerate-thumbnails.php:382
 msgid "To begin, just press the button below."
 msgstr "Чтобы начать, просто нажмите на кнопку ниже."
 
-#: regenerate-thumbnails.php:332
+#: regenerate-thumbnails.php:380
 msgid "Thumbnail regeneration is not reversible, but you can just change your thumbnail dimensions back to the old values and click the button again if you don't like the results."
 msgstr "Пересоздание миниатюр невозможно отменить, но вы можете просто вернуть старые размеры миниатюр и нажать на кнопку еще раз, если вас не устроит результат."
 
-#: regenerate-thumbnails.php:330
+#: regenerate-thumbnails.php:378
 msgid "You can regenerate specific images (rather than all images) from the <a href='%s'>Media</a> page. Hover over an image's row and click the link to resize just that one image or use the checkboxes and the &quot;Bulk Actions&quot; dropdown to resize multiple images (WordPress 3.1+ only)."
 msgstr "Вы можете пересоздать миниатюры для конкретных изображений (вместо всех изображений) на странице <a href='%s'>Медиафайлы</a>. Наведите курсор на строку с изображением и нажмите на ссылку, чтобы пересоздать миниатюры только для данного изображения или используйте флажки (чекбоксы) и выпадающий список &quot;Массовые действия&quot;, чтобы пересоздать миниатюры для нескольких выбранных изображений (только для WordPress 3.1 и выше)."
 
-#: regenerate-thumbnails.php:328
+#: regenerate-thumbnails.php:376
 msgid "Use this tool to regenerate thumbnails for all images that you have uploaded to your blog. This is useful if you've changed any of the thumbnail dimensions on the <a href='%s'>media settings page</a>. Old thumbnails will be kept to avoid any broken images due to hard-coded URLs."
 msgstr "С помощью этого инструмента вы можете пересоздать миниатюры для всех изображений, которые были загружены на ваш сайт. Это имеет смысл, если вы изменили один из размеров миниатюр на <a href='%s'>странице настройки медиафайлов</a> или активировали другую тему. Старые миниатюры будут сохранены, чтобы избежать &quot;битых&quot; ссылок на изображений, которые были указаны вручную."
 
-#: regenerate-thumbnails.php:285
+#: regenerate-thumbnails.php:334
 msgid "The resize request was abnormally terminated (ID %s). This is likely due to the image exceeding available memory or some other type of fatal error."
 msgstr "Запрос на пересоздание миниатюр был аварийно завершен (ID %s). Скорее всего это произошло из-за того, что изображение превышает объем доступной памяти или другой критической ошибки."
 
-#: regenerate-thumbnails.php:233
+#: regenerate-thumbnails.php:282
 msgid "Stopping..."
 msgstr "Остановка..."
 
-#: regenerate-thumbnails.php:202
+#: regenerate-thumbnails.php:252
 msgid "Resize Failures: %s"
 msgstr "Пересоздание не удалось: %s"
 
-#: regenerate-thumbnails.php:201
+#: regenerate-thumbnails.php:251
 msgid "Images Resized: %s"
 msgstr "Успешно пересоздано: %s"
 
-#: regenerate-thumbnails.php:200
+#: regenerate-thumbnails.php:250
 msgid "Total Images: %s"
 msgstr "Всего изображений: %s"
 
-#: regenerate-thumbnails.php:197
+#: regenerate-thumbnails.php:247
 msgid "Debugging Information"
 msgstr "Отладочная информация"
 
-#: regenerate-thumbnails.php:195
+#: regenerate-thumbnails.php:245
 msgid "Abort Resizing Images"
 msgstr "Прервать пересоздание миниатюр"
 
-#: regenerate-thumbnails.php:189 regenerate-thumbnails.php:338
+#: regenerate-thumbnails.php:239 regenerate-thumbnails.php:386
 msgid "You must enable Javascript in order to proceed!"
 msgstr "Чтобы продолжить, вы должны включить Javascript в браузере!"
 
-#: regenerate-thumbnails.php:185
+#: regenerate-thumbnails.php:235
 msgid "All done! %1$s image(s) were successfully resized in %2$s seconds and there were 0 failures. %3$s"
 msgstr "Все готово! Для %1$s изображения(ий) были пересозданы миниатюры за %2$s сек. %3$s"
 
-#: regenerate-thumbnails.php:184
+#: regenerate-thumbnails.php:234
 msgid "All done! %1$s image(s) were successfully resized in %2$s seconds and there were %3$s failure(s). To try regenerating the failed images again, <a href=\"%4$s\">click here</a>. %5$s"
 msgstr "Все готово! Для %1$s изображения(ий) были пересозданы миниатюры за %2$s сек. Не удалось пересоздать миниатюры для %3$s изображения(ий). Чтобы попробовать пересоздать неудавшиеся миниатюры, <a href=\"%4$s\">нажмите здесь</a>. %5$s"
 
-#: regenerate-thumbnails.php:183
+#: regenerate-thumbnails.php:233
 msgid "To go back to the previous page, <a href=\"%s\">click here</a>."
 msgstr "Чтобы вернуться на предыдущую страницу, <a href=\"%s\">нажмите здесь</a>."
 
-#: regenerate-thumbnails.php:179
+#: regenerate-thumbnails.php:229
 msgid "Please be patient while the thumbnails are regenerated. This can take a while if your server is slow (inexpensive hosting) or if you have many images. Do not navigate away from this page until this script is done or the thumbnails will not be resized. You will be notified via this page when the regenerating is completed."
 msgstr "Пожалуйста, подождите пока миниатюры будут пересозданы. Это может занять некоторое время, если ваш сервер медленный (недорогой хостинг) или у вас много изображений. Не покидайте эту страницу пока скрипт не выполнится до конца или миниатюры не будут пересозданы. Вы будете оповещены, когда пересоздание миниатюр завершится."
 
-#: regenerate-thumbnails.php:168
+#: regenerate-thumbnails.php:218
 msgid "Unable to find any images. Are you sure <a href='%s'>some exist</a>?"
 msgstr "Не найдено ни одного изображения. Вы уверены, что <a href='%s'>они есть</a>?"
 
-#: regenerate-thumbnails.php:154
+#: regenerate-thumbnails.php:204
 msgid "Cheatin&#8217; uh?"
 msgstr "Хакер?"
 
-#: regenerate-thumbnails.php:81
+#: regenerate-thumbnails.php:104 regenerate-thumbnails.php:120
+#: regenerate-thumbnails.php:141
 msgid "Regenerate the thumbnails for this single image"
 msgstr "Пересоздать миниатюры для этого изображения"
 
-#: regenerate-thumbnails.php:56
+#: regenerate-thumbnails.php:60
 msgid "Regen. Thumbnails"
 msgstr "Пересоздать миниатюры"
 
-#. #-#-#-#-#  tmp-regenerate-thumbnails.pot (Regenerate Thumbnails 2.2.6) 
+#. #-#-#-#-#  regenerate-thumbnails-code.pot (Regenerate Thumbnails 2.3.1) 
 #. #-#-#-#-#
 #. Plugin Name of the plugin/theme
-#: regenerate-thumbnails.php:56 regenerate-thumbnails.php:81
-#: regenerate-thumbnails.php:95 regenerate-thumbnails.php:112
-#: regenerate-thumbnails.php:146
+#: regenerate-thumbnails.php:60 regenerate-thumbnails.php:120
+#: regenerate-thumbnails.php:141 regenerate-thumbnails.php:196
 msgid "Regenerate Thumbnails"
 msgstr "Regenerate Thumbnails"

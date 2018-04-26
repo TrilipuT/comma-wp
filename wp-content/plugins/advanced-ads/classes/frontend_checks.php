@@ -13,6 +13,8 @@ class Advanced_Ads_Frontend_Checks {
 	}
 
 	public function init() {
+		$enabled = false;
+
 		if ( ! is_admin()
 			&& is_admin_bar_showing()
 			&& current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_manage_options' ) )
@@ -20,8 +22,24 @@ class Advanced_Ads_Frontend_Checks {
 			add_action( 'admin_bar_menu', array( $this, 'add_admin_bar_menu' ), 1000 );
 			add_filter( 'the_content', array( $this, 'set_did_the_content' ) );
 			add_filter( 'wp_footer', array( $this, 'footer_checks' ), -101 );
+			add_filter( 'advanced-ads-ad-select-args', array( $this, 'ad_select_args_callback' ) );
+			$enabled = true;
+		}
+
+		if ( $enabled || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
 			add_filter( 'advanced-ads-ad-output', array( $this, 'after_ad_output' ), 10, 2 );
 		}
+	}
+
+	/**
+	 * Notify ads loaded with AJAX.
+	 *
+	 * @param array $args
+	 * @return array $args
+	 */
+	public function ad_select_args_callback( $args ) {
+		$args['frontend-check'] = true;
+		return $args;
 	}
 
 	/**
@@ -33,16 +51,14 @@ class Advanced_Ads_Frontend_Checks {
 		global $wp_the_query, $post, $wp_scripts;
 
 		$options = Advanced_Ads_Plugin::get_instance()->options();
-		$display_fine = true;
-
-		$wp_admin_bar->add_node( array(
-			'id'    => 'advanced_ads_ad_health',
-			'title' => __( 'Ad Health', 'advanced-ads' ),
-		) );
+		
+		// load AdSense related options
+		$adsense_options = Advanced_Ads_AdSense_Data::get_instance()->get_options();
 
 		// check if jQuery is loaded in the header
 		// Hidden, will be shown using js.
-		$wp_admin_bar->add_node( array(
+		// message removed after we fixed all issues we know of
+		/*$wp_admin_bar->add_node( array(
 			'parent' => 'advanced_ads_ad_health',
 			'id'    => 'advanced_ads_ad_health_jquery',
 			'title' => __( 'jQuery not in header', 'advanced-ads' ),
@@ -51,24 +67,40 @@ class Advanced_Ads_Frontend_Checks {
 				'class' => 'hidden advanced_ads_ad_health_warning',
 				'target' => '_blank'
 			)
-		) );
+		) );*/
 		
-		// check if AdSense loads QuickStart ads
+		// check if AdSense loads Auto Ads ads
 		// Hidden, will be shown using js.
-		$wp_admin_bar->add_node( array(
-			'parent' => 'advanced_ads_ad_health',
-			'id'    => 'advanced_ads_quickstart_displayed',
-			'title' => __( 'Random AdSense ads', 'advanced-ads' ),
-			'href'  => ADVADS_URL . 'adsense-in-random-positions/#utm_source=advanced-ads&utm_medium=link&utm_campaign=frontend-quickstart-ads',
-			'meta'   => array(
-				'class' => 'hidden advanced_ads_ad_health_warning',
-				'target' => '_blank'
-			)
-		) );
+		if( ! isset( $adsense_options['violation-warnings-disable'] ) ) {
+			$nodes[] = array( 'type' => 2, 'data' => array(
+				'parent' => 'advanced_ads_ad_health',
+				'id'    => 'advanced_ads_autoads_displayed',
+				'title' => __( 'Random AdSense ads', 'advanced-ads' ),
+				'href'  => ADVADS_URL . 'adsense-in-random-positions-auto-ads/#utm_source=advancedads&utm_medium=link&utm_campaign=frontend-autoads-ads',
+				'meta'   => array(
+					'class' => 'hidden advanced_ads_ad_health_warning',
+					'target' => '_blank'
+				)
+			) );
+		}
+		
+		// check if current user was identified as a bot
+		if( Advanced_Ads::get_instance()->is_bot() ) {
+			$nodes[] = array( 'type' => 1, 'data' => array(
+				'parent' => 'advanced_ads_ad_health',
+				'id'    => 'advanced_ads_user_is_bot',
+				'title' => __( 'You look like a bot', 'advanced-ads' ),
+				'href'  => ADVADS_URL . 'manual/ad-health/#look-like-bot',
+				'meta'   => array(
+					'class' => 'advanced_ads_ad_health_warning',
+					'target' => '_blank'
+				)
+			) );
+		}
 
 		// check if an ad blocker is enabled
 		// Hidden, will be shown using js.
-		$wp_admin_bar->add_node( array(
+		$nodes[] = array( 'type' => 2, 'data' => array(
 			'parent' => 'advanced_ads_ad_health',
 			'id'     => 'advanced_ads_ad_health_adblocker_enabled',
 			'title'  => __( 'Ad blocker enabled', 'advanced-ads' ),
@@ -80,26 +112,33 @@ class Advanced_Ads_Frontend_Checks {
 		) );
 
 		if ( $wp_the_query->is_singular() ) {
-		    
 			if ( ! $this->did_the_content ) {
-				$wp_admin_bar->add_node( array(
-					'parent' => 'advanced_ads_ad_health',
-					'id'    => 'advanced_ads_ad_health_the_content_not_invoked',
-					'title' => sprintf( __( '<em>%s</em> filter does not exist', 'advanced-ads' ), 'the_content' ),
-					'href'  => 'https://wpadvancedads.com/manual/ads-not-showing-up/#frontend-issues-the-content-filter',
-					'meta'   => array(
-						'class' => 'advanced_ads_ad_health_warning',
-						'target' => '_blank'
-					)
-				) );
-				$display_fine = false;
+				$placements = Advanced_Ads::get_ad_placements_array();
+				$placement_types = Advanced_Ads_Placements::get_placement_types();
+				// Find a placement that depends on 'the_content' filter.
+				foreach ( $placements as $placement ) {
+					if ( isset ( $placement['type'] )
+					&& ! empty( $placement_types[ $placement['type'] ]['options']['uses_the_content'] ) ) {
+						$nodes[] = array( 'type' => 1, 'data' => array(
+							'parent' => 'advanced_ads_ad_health',
+							'id'    => 'advanced_ads_ad_health_the_content_not_invoked',
+							'title' => sprintf( __( '<em>%s</em> filter does not exist', 'advanced-ads' ), 'the_content' ),
+							'href'  => 'https://wpadvancedads.com/manual/ads-not-showing-up/#frontend-issues-the-content-filter',
+							'meta'   => array(
+								'class' => 'advanced_ads_ad_health_warning',
+								'target' => '_blank'
+							)
+						) );
+						break;
+					}
+				}
 			}
 		    
 			if ( ! empty( $post->ID ) ) {
 				$ad_settings = get_post_meta( $post->ID, '_advads_ad_settings', true );
 
 				if ( ! empty( $ad_settings['disable_ads'] ) ) {
-					$wp_admin_bar->add_node( array(
+					$nodes[] = array( 'type' => 1, 'data' => array(
 						'parent' => 'advanced_ads_ad_health',
 						'id'    => 'advanced_ads_ad_health_disabled_on_page',
 						'title' => __( 'Ads are disabled on this page', 'advanced-ads' ),
@@ -109,11 +148,10 @@ class Advanced_Ads_Frontend_Checks {
 							'target' => '_blank'
 						)
 					) );
-					$display_fine = false;
 				}
 
 				if ( ! empty( $ad_settings['disable_the_content'] ) ) {
-					$wp_admin_bar->add_node( array(
+					$nodes[] = array( 'type' => 1, 'data' => array(
 						'parent' => 'advanced_ads_ad_health',
 						'id'    => 'advanced_ads_ad_health_disabled_in_content',
 						'title' => __( 'Ads are disabled in the content of this page', 'advanced-ads' ),
@@ -123,25 +161,36 @@ class Advanced_Ads_Frontend_Checks {
 							'target' => '_blank'
 						)
 					) );
-					$display_fine = false;
 				}
 			} else {
-				$wp_admin_bar->add_node( array(
+				$nodes[] = array( 'type' => 1, 'data' => array(
 					'parent' => 'advanced_ads_ad_health',
 					'id'    => 'advanced_ads_ad_health_post_zero',
 					'title' => __( 'the current post ID is 0 ', 'advanced-ads' ),
-					'href'  => 'https://wpadvancedads.com/manual/known-plugin-conflicts/#frontend-issue-post-id-empty',
+					'href'  => ADVADS_URL . 'manual/ad-health/#post-id-0',
 					'meta'   => array(
 						'class' => 'advanced_ads_ad_health_warning',
 						'target' => '_blank'
 					)
 				) );
-				$display_fine = false;
 			}
 		}
 
+		if ( ! empty( $options['disabled-ads']['all'] ) ) {
+			$nodes[] = array( 'type' => 1, 'data' => array(
+				'parent' => 'advanced_ads_ad_health',
+				'id'    => 'advanced_ads_ad_health_no_all',
+				'title' => __( 'Ads are disabled on all pages', 'advanced-ads' ),
+				'href'  => admin_url( 'admin.php?page=advanced-ads-settings' ),
+				'meta'   => array(
+					'class' => 'advanced_ads_ad_health_warning',
+					'target' => '_blank'
+				)
+			) );
+		}
+
 		if ( $wp_the_query->is_404() && ! empty( $options['disabled-ads']['404'] ) ) {
-			$wp_admin_bar->add_node( array(
+			$nodes[] = array( 1, array(
 				'parent' => 'advanced_ads_ad_health',
 				'id'    => 'advanced_ads_ad_health_no_404',
 				'title' => __( 'Ads are disabled on 404 pages', 'advanced-ads' ),
@@ -151,11 +200,10 @@ class Advanced_Ads_Frontend_Checks {
 					'target' => '_blank'
 				)
 			) );
-			$display_fine = false;
 		}
 
 		if ( ! $wp_the_query->is_singular() && ! empty( $options['disabled-ads']['archives'] ) ){
-			$wp_admin_bar->add_node( array(
+			$nodes[] = array( 'type' => 1, 'data' => array(
 				'parent' => 'advanced_ads_ad_health',
 				'id'    => 'advanced_ads_ad_health_no_archive',
 				'title' => __( 'Ads are disabled on non singular pages', 'advanced-ads' ),
@@ -165,11 +213,10 @@ class Advanced_Ads_Frontend_Checks {
 					'target' => '_blank'
 				)
 			) );
-			$display_fine = false;
 		}
 
 		if ( ! extension_loaded( 'dom' ) ) {
-			$wp_admin_bar->add_node( array(
+			$nodes[] = array( 'type' => 1, 'data' => array(
 				'parent' => 'advanced_ads_ad_health',
 				'id'    => 'advanced_ads_ad_health_no_dom_document',
 				'title' => sprintf( __( 'The %s extension(s) is not loaded', 'advanced-ads' ), 'dom' ),
@@ -179,10 +226,80 @@ class Advanced_Ads_Frontend_Checks {
 					'target' => '_blank'
 				)
 			) );
-			$display_fine = false;
+		}
+
+		$nodes[] = array( 'type' => 2, 'data' => array(
+			'parent' => 'advanced_ads_ad_health',
+			'id'    => 'advanced_ads_ad_health_has_http',
+			'title' => sprintf( '%s %s',
+				__( 'Your website is using HTTPS, but the ad code contains HTTP and might not work.', 'advanced-ads' ),
+				sprintf( __( 'Ad IDs: %s', 'advanced-ads'  ), '<i></i>' )
+			),
+			'href'  => 'https://wpadvancedads.com/manual/ad-health/#https-ads',
+			'meta'   => array(
+				'class' => 'hidden advanced_ads_ad_health_warning advanced_ads_ad_health_has_http',
+				'target' => '_blank'
+			)
+		) );
+		
+		// warn if an AdSense ad seems to be hidden
+		if( ! isset( $adsense_options['violation-warnings-disable'] ) ) {
+			$nodes[] = array( 'type' => 2, 'data' => array(
+				'parent' => 'advanced_ads_ad_health',
+				'id'    => 'advanced_ads_ad_health_hidden_adsense',
+				'title' => sprintf( '%s: %s. %s',
+					__( 'AdSense violation', 'advanced-ads' ),
+					__( 'Ad is hidden', 'advanced-ads' ),
+					sprintf( __( 'IDs: %s', 'advanced-ads'  ), '<i></i>' )
+				),
+				'href'  => 'https://wpadvancedads.com/manual/ad-health/#adsense-hidden&utm_source=advanced-ads&utm_medium=link&utm_campaign=frontend-adsense-hidden',
+				'meta'   => array(
+					'class' => 'hidden advanced_ads_ad_health_warning advanced_ads_ad_health_hidden_adsense',
+					'target' => '_blank'
+				)
+			) );
 		}
 		
-		$display_fine = apply_filters( 'advanced-ads-ad-health-display-fine', $display_fine );
+		$nodes[] = array( 'type' => 3, 'data' => array(
+			'parent' => 'advanced_ads_ad_health',
+			'id'    => 'advanced_ads_ad_health_debug_dfp',
+			'title' => __( 'debug DFP ads', 'advanced-ads' ),
+			'href'  => esc_url( add_query_arg( 'googfc', '' ) ),
+			'meta'   => array(
+				'class' => 'hidden advanced_ads_ad_health_debug_dfp_link',
+				'target' => '_blank',
+			)
+		) );
+
+		$nodes[] = array( 'type' => 3, 'data' => array(
+			'parent' => 'advanced_ads_ad_health',
+			'id'    => 'advanced_ads_ad_health_highlight_ads',
+			'title' => sprintf( '<label style="color: inherit;"><input id="advanced_ads_highlight_ads_checkbox" type="checkbox"> %s</label>', __( 'highlight ads', 'advanced-ads' ) )
+		) );
+
+		/**
+		 * Add new node.
+		 *
+		 * @param array $node An array that contains: 
+		 *      'type' => 1 - warning, 2 - hidden warning that will be shown using JS, 3 - info message
+		 *      'data': @see WP_Admin_Bar->add_node 
+		 * @param obj  $wp_admin_bar
+		 */
+		$nodes = apply_filters( 'advanced-ads-ad-health-nodes', $nodes );
+		usort( $nodes, array( $this, 'sort_nodes' ) );
+
+		$wp_admin_bar->add_node( array(
+			'id'    => 'advanced_ads_ad_health',
+			'title' => __( 'Ad Health', 'advanced-ads' ),
+		) );
+
+		$display_fine = true;
+
+		foreach ( $nodes as $node ) {
+			if ( ! isset( $node['type'] ) || ! isset( $node['data'] ) ) { continue; }
+			if ( $node['type'] === 1 ) { $display_fine = false; }
+			$wp_admin_bar->add_node( $node['data'] );
+		}
 
 		if ( $display_fine ) {
 			$wp_admin_bar->add_node( array(
@@ -196,22 +313,19 @@ class Advanced_Ads_Frontend_Checks {
 			) );
 		}
 
-		$wp_admin_bar->add_node( array(
-			'parent' => 'advanced_ads_ad_health',
-			'id'    => 'advanced_ads_ad_health_debug_dfp',
-			'title' => __( 'debug DFP ads', 'advanced-ads' ),
-			'href'  => esc_url( add_query_arg( 'googfc', '' ) ),
-			'meta'   => array(
-				'class' => 'hidden advanced_ads_ad_health_debug_dfp_link',
-				'target' => '_blank',
-			)
-		) );
+	}
 
-		$wp_admin_bar->add_node( array(
-			'parent' => 'advanced_ads_ad_health',
-			'id'    => 'advanced_ads_ad_health_highlight_ads',
-			'title' => sprintf( '<label style="color: inherit;"><input id="advanced_ads_highlight_ads_checkbox" type="checkbox"> %s</label>', __( 'highlight ads', 'advanced-ads' ) )
-		) );
+	/**
+	 * Sort nodes.
+	 */
+	function sort_nodes( $a, $b ) {
+		if ( ! isset( $a['type'] ) || ! isset( $b['type'] ) ) {
+			return 0;
+		}
+		if ( $a['type'] == $b['type'] ) {
+			return 0;
+		}
+		return ( $a['type'] < $b['type'] ) ? -1 : 1;
 	}
 
 	/**
@@ -234,13 +348,41 @@ class Advanced_Ads_Frontend_Checks {
 	 *		jQuery is included in header
 	 *		AdSense Quick Start ads are running
 	 */
-	public function footer_checks() { ?>
-		<!--noptimize--><style>.hidden { display: none; } .advads-adminbar-is-warnings { background: #a54811 ! important; color: #fff !important; }
+	public function footer_checks() { 
+		$adsense_options = Advanced_Ads_AdSense_Data::get_instance()->get_options();
+		ob_start();
+		?><!-- Advanced Ads: <?php _e( 'the following code is used for automatic error detection and only visible to admins', 'advanced-ads' ); ?>-->
+		<style>.hidden { display: none; } .advads-adminbar-is-warnings { background: #a54811 ! important; color: #fff !important; }
+		#wp-admin-bar-advanced_ads_ad_health-default a:after { content: "\25BA"; margin-left: .5em; font-size: smaller; }
 		.advanced-ads-highlight-ads { outline:4px solid blue !important; }</style>
 		<script type="text/javascript" src="<?php echo ADVADS_BASE_URL . 'admin/assets/js/advertisement.js' ?>"></script>
 		<script>
+		var advanced_ads_frontend_checks = {
+			showCount: function() {
+				try {
+					// Count only warnings that have the 'advanced_ads_ad_health_warning' class.
+					var warning_count = document.querySelectorAll( '.advanced_ads_ad_health_warning:not(.hidden)' ).length;
+					var fine_item = document.getElementById( 'wp-admin-bar-advanced_ads_ad_health_fine' );
+				} catch ( e ) { return; }
+
+				if ( warning_count ) {
+					var header = document.querySelector( '#wp-admin-bar-advanced_ads_ad_health > div' );
+
+					if ( fine_item ) {
+						// Hide 'fine' item.
+						fine_item.className += ' hidden';
+					}
+
+					if ( header ) {
+						header.innerHTML = header.innerHTML.replace(/ <i>(.*?)<\/i>/, '') + ' <i>(' + warning_count + ')</i>';
+						header.className += ' advads-adminbar-is-warnings';
+					}
+				}
+			}
+		};
+
 		(function(d, w) {
-				var not_head_jQuery = typeof jQuery === 'undefined';
+				// var not_head_jQuery = typeof jQuery === 'undefined';
 
 				var addEvent = function( obj, type, fn ) {
 					if ( obj.addEventListener )
@@ -262,11 +404,9 @@ class Advanced_Ads_Frontend_Checks {
 				    }
 				}
 
-				addEvent( w, 'load', function() {
-					var adblock_item = d.getElementById( 'wp-admin-bar-advanced_ads_ad_health_adblocker_enabled' ),
-						jQuery_item = d.getElementById( 'wp-admin-bar-advanced_ads_ad_health_jquery' ),
-						fine_item = d.getElementById( 'wp-admin-bar-advanced_ads_ad_health_fine' ),
-						hide_fine = false;
+				advanced_ads_ready( function() {
+					var adblock_item = d.getElementById( 'wp-admin-bar-advanced_ads_ad_health_adblocker_enabled' );
+					// jQuery_item = d.getElementById( 'wp-admin-bar-advanced_ads_ad_health_jquery' ),
 
 					var highlight_checkbox = d.getElementById( 'advanced_ads_highlight_ads_checkbox' );
 					if ( highlight_checkbox ) {
@@ -276,79 +416,119 @@ class Advanced_Ads_Frontend_Checks {
 					if ( adblock_item && typeof advanced_ads_adblocker_test === 'undefined' ) {
 						// show hidden item
 						adblock_item.className = adblock_item.className.replace( /hidden/, '' );
-						hide_fine = true;
 					}
 
-					if ( jQuery_item && not_head_jQuery ) {
+					/* if ( jQuery_item && not_head_jQuery ) {
 						// show hidden item
 						jQuery_item.className = jQuery_item.className.replace( /hidden/, '' );
-						hide_fine = true;
-					}
+					}*/
 
-					if ( hide_fine && fine_item ) {
-						fine_item.className += ' hidden';
-					}
-
-					showCount();
+					advanced_ads_frontend_checks.showCount();
 				});
-
-				var showCount = function() {
-					try {
-						// select not hidden warning items, exclude the 'fine_item'
-						var warning_count = document.querySelectorAll( '.advanced_ads_ad_health_warning:not(.hidden)' ).length;
-					} catch ( e ) { return; }
-
-					if ( warning_count ) {
-						var header = document.querySelector( '#wp-admin-bar-advanced_ads_ad_health > div' );
-
-						if ( header ) {
-							header.innerHTML += ' <i>(' + warning_count + ')</i>';
-							header.className += ' advads-adminbar-is-warnings';
+				
+				<?php if( ! isset( $adsense_options['violation-warnings-disable'] ) ) : ?>
+					// show warning if AdSense ad is hidden
+					setTimeout( function(){
+						advanced_ads_ready( advads_highlight_hidden_adsense );
+					}, 2000 );
+					function advads_highlight_hidden_adsense(){
+						if ( window.jQuery ) {
+							var advads_ad_health_check_adsense_hidden_ids = [];
+							jQuery('ins.adsbygoogle').each( function(){
+								if( ! jQuery( this ).parent().is(':visible') ){
+								advads_ad_health_check_adsense_hidden_ids.push( this.dataset.adSlot );
+								}
+							});
+							if( advads_ad_health_check_adsense_hidden_ids.length ){
+								var advads_has_hidden_adsense_link = document.querySelector( '.advanced_ads_ad_health_hidden_adsense' );
+								if ( advads_has_hidden_adsense_link ) {
+									advads_has_hidden_adsense_link.className = advads_has_hidden_adsense_link.className.replace( 'hidden', '' );
+									advads_has_hidden_adsense_link.innerHTML = advads_has_hidden_adsense_link.innerHTML.replace( /(<i>)(.*?)(<\/i>)/, function( match, p1, p2, p3 ) {
+										var ad_id = advads_ad_health_check_adsense_hidden_ids.join( ', ');
+										p2 = ( p2 ) ? p2.split( ', ' ) : [];
+										if ( p2.indexOf( ad_id ) === -1 ) p2.push( ad_id );
+										return p1 + p2.join( ', ' ) + p3;
+									} );
+									advanced_ads_frontend_checks.showCount();
+								}
+							}
 						}
-					}
-				};
-				// highlight AdSense QuickStart ads 3 seconds after site loaded
-				setTimeout(function(){ advads_highlight_adsense_quickstart(); }, 3000);
-				function advads_highlight_adsense_quickstart(){
-					var quickstart_ads = jQuery(document).find('.google-auto-placed');
-					jQuery( '<p class="advads-quickstart-hint" style="background-color:#0085ba;color:#fff;font-size:0.8em;padding:5px;"><?php 
-						printf(__( 'This ads was automatically placed here by AdSense. <a href="%s" target="_blank" style="color:#fff;border-color:#fff;">Click here to learn more</a>.', 'advanced-ads' ), ADVADS_URL . 'adsense-in-random-positions/#utm_source=advanced-ads&utm_medium=link&utm_campaign=frontend-quickstart-ads' ); 
-						?></p>' ).prependTo( quickstart_ads );
-					// show quickstart warning in Adhealth Bar if relevant
-					if( quickstart_ads.length ){
-						var advads_quickstart_link = document.querySelector( '#wp-admin-bar-advanced_ads_quickstart_displayed.hidden' );
-						console.log( advads_quickstart_link );
-						if ( advads_quickstart_link ) {
-							advads_quickstart_link.className = advads_quickstart_link.className.replace( 'hidden', '' );
-						}
-						showCount();
-					}
+					};
 
-				}
+					// highlight AdSense Auto Ads ads 3 seconds after site loaded
+					setTimeout( function(){
+						advanced_ads_ready( advads_highlight_adsense_autoads )
+					}, 3000 );
+					function advads_highlight_adsense_autoads(){
+						if ( ! window.jQuery ) {
+							window.console && window.console.log( 'Advanced Ads: jQuery not found. Some Ad Health warnings will not be shown' );
+							return;
+						}
+						var autoads_ads = jQuery(document).find('.google-auto-placed');
+						jQuery( '<p class="advads-autoads-hint" style="background-color:#0085ba;color:#fff;font-size:0.8em;padding:5px;"><?php 
+							printf(__( 'This ad was automatically placed here by AdSense. <a href="%s" target="_blank" style="color:#fff;border-color:#fff;">Click here to learn more</a>.', 'advanced-ads' ), ADVADS_URL . 'adsense-in-random-positions-auto-ads/#utm_source=advanced-ads&utm_medium=link&utm_campaign=frontend-autoads-ads' ); 
+							?></p>' ).prependTo( autoads_ads );
+						// show Auto Ads warning in Adhealth Bar if relevant
+						if( autoads_ads.length ){
+							var advads_autoads_link = document.querySelector( '#wp-admin-bar-advanced_ads_autoads_displayed.hidden' );
+							console.log( advads_autoads_link );
+							if ( advads_autoads_link ) {
+								advads_autoads_link.className = advads_autoads_link.className.replace( 'hidden', '' );
+							}
+							advanced_ads_frontend_checks.showCount();
+						}
+
+					}
+				<?php endif; ?>
 		})(document, window);
-		</script><!--/noptimize-->
-		<?php
+		</script>
+		<?php echo Advanced_Ads_Utils::get_inline_asset( ob_get_clean() );
 	}
 
 	/**
-	 * Allow DFP debugging by showing a link that points to the current URL with the 'googfc' parameter.
+	 * Inject JS after ad content.
 	 *
 	 * @param str $content ad content
 	 * @param obj $ad Advanced_Ads_Ad
 	 * @return str $content ad content
 	 */
 	public function after_ad_output( $content = '', Advanced_Ads_Ad $ad ) {
+		if ( ! isset( $ad->args['frontend-check'] ) ) { return $content; }
+
+		// Allow DFP debugging by showing a link that points to the current URL with the 'googfc' parameter.
 		if ( $ad->type === 'plain' && preg_match( '/gpt\.js/', $content ) ) {
 			ob_start(); ?>
-			<!--noptimize--><script>
+			<!--noptimize--><script>advanced_ads_ready( function() {
 			var advads_dfp_link = document.querySelector( '.advanced_ads_ad_health_debug_dfp_link.hidden' );
 			if ( advads_dfp_link ) {
 				advads_dfp_link.className = advads_dfp_link.className.replace( 'hidden', '' );
+				advanced_ads_frontend_checks.showCount();
 			}
-			</script><!--/noptimize-->
+			});</script><!--/noptimize-->
 			<?php
-			$content .= ob_get_clean();
+			$content .= Advanced_Ads_Utils::get_inline_asset( ob_get_clean() );
 		}
+
+
+		if ( Advanced_Ads_Ad_Debug::is_https_and_http( $ad ) ) {
+			ob_start(); ?>
+			<!--noptimize--><script>advanced_ads_ready( function() {
+			var advads_has_http_link = document.querySelector( '.advanced_ads_ad_health_has_http' );
+			if ( advads_has_http_link ) {
+				advads_has_http_link.className = advads_has_http_link.className.replace( 'hidden', '' );
+				advads_has_http_link.innerHTML = advads_has_http_link.innerHTML.replace( /(<i>)(.*?)(<\/i>)/, function( match, p1, p2, p3 ) {
+					var ad_id = '<?php echo $ad->id; ?>';
+					p2 = ( p2 ) ? p2.split( ', ' ) : [];
+					if ( p2.indexOf( ad_id ) === -1 ) p2.push( ad_id );
+					return p1 + p2.join( ', ' ) + p3;
+				} );
+				advanced_ads_frontend_checks.showCount();
+			}
+			});</script><!--/noptimize-->
+			<?php
+			$content .= Advanced_Ads_Utils::get_inline_asset( ob_get_clean() );
+		}
+
 		return $content;
 	}
 

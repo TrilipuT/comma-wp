@@ -122,6 +122,13 @@ class Advanced_Ads_Model {
 	}
 
 	/**
+	 * Reset placement array.
+	 */
+	public function reset_placement_array() {
+		$this->ad_placements = null;
+	}
+
+	/**
 	 * update the array with ad placements
 	 *
 	 * @param arr $ad_placements

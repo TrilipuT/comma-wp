@@ -25,6 +25,8 @@ class Advanced_Ads_Admin_Meta_Boxes {
 		add_action( 'save_post', array( $this, 'save_post_meta_box' ) );
 		// register dashboard widget
 		add_action( 'wp_dashboard_setup', array($this, 'add_dashboard_widget') );
+		// fixes compatibility issue with WP QUADS PRO
+		add_action( 'quads_meta_box_post_types', array($this, 'fix_wpquadspro_issue'), 11 );
 	}
 
 	/**
@@ -67,6 +69,16 @@ class Advanced_Ads_Admin_Meta_Boxes {
 		add_meta_box(
 			'ad-visitor-box', __( 'Visitor Conditions', 'advanced-ads' ), array($this, 'markup_meta_boxes'), $post_type, 'normal', 'high'
 		);
+		if( ! defined( 'AAP_VERSION' ) ){
+			add_meta_box(
+				'advads-pro-pitch', __( 'Increase your ad revenue', 'advanced-ads' ), array($this, 'markup_meta_boxes'), $post_type, 'side', 'low'
+			);
+		}
+		if( ! defined( 'AAT_VERSION' ) ){
+			add_meta_box(
+				'advads-tracking-pitch', __( 'Ad Stats', 'advanced-ads' ), array($this, 'markup_meta_boxes'), $post_type, 'normal', 'low'
+			);
+		}
 
 		// register meta box ids
 		$this->meta_box_ids = array(
@@ -75,6 +87,8 @@ class Advanced_Ads_Admin_Meta_Boxes {
 		    'ad-output-box',
 		    'ad-display-box',
 		    'ad-visitor-box',
+		    'advads-pro-pitch',
+		    'advads-tracking-pitch',
 		    'revisionsdiv', // revisions – only when activated
 		    'advanced_ads_groupsdiv' // automatically added by ad groups taxonomy
 		);
@@ -140,6 +154,14 @@ class Advanced_Ads_Admin_Meta_Boxes {
 			case 'ad-visitor-box':
 				$view = 'ad-visitor-metabox.php';
 				$hndlelinks = '<a href="' . ADVADS_URL . 'manual/visitor-conditions#utm_source=advanced-ads&utm_medium=link&utm_campaign=edit-visitor" target="_blank">' . __('Manual', 'advanced-ads') . '</a>';
+				break;
+			case 'advads-pro-pitch':
+				$view = 'pitch-bundle.php';
+				// $hndlelinks = '<a href="' . ADVADS_URL . 'manual/visitor-conditions#utm_source=advanced-ads&utm_medium=link&utm_campaign=edit-visitor" target="_blank">' . __('Manual', 'advanced-ads') . '</a>';
+				break;
+			case 'advads-tracking-pitch':
+				$view = 'pitch-tracking.php';
+				// $hndlelinks = '<a href="' . ADVADS_URL . 'manual/visitor-conditions#utm_source=advanced-ads&utm_medium=link&utm_campaign=edit-visitor" target="_blank">' . __('Manual', 'advanced-ads') . '</a>';
 				break;
 		}
 
@@ -301,7 +323,7 @@ class Advanced_Ads_Admin_Meta_Boxes {
 	 */
 	public function close_ad_type_metabox( $classes = array() ) {
 	    global $post;
-	    if ( isset( $post->ID ) && 'edit' === $post->filter ) {
+	    if ( isset( $post->ID ) && 'publish' === $post->post_status ) {
 			if ( ! in_array( 'closed', $classes ) ) {
 			    $classes[] = 'closed';
 			}
@@ -328,28 +350,6 @@ class Advanced_Ads_Admin_Meta_Boxes {
 	 * display widget functions
 	 */
 	public static function dashboard_widget_function($post, $callback_args){
-		// load ad optimization feed
-		$feeds = array(
-		array(
-			'link'         => 'http://webgilde.com/en/ad-optimization/',
-			'url'          => 'http://webgilde.com/en/ad-optimization/feed/',
-			'title'        => __( 'From the ad optimization universe', 'advanced-ads' ),
-			'items'        => 2,
-			'show_summary' => 0,
-			'show_author'  => 0,
-			'show_date'    => 0,
-		),
-		array(
-			'link'         => ADVADS_URL,
-			'url'          => ADVADS_URL . 'feed/',
-			'title'        => __( 'Advanced Ads Tutorials', 'advanced-ads' ),
-			'items'        => 2,
-			'show_summary' => 0,
-			'show_author'  => 0,
-			'show_date'    => 0,
-		),
-		);
-
 		// get number of ads
 		$ads_count = Advanced_Ads::get_number_of_ads();
 		if( current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_edit_ads') ) ) {
@@ -385,8 +385,7 @@ class Advanced_Ads_Admin_Meta_Boxes {
 		}
 
 		// rss feed
-		// $this->dashboard_widget_function_output('advads_dashboard_widget', $feed);
-		self::dashboard_cached_rss_widget( 'advads_dashboard_widget', array( 'self', 'dashboard_widget_function_output' ), array( 'advads' => $feeds ) );
+		self::dashboard_cached_rss_widget();
 
 		// add markup for utm variables
 		// todo: move to js file
@@ -403,21 +402,21 @@ class Advanced_Ads_Admin_Meta_Boxes {
 	 * @param array $check_urls RSS feeds
 	 * @return bool False on failure. True on success.
 	 */
-	static function dashboard_cached_rss_widget( $widget_id, $callback, $feeds = array() ) {
-		if ( empty($feeds) ) {
-			return;
-		}
+	static function dashboard_cached_rss_widget() {
+	    
+		$cache_key = 'dash_' . md5( 'advads_dashboard_widget' );
 
-		$cache_key = 'dash_' . md5( $widget_id );
 		if ( false !== ( $output = get_transient( $cache_key ) ) ) {
 		    echo $output;
 		    return true;
 		}
-		if ( $callback && is_callable( $callback ) ) {
-			ob_start();
-			call_user_func_array( $callback, $feeds );
-			set_transient( $cache_key, ob_get_flush(), 48 * HOUR_IN_SECONDS ); // Default lifetime in cache of 48 hours
-		}
+		/**
+		 * only display dummy output which then loads the content via AJAX
+		 */
+		?><div id="advads-dashboard-widget-placeholder">
+		    <img src="<?php echo admin_url( 'images/spinner.gif' ); ?>" width="20" height="20"/>
+		    <script>advads_load_dashboard_rss_widget_content();</script>
+		</div><?php
 
 		return true;
 	}
@@ -426,15 +425,55 @@ class Advanced_Ads_Admin_Meta_Boxes {
 	 * create the rss output of the widget
 	 *
 	 * @param string $widget_id Widget ID.
-	 * @param array  $feeds     Array of RSS feeds.
 	 */
-	static function dashboard_widget_function_output( $feeds ) {
+	static function dashboard_widget_function_output( ) {
+	    
+		check_ajax_referer('advanced-ads-admin-ajax-nonce', 'nonce');
+	    
+		$cache_key = 'dash_' . md5( 'advads_dashboard_widget' );
+	    
+		$feeds = array(
+			array(
+				'link'         => 'http://webgilde.com/en/ad-optimization/',
+				'url'          => 'http://webgilde.com/en/ad-optimization/feed/',
+				'title'        => __( 'From the ad optimization universe', 'advanced-ads' ),
+				'items'        => 2,
+				'show_summary' => 0,
+				'show_author'  => 0,
+				'show_date'    => 0,
+			),
+			array(
+				'link'         => ADVADS_URL,
+				'url'          => ADVADS_URL . 'feed/',
+				'title'        => __( 'Advanced Ads Tutorials', 'advanced-ads' ),
+				'items'        => 2,
+				'show_summary' => 0,
+				'show_author'  => 0,
+				'show_date'    => 0,
+			),
+		);
+	    
+		// create output and also cache it
+		
+		ob_start();
 		foreach ( $feeds as $_feed ){
 			echo '<div class="rss-widget">';
 			echo '<h4>'.$_feed['title'].'</h4>';
 			wp_widget_rss_output( $_feed['url'], $_feed );
 			echo '</div>';
 		}
+		set_transient( $cache_key, ob_get_flush(), 48 * HOUR_IN_SECONDS ); // Default lifetime in cache of 48 hours
+		die();
+	}
+	
+	/**
+	 * fixes a WP QUADS PRO compatibility issue
+	 * they inject their ad optimization meta box into our ad page, even though it is not a public post type
+	 * using they filter, we remove AA from the list of post types they inject this box into
+	 */
+	function fix_wpquadspro_issue( $allowed_post_types ){
+		unset( $allowed_post_types['advanced_ads'] );
+		return $allowed_post_types;
 	}
 
 }

@@ -88,7 +88,8 @@ class Advanced_Ads_Admin {
 		$plugin = Advanced_Ads::get_instance();
 		$this->plugin_slug = $plugin->get_plugin_slug();
 		
-
+		add_action( 'current_screen', array( $this, 'current_screen' ) );
+		
 		// Load admin style sheet and JavaScript.
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_styles' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_scripts' ), 9 );
@@ -98,12 +99,7 @@ class Advanced_Ads_Admin {
 		
 		// check for update logic
 		add_action( 'admin_notices', array($this, 'admin_notices') );
-		
-
-		// set 1 column layout on overview page as user and page option
-		add_filter( 'screen_layout_columns', array('Advanced_Ads_Overview_Widgets_Callbacks', 'one_column_overview_page') );
-		add_filter( 'get_user_option_screen_layout_toplevel_page_advanced', array( 'Advanced_Ads_Overview_Widgets_Callbacks', 'one_column_overview_page_user') );
-		
+				
 		// add links to plugin page
 		add_filter( 'plugin_action_links_' . ADVADS_BASE, array( $this, 'add_plugin_links' ) );
 		
@@ -128,6 +124,7 @@ class Advanced_Ads_Admin {
 		Advanced_Ads_Admin_Ad_Type::get_instance();
 		
 		add_action( 'wp_ajax_advads_send_feedback', array( $this, 'send_feedback' ) );
+		add_action( 'wp_ajax_advads_load_rss_widget_content', array( 'Advanced_Ads_Admin_Meta_Boxes', 'dashboard_widget_function_output' ) );
 	}
 	
 	/**
@@ -145,6 +142,25 @@ class Advanced_Ads_Admin {
 
 		return self::$instance;
 	}
+	
+	/**
+	 * general stuff after page is loaded and screen variable is available
+	 */
+	public function current_screen(){
+		$screen = get_current_screen();
+		
+		if( !isset( $screen->id ) ){
+			return;
+		}
+		
+		switch( $screen->id ){
+			case 'edit-advanced_ads' : // ad overview page
+			case 'advanced_ads' : // ad edit page
+			    // remove notice about missing first ad
+			    Advanced_Ads_Admin_Notices::get_instance()->remove_from_queue( 'nl_intro' );
+			    break;
+		}
+	}	
 
 	/**
 	 * Register and enqueue admin-specific style sheet.
@@ -172,6 +188,12 @@ class Advanced_Ads_Admin {
 		// global js script
 		wp_enqueue_script( $this->plugin_slug . '-admin-global-script', plugins_url( 'assets/js/admin-global.js', __FILE__ ), array('jquery'), ADVADS_VERSION );
 		wp_enqueue_script( $this->plugin_slug . '-admin-find-adblocker', plugins_url( 'assets/js/advertisement.js', __FILE__ ), array(), ADVADS_VERSION );
+		
+		// register ajax nonce
+		$params = array(
+			'ajax_nonce' => wp_create_nonce( 'advanced-ads-admin-ajax-nonce' ),
+		);
+		wp_localize_script( $this->plugin_slug . '-admin-global-script', 'advadsglobal', $params );
 
 		if( self::screen_belongs_to_advanced_ads() ){
 		    wp_register_script( $this->plugin_slug . '-admin-script', plugins_url( 'assets/js/admin.js', __FILE__ ), array( 'jquery', 'jquery-ui-autocomplete' , 'jquery-ui-button' ), ADVADS_VERSION );
@@ -235,7 +257,7 @@ class Advanced_Ads_Admin {
 			'advanced-ads_page_advanced-ads-settings', // settings
 			'toplevel_page_advanced-ads', // overview
 			'admin_page_advanced-ads-debug', // debug
-			'advanced-ads_page_advanced-ads-support', // support
+			// 'advanced-ads_page_advanced-ads-support', // support
 			'admin_page_advanced-ads-import-export', // import & export
 		));
 
@@ -333,12 +355,17 @@ class Advanced_Ads_Admin {
 	 * @return array $links
 	 */
 	public function add_plugin_links( $links ) {
+	    
+		if( ! is_array( $links ) ){
+			return $links;
+		}
+	    
 		// add link to settings
 		//$settings_link = '<a href="' . admin_url( 'admin.php?page=advanced_ads&page=advanced-ads-settings' ) . '">' . __( 'Settings', 'advanced-ads' ) . '</a>';
 		//array_unshift( $links, $settings_link );
 
 		// add link to support page
-		$support_link = '<a href="' . esc_url( admin_url( 'admin.php?page=advanced-ads-support' ) ) . '">' . __( 'Support', 'advanced-ads' ) . '</a>';
+		$support_link = '<a href="' . esc_url( admin_url( 'admin.php?page=advanced-ads-settings#top#support' ) ) . '">' . __( 'Support', 'advanced-ads' ) . '</a>';
 		array_unshift( $links, $support_link );
 
 		// add link to add-ons
@@ -383,6 +410,10 @@ class Advanced_Ads_Admin {
 			parse_str( $_POST['formdata'], $form );
 		}
 		
+		if( ! wp_verify_nonce( $form[ 'advanced_ads_disable_form_nonce' ], 'advanced_ads_disable_form' ) ){
+		    die();
+		}
+		
 		$text = '';
 		if( isset( $form[ 'advanced_ads_disable_text' ] ) ){
 		    $text = implode( "\n\r", $form[ 'advanced_ads_disable_text' ] );
@@ -397,11 +428,18 @@ class Advanced_Ads_Admin {
 		$headers = array();
 		
 		$from = isset( $form['advanced_ads_disable_from'] ) ? $form['advanced_ads_disable_from'] : '';
-		// if an address is given in the form then use that one
-		if( isset( $form['advanced_ads_disable_reason'] ) && in_array( $form['advanced_ads_disable_reason'], array( 'technical issue', 'get help' ) )
-			&& isset( $form[ 'advanced_ads_disable_reply' ] ) && !empty( $form[ 'advanced_ads_disable_reply_email' ] ) ){
-			$from = $current_user->user_nicename . ' <' . trim( $form[ 'advanced_ads_disable_reply_email' ] ) . '>';
-			$text .= "\n\n REPLY ALLOWED";
+		// the user clicked on the "don’t disable" button or if an address is given in the form then use that one
+		if( ( isset( $_POST['feedback'] ) && $_POST['feedback'] && 'false' !== $_POST['feedback'] ) 
+			|| ( 
+			    isset( $form['advanced_ads_disable_reason'] ) 
+			    && in_array( $form['advanced_ads_disable_reason'], array( 'technical issue', 'get help' ) )
+			    && !empty( $form[ 'advanced_ads_disable_reply_email' ] ) ) )
+		{
+			$email = isset( $form[ 'advanced_ads_disable_reply_email' ] ) ? trim( $form[ 'advanced_ads_disable_reply_email' ] ) : $current_user->email;
+			$current_user = wp_get_current_user();
+			$name = ($current_user instanceof WP_User) ? $current_user->user_nicename : '';
+			$from = $name . ' <' . $email . '>';
+			$text .= "\n\n PLEASE REPLY";
 		}
 		if( $from ){
 			$headers[] = "From: $from";
@@ -430,5 +468,17 @@ class Advanced_Ads_Admin {
 		
 		return $mceInit;
 	}   
+	
+	/**
+	 * sort visitor and display condition arrays alphabetically by their label
+	 * 
+	 * @since 1.8.12
+	 */
+	static function sort_condition_array_by_label( $a, $b ){
+		if( ! isset( $a['label'] ) || ! isset( $b['label'] ) ){
+		    return;
+		}
+		return strcmp( strtolower( $a['label'] ), strtolower( $b['label'] ) );
+	}
 
 }

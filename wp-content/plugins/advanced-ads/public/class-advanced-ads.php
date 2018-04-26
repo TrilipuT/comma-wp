@@ -75,7 +75,7 @@ class Advanced_Ads {
 	 * @since 1.4.9
 	 * @var array list of bots
 	 */
-	protected $bots = array('bot','spider','crawler','scraper','parser','008','Accoona-AI-Agent','ADmantX','alexa','appie','Apple-PubSub','Arachmo','Ask Jeeves','avira\.com','B-l-i-t-z-B-O-T','boitho\.com-dc','BUbiNG','Cerberian Drtrs','Charlotte','cosmos','Covario IDS','curl','DataparkSearch','DDG-Android','expo9','facebookexternalhit','Feedfetcher-Google','FindLinks','Firefly','froogle','Genieo','heritrix','Holmes','htdig','https://developers\.google\.com','ia_archiver','ichiro','igdeSpyder','InfoSeek','inktomi','Kraken','L\.webis','Larbin','Linguee','LinkWalker','looksmart','lwp-trivial','mabontland','Mediapartners-Google','Mnogosearch','mogimogi','Morning Paper','MVAClient','NationalDirectory','NetResearchServer','NewsGator','NG-Search','Nusearch','NutchCVS','Nymesis','oegp','Orbiter','Peew','Pompos','PostPost','proximic','PycURL','Qseero','rabaz','Radian6','Reeder', 'savetheworldheritage','SBIder','Scooter','ScoutJet','Scrubby','SearchSight','semanticdiscovery','Sensis','ShopWiki','silk','Snappy','Spade','Sqworm','StackRambler','TechnoratiSnoop','TECNOSEEK','Teoma','Thumbnail\.CZ','TinEye','truwoGPS','updated','Vagabondo','voltron','Vortex','voyager','VYU2','WebBug','webcollage','WebIndex','Websquash\.com','WeSEE:Ads','wf84','Wget','WomlpeFactory','WordPress','yacy','Yahoo! Slurp','Yahoo! Slurp China','YahooSeeker','YahooSeeker-Testing','YandexImages','Yeti','yoogliFetchAgent','Zao','ZyBorg','okhttp','ips-agent','ltx71','Optimizer','Daum','Qwantify');
+	protected $bots = array('bot','spider','crawler','scraper','parser','008','Accoona-AI-Agent','ADmantX','alexa','appie','Apple-PubSub','Arachmo','Ask Jeeves','avira\.com','B-l-i-t-z-B-O-T','boitho\.com-dc','BUbiNG','Cerberian Drtrs','Charlotte','cosmos','Covario IDS','curl','DataparkSearch','DDG-Android','expo9','facebookexternalhit','Feedfetcher-Google','FindLinks','Firefly','froogle','Genieo','heritrix','Holmes','htdig','https://developers\.google\.com','ia_archiver','ichiro','igdeSpyder','InfoSeek','inktomi','Kraken','L\.webis','Larbin','Linguee','LinkWalker','looksmart','lwp-trivial','mabontland','Mnogosearch','mogimogi','Morning Paper','MVAClient','NationalDirectory','NetResearchServer','NewsGator','NG-Search','Nusearch','NutchCVS','Nymesis','oegp','Orbiter','Peew','Pompos','PostPost','proximic','PycURL','Qseero','rabaz','Radian6','Reeder', 'savetheworldheritage','SBIder','Scooter','ScoutJet','Scrubby','SearchSight','semanticdiscovery','Sensis','ShopWiki','silk','Snappy','Spade','Sqworm','StackRambler','TechnoratiSnoop','TECNOSEEK','Teoma','Thumbnail\.CZ','TinEye','truwoGPS','updated','Vagabondo','voltron','Vortex','voyager','VYU2','WebBug','webcollage','WebIndex','Websquash\.com','WeSEE:Ads','wf84','Wget','WomlpeFactory','WordPress','yacy','Yahoo! Slurp','Yahoo! Slurp China','YahooSeeker','YahooSeeker-Testing','YandexBot','YandexMedia','YandexBlogs','YandexNews','YandexCalendar','YandexImages','Yeti','yoogliFetchAgent','Zao','ZyBorg','okhttp','ips-agent','ltx71','Optimizer','Daum','Qwantify');
 
 	/**
 	 *
@@ -278,6 +278,18 @@ class Advanced_Ads {
 				define( 'ADVADS_ADS_DISABLED', true );
 			}
 		};
+		
+		/**
+		 * check if ads are disabled on WooCommerce shop page (and currently on shop page)
+		 * since WooCommerce changes the post ID of the static page selected to be the product overview page, we need to get the original page id from the WC options
+		 */
+		if ( function_exists( 'is_shop' ) && is_shop() ) {
+			$shop_id = get_option( 'woocommerce_shop_page_id' );
+			$shop_ad_options = get_post_meta( absint( $shop_id ), '_advads_ad_settings', true );
+			if ( ! empty( $shop_ad_options['disable_ads'] ) ) {
+				define( 'ADVADS_ADS_DISABLED', true );
+			}
+		}
 	}
 
 	/**
@@ -377,6 +389,11 @@ class Advanced_Ads {
 	public function inject_content($content = ''){
 		$options = $this->plugin->options();
 
+		// do not inject in content when on a BuddyPress profile upload page (avatar & cover image)
+		if ( ( function_exists( 'bp_is_user_change_avatar' ) && bp_is_user_change_avatar() ) || ( function_exists( 'bp_is_user_change_cover_image' ) && bp_is_user_change_cover_image() ) ) {
+			return $content;
+		}
+		
 		// check if ads are disabled in secondary queries and this function was called by ajax (in secondary query)
 		if ( ! empty( $options['disabled-ads']['secondary'] ) && ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
 			return $content;
@@ -393,7 +410,7 @@ class Advanced_Ads {
 		// check if admin allows injection in all places
 		if( ! isset( $options['content-injection-everywhere'] ) ){
                     // check if this is a singular page within the loop or an amp page
-                    $is_amp = function_exists( 'advanced_ads_is_amp' ) && advanced_ads_is_amp();
+                    $is_amp = advads_is_amp();
                     if ( ( ! is_singular( $public_post_types ) && ! is_feed() ) || ( ! $is_amp && ! in_the_loop() ) ) { return $content; }
 		} else {
                     global $wp_query;
@@ -526,7 +543,7 @@ class Advanced_Ads {
 	 */
 	public function is_bot(){
 		// show ads on AMP version also for bots in order to allow Google (and maybe others) to cache the page
-		if ( function_exists( 'advanced_ads_is_amp' ) && advanced_ads_is_amp() ) {
+		if ( advads_is_amp() ) {
 			return false;
 		}
 
@@ -577,7 +594,7 @@ class Advanced_Ads {
 	 */
 	protected function get_group_taxonomy_params(){
 		$labels = array(
-			'name'              => _x( 'Ad Groups', 'ad group general name', 'advanced-ads' ),
+			'name'              => _x( 'Ad Groups & Rotations', 'ad group general name', 'advanced-ads' ),
 			'singular_name'     => _x( 'Ad Group', 'ad group singular name', 'advanced-ads' ),
 			'search_items'      => __( 'Search Ad Groups', 'advanced-ads' ),
 			'all_items'         => __( 'All Ad Groups', 'advanced-ads' ),
@@ -765,5 +782,27 @@ class Advanced_Ads {
 		$recent_ads = self::get_instance()->get_model()->get_ads( $args );
 		
 		return count( $recent_ads );
+	}
+
+	/**
+	 * Switch the current blog.
+	 *
+	 * @param int $blog_id
+	 */
+	public function switch_to_blog( $blog_id ) {
+		if ( is_multisite() ) {
+			switch_to_blog( $blog_id );
+			Advanced_Ads::get_instance()->get_model()->reset_placement_array();
+		}
+	}
+
+	/**
+	 * Restore the current blog.
+	 */
+	public function restore_current_blog() {
+		if ( is_multisite() ) {
+			restore_current_blog();
+			Advanced_Ads::get_instance()->get_model()->reset_placement_array();
+		}
 	}
 }

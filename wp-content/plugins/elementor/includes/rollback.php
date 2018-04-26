@@ -1,21 +1,92 @@
 <?php
 namespace Elementor;
 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
+/**
+ * Elementor rollback.
+ *
+ * Elementor rollback handler class is responsible for rolling back Elementor to
+ * previous version.
+ *
+ * @since 1.5.0
+ */
 class Rollback {
 
+	/**
+	 * Package URL.
+	 *
+	 * Holds the package URL.
+	 *
+	 * @since 1.5.0
+	 * @access protected
+	 *
+	 * @var string Package URL.
+	 */
 	protected $package_url;
+
+	/**
+	 * Version.
+	 *
+	 * Holds the version.
+	 *
+	 * @since 1.5.0
+	 * @access protected
+	 *
+	 * @var string Package URL.
+	 */
 	protected $version;
+
+	/**
+	 * Plugin name.
+	 *
+	 * Holds the plugin name.
+	 *
+	 * @since 1.5.0
+	 * @access protected
+	 *
+	 * @var string Plugin name.
+	 */
 	protected $plugin_name;
+
+	/**
+	 * Plugin slug.
+	 *
+	 * Holds the plugin slug.
+	 *
+	 * @since 1.5.0
+	 * @access protected
+	 *
+	 * @var string Plugin slug.
+	 */
 	protected $plugin_slug;
 
+	/**
+	 * Rollback constructor.
+	 *
+	 * Initializing Elementor rollback.
+	 *
+	 * @since 1.5.0
+	 * @access public
+	 *
+	 * @param array $args Optional. Rollback arguments. Default is an empty array.
+	 */
 	public function __construct( $args = [] ) {
 		foreach ( $args as $key => $value ) {
 			$this->{$key} = $value;
 		}
 	}
 
+	/**
+	 * Print inline style.
+	 *
+	 * Add an inline CSS to the rollback page.
+	 *
+	 * @since 1.5.0
+	 * @access private
+	 */
 	private function print_inline_style() {
 		?>
 		<style>
@@ -41,10 +112,20 @@ class Rollback {
 		<?php
 	}
 
+	/**
+	 * Apply package.
+	 *
+	 * Change the plugin data when WordPress checks for updates. This method
+	 * modifies package data to update the plugin from a specific URL containing
+	 * the version package.
+	 *
+	 * @since 1.5.0
+	 * @access protected
+	 */
 	protected function apply_package() {
 		$update_plugins = get_site_transient( 'update_plugins' );
 		if ( ! is_object( $update_plugins ) ) {
-			$update_plugins = new \stdClass;
+			$update_plugins = new \stdClass();
 		}
 
 		$plugin_info = new \stdClass();
@@ -55,16 +136,27 @@ class Rollback {
 
 		$update_plugins->response[ $this->plugin_name ] = $plugin_info;
 
+		// Remove handle beta testers.
+		remove_filter( 'pre_set_site_transient_update_plugins', [ Plugin::instance()->beta_testers, 'check_version' ] );
+
 		set_site_transient( 'update_plugins', $update_plugins );
 	}
 
+	/**
+	 * Upgrade.
+	 *
+	 * Run WordPress upgrade to rollback Elementor to previous version.
+	 *
+	 * @since 1.5.0
+	 * @access protected
+	 */
 	protected function upgrade() {
 		require_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
 
 		$logo_url = ELEMENTOR_ASSETS_URL . 'images/logo-panel.svg';
 
 		$upgrader_args = [
-			'url' => 'update.php?action=upgrade-plugin&plugin=' . urlencode( $this->plugin_name ),
+			'url' => 'update.php?action=upgrade-plugin&plugin=' . rawurlencode( $this->plugin_name ),
 			'plugin' => $this->plugin_name,
 			'nonce' => 'upgrade-plugin_' . $this->plugin_name,
 			'title' => '<img src="' . $logo_url . '" alt="Elementor">' . __( 'Rollback to Previous Version', 'elementor' ),
@@ -76,6 +168,14 @@ class Rollback {
 		$upgrader->upgrade( $this->plugin_name );
 	}
 
+	/**
+	 * Run.
+	 *
+	 * Rollback Elementor to previous versions.
+	 *
+	 * @since 1.5.0
+	 * @access public
+	 */
 	public function run() {
 		$this->apply_package();
 		$this->upgrade();

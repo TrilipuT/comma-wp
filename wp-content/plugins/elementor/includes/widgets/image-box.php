@@ -1,26 +1,69 @@
 <?php
 namespace Elementor;
 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
+/**
+ * Elementor image box widget.
+ *
+ * Elementor widget that displays an image, a headline and a text.
+ *
+ * @since 1.0.0
+ */
 class Widget_Image_Box extends Widget_Base {
 
+	/**
+	 * Get widget name.
+	 *
+	 * Retrieve image box widget name.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 *
+	 * @return string Widget name.
+	 */
 	public function get_name() {
 		return 'image-box';
 	}
 
+	/**
+	 * Get widget title.
+	 *
+	 * Retrieve image box widget title.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 *
+	 * @return string Widget title.
+	 */
 	public function get_title() {
 		return __( 'Image Box', 'elementor' );
 	}
 
+	/**
+	 * Get widget icon.
+	 *
+	 * Retrieve image box widget icon.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 *
+	 * @return string Widget icon.
+	 */
 	public function get_icon() {
 		return 'eicon-image-box';
 	}
 
-	public function get_categories() {
-		return [ 'general-elements' ];
-	}
-
+	/**
+	 * Register image box widget controls.
+	 *
+	 * Adds different input fields to allow the user to change and customize the widget settings.
+	 *
+	 * @since 1.0.0
+	 * @access protected
+	 */
 	protected function _register_controls() {
 		$this->start_controls_section(
 			'section_image',
@@ -34,9 +77,21 @@ class Widget_Image_Box extends Widget_Base {
 			[
 				'label' => __( 'Choose Image', 'elementor' ),
 				'type' => Controls_Manager::MEDIA,
+				'dynamic' => [
+					'active' => true,
+				],
 				'default' => [
 					'url' => Utils::get_placeholder_image_src(),
 				],
+			]
+		);
+
+		$this->add_group_control(
+			Group_Control_Image_Size::get_type(),
+			[
+				'name' => 'thumbnail', // Usage: `{name}_size` and `{name}_custom_dimension`, in this case `thumbnail_size` and `thumbnail_custom_dimension`.
+				'default' => 'full',
+				'separator' => 'none',
 			]
 		);
 
@@ -45,8 +100,11 @@ class Widget_Image_Box extends Widget_Base {
 			[
 				'label' => __( 'Title & Description', 'elementor' ),
 				'type' => Controls_Manager::TEXT,
+				'dynamic' => [
+					'active' => true,
+				],
 				'default' => __( 'This is the heading', 'elementor' ),
-				'placeholder' => __( 'Your Title', 'elementor' ),
+				'placeholder' => __( 'Enter your title', 'elementor' ),
 				'label_block' => true,
 			]
 		);
@@ -56,9 +114,11 @@ class Widget_Image_Box extends Widget_Base {
 			[
 				'label' => __( 'Content', 'elementor' ),
 				'type' => Controls_Manager::TEXTAREA,
+				'dynamic' => [
+					'active' => true,
+				],
 				'default' => __( 'Click edit button to change this text. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.', 'elementor' ),
-				'placeholder' => __( 'Your Description', 'elementor' ),
-				'title' => __( 'Input image text here', 'elementor' ),
+				'placeholder' => __( 'Enter your description', 'elementor' ),
 				'separator' => 'none',
 				'rows' => 10,
 				'show_label' => false,
@@ -70,7 +130,10 @@ class Widget_Image_Box extends Widget_Base {
 			[
 				'label' => __( 'Link to', 'elementor' ),
 				'type' => Controls_Manager::URL,
-				'placeholder' => __( 'http://your-link.com', 'elementor' ),
+				'dynamic' => [
+					'active' => true,
+				],
+				'placeholder' => __( 'https://your-link.com', 'elementor' ),
 				'separator' => 'before',
 			]
 		);
@@ -106,15 +169,15 @@ class Widget_Image_Box extends Widget_Base {
 				'label' => __( 'Title HTML Tag', 'elementor' ),
 				'type' => Controls_Manager::SELECT,
 				'options' => [
-					'h1' => __( 'H1', 'elementor' ),
-					'h2' => __( 'H2', 'elementor' ),
-					'h3' => __( 'H3', 'elementor' ),
-					'h4' => __( 'H4', 'elementor' ),
-					'h5' => __( 'H5', 'elementor' ),
-					'h6' => __( 'H6', 'elementor' ),
-					'div' => __( 'div', 'elementor' ),
-					'span' => __( 'span', 'elementor' ),
-					'p' => __( 'p', 'elementor' ),
+					'h1' => 'H1',
+					'h2' => 'H2',
+					'h3' => 'H3',
+					'h4' => 'H4',
+					'h5' => 'H5',
+					'h6' => 'H6',
+					'div' => 'div',
+					'span' => 'span',
+					'p' => 'p',
 				],
 				'default' => 'h3',
 			]
@@ -157,6 +220,7 @@ class Widget_Image_Box extends Widget_Base {
 					'{{WRAPPER}}.elementor-position-right .elementor-image-box-img' => 'margin-left: {{SIZE}}{{UNIT}};',
 					'{{WRAPPER}}.elementor-position-left .elementor-image-box-img' => 'margin-right: {{SIZE}}{{UNIT}};',
 					'{{WRAPPER}}.elementor-position-top .elementor-image-box-img' => 'margin-bottom: {{SIZE}}{{UNIT}};',
+					'(mobile){{WRAPPER}} .elementor-image-box-img' => 'margin-bottom: {{SIZE}}{{UNIT}};',
 				],
 			]
 		);
@@ -192,7 +256,7 @@ class Widget_Image_Box extends Widget_Base {
 		$this->add_control(
 			'image_opacity',
 			[
-				'label' => __( 'Opacity (%)', 'elementor' ),
+				'label' => __( 'Opacity', 'elementor' ),
 				'type' => Controls_Manager::SLIDER,
 				'default' => [
 					'size' => 1,
@@ -213,7 +277,7 @@ class Widget_Image_Box extends Widget_Base {
 		$this->add_control(
 			'hover_animation',
 			[
-				'label' => __( 'Animation', 'elementor' ),
+				'label' => __( 'Hover Animation', 'elementor' ),
 				'type' => Controls_Manager::HOVER_ANIMATION,
 			]
 		);
@@ -360,12 +424,32 @@ class Widget_Image_Box extends Widget_Base {
 		$this->end_controls_section();
 	}
 
+	/**
+	 * Render image box widget output on the frontend.
+	 *
+	 * Written in PHP and used to generate the final HTML.
+	 *
+	 * @since 1.0.0
+	 * @access protected
+	 */
 	protected function render() {
-		$settings = $this->get_settings();
+		$settings = $this->get_settings_for_display();
 
 		$has_content = ! empty( $settings['title_text'] ) || ! empty( $settings['description_text'] );
 
 		$html = '<div class="elementor-image-box-wrapper">';
+
+		if ( ! empty( $settings['link']['url'] ) ) {
+			$this->add_render_attribute( 'link', 'href', $settings['link']['url'] );
+
+			if ( $settings['link']['is_external'] ) {
+				$this->add_render_attribute( 'link', 'target', '_blank' );
+			}
+
+			if ( ! empty( $settings['link']['nofollow'] ) ) {
+				$this->add_render_attribute( 'link', 'rel', 'nofollow' );
+			}
+		}
 
 		if ( ! empty( $settings['image']['url'] ) ) {
 			$this->add_render_attribute( 'image', 'src', $settings['image']['url'] );
@@ -376,19 +460,9 @@ class Widget_Image_Box extends Widget_Base {
 				$this->add_render_attribute( 'image', 'class', 'elementor-animation-' . $settings['hover_animation'] );
 			}
 
-			$image_html = '<img ' . $this->get_render_attribute_string( 'image' ) . '>';
+			$image_html = Group_Control_Image_Size::get_attachment_image_html( $settings, 'thumbnail', 'image' );
 
 			if ( ! empty( $settings['link']['url'] ) ) {
-				$this->add_render_attribute( 'link', 'href', $settings['link']['url'] );
-
-				if ( $settings['link']['is_external'] ) {
-					$this->add_render_attribute( 'link', 'target', '_blank' );
-				}
-
-				if ( ! empty( $settings['link']['nofollow'] ) ) {
-					$this->add_render_attribute( 'link', 'rel', 'nofollow' );
-				}
-
 				$image_html = '<a ' . $this->get_render_attribute_string( 'link' ) . '>' . $image_html . '</a>';
 			}
 
@@ -399,17 +473,25 @@ class Widget_Image_Box extends Widget_Base {
 			$html .= '<div class="elementor-image-box-content">';
 
 			if ( ! empty( $settings['title_text'] ) ) {
+				$this->add_render_attribute( 'title_text', 'class', 'elementor-image-box-title' );
+
+				$this->add_inline_editing_attributes( 'title_text', 'none' );
+
 				$title_html = $settings['title_text'];
 
 				if ( ! empty( $settings['link']['url'] ) ) {
 					$title_html = '<a ' . $this->get_render_attribute_string( 'link' ) . '>' . $title_html . '</a>';
 				}
 
-				$html .= sprintf( '<%1$s class="elementor-image-box-title">%2$s</%1$s>', $settings['title_size'], $title_html );
+				$html .= sprintf( '<%1$s %2$s>%3$s</%1$s>', $settings['title_size'], $this->get_render_attribute_string( 'title_text' ), $title_html );
 			}
 
 			if ( ! empty( $settings['description_text'] ) ) {
-				$html .= sprintf( '<p class="elementor-image-box-description">%s</p>', $settings['description_text'] );
+				$this->add_render_attribute( 'description_text', 'class', 'elementor-image-box-description' );
+
+				$this->add_inline_editing_attributes( 'description_text' );
+
+				$html .= sprintf( '<p %1$s>%2$s</p>', $this->get_render_attribute_string( 'description_text' ), $settings['description_text'] );
 			}
 
 			$html .= '</div>';
@@ -420,13 +502,31 @@ class Widget_Image_Box extends Widget_Base {
 		echo $html;
 	}
 
+	/**
+	 * Render image box widget output in the editor.
+	 *
+	 * Written as a Backbone JavaScript template and used to generate the live preview.
+	 *
+	 * @since 1.0.0
+	 * @access protected
+	 */
 	protected function _content_template() {
 		?>
 		<#
 		var html = '<div class="elementor-image-box-wrapper">';
 
 		if ( settings.image.url ) {
-			var imageHtml = '<img src="' + settings.image.url + '" class="elementor-animation-' + settings.hover_animation + '" />';
+			var image = {
+				id: settings.image.id,
+				url: settings.image.url,
+				size: settings.thumbnail_size,
+				dimension: settings.thumbnail_custom_dimension,
+				model: view.getEditModel()
+			};
+
+			var image_url = elementor.imagesManager.getImageUrl( image );
+
+			var imageHtml = '<img src="' + image_url + '" class="elementor-animation-' + settings.hover_animation + '" />';
 
 			if ( settings.link.url ) {
 				imageHtml = '<a href="' + settings.link.url + '">' + imageHtml + '</a>';
@@ -447,11 +547,19 @@ class Widget_Image_Box extends Widget_Base {
 					title_html = '<a href="' + settings.link.url + '">' + title_html + '</a>';
 				}
 
-				html += '<' + settings.title_size  + ' class="elementor-image-box-title">' + title_html + '</' + settings.title_size  + '>';
+				view.addRenderAttribute( 'title_text', 'class', 'elementor-image-box-title' );
+
+				view.addInlineEditingAttributes( 'title_text', 'none' );
+
+				html += '<' + settings.title_size  + ' ' + view.getRenderAttributeString( 'title_text' ) + '>' + title_html + '</' + settings.title_size  + '>';
 			}
 
 			if ( settings.description_text ) {
-				html += '<p class="elementor-image-box-description">' + settings.description_text + '</p>';
+				view.addRenderAttribute( 'description_text', 'class', 'elementor-image-box-description' );
+
+				view.addInlineEditingAttributes( 'description_text' );
+
+				html += '<p ' + view.getRenderAttributeString( 'description_text' ) + '>' + settings.description_text + '</p>';
 			}
 
 			html += '</div>';

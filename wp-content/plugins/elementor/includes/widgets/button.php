@@ -1,22 +1,89 @@
 <?php
 namespace Elementor;
 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
+/**
+ * Elementor button widget.
+ *
+ * Elementor widget that displays a button with the ability to control every
+ * aspect of the button design.
+ *
+ * @since 1.0.0
+ */
 class Widget_Button extends Widget_Base {
 
+	/**
+	 * Get widget name.
+	 *
+	 * Retrieve button widget name.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 *
+	 * @return string Widget name.
+	 */
 	public function get_name() {
 		return 'button';
 	}
 
+	/**
+	 * Get widget title.
+	 *
+	 * Retrieve button widget title.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 *
+	 * @return string Widget title.
+	 */
 	public function get_title() {
 		return __( 'Button', 'elementor' );
 	}
 
+	/**
+	 * Get widget icon.
+	 *
+	 * Retrieve button widget icon.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 *
+	 * @return string Widget icon.
+	 */
 	public function get_icon() {
 		return 'eicon-button';
 	}
 
+	/**
+	 * Get widget categories.
+	 *
+	 * Retrieve the list of categories the button widget belongs to.
+	 *
+	 * Used to determine where to display the widget in the editor.
+	 *
+	 * @since 2.0.0
+	 * @access public
+	 *
+	 * @return array Widget categories.
+	 */
+	public function get_categories() {
+		return [ 'basic' ];
+	}
+
+	/**
+	 * Get button sizes.
+	 *
+	 * Retrieve an array of button sizes for the button widget.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 * @static
+	 *
+	 * @return array An array containing button sizes.
+	 */
 	public static function get_button_sizes() {
 		return [
 			'xs' => __( 'Extra Small', 'elementor' ),
@@ -27,6 +94,14 @@ class Widget_Button extends Widget_Base {
 		];
 	}
 
+	/**
+	 * Register button widget controls.
+	 *
+	 * Adds different input fields to allow the user to change and customize the widget settings.
+	 *
+	 * @since 1.0.0
+	 * @access protected
+	 */
 	protected function _register_controls() {
 		$this->start_controls_section(
 			'section_button',
@@ -57,9 +132,11 @@ class Widget_Button extends Widget_Base {
 			[
 				'label' => __( 'Text', 'elementor' ),
 				'type' => Controls_Manager::TEXT,
-				'default' => __( 'Click me', 'elementor' ),
-				'placeholder' => __( 'Click me', 'elementor' ),
-				'dynamic' => [],
+				'dynamic' => [
+					'active' => true,
+				],
+				'default' => __( 'Click here', 'elementor' ),
+				'placeholder' => __( 'Click here', 'elementor' ),
 			]
 		);
 
@@ -68,7 +145,10 @@ class Widget_Button extends Widget_Base {
 			[
 				'label' => __( 'Link', 'elementor' ),
 				'type' => Controls_Manager::URL,
-				'placeholder' => 'http://your-link.com',
+				'dynamic' => [
+					'active' => true,
+				],
+				'placeholder' => __( 'https://your-link.com', 'elementor' ),
 				'default' => [
 					'url' => '#',
 				],
@@ -182,7 +262,6 @@ class Widget_Button extends Widget_Base {
 			Group_Control_Typography::get_type(),
 			[
 				'name' => 'typography',
-				'label' => __( 'Typography', 'elementor' ),
 				'scheme' => Scheme_Typography::TYPOGRAPHY_4,
 				'selector' => '{{WRAPPER}} a.elementor-button, {{WRAPPER}} .elementor-button',
 			]
@@ -272,7 +351,7 @@ class Widget_Button extends Widget_Base {
 		$this->add_control(
 			'hover_animation',
 			[
-				'label' => __( 'Animation', 'elementor' ),
+				'label' => __( 'Hover Animation', 'elementor' ),
 				'type' => Controls_Manager::HOVER_ANIMATION,
 			]
 		);
@@ -285,7 +364,6 @@ class Widget_Button extends Widget_Base {
 			Group_Control_Border::get_type(),
 			[
 				'name' => 'border',
-				'label' => __( 'Border', 'elementor' ),
 				'placeholder' => '1px',
 				'default' => '1px',
 				'selector' => '{{WRAPPER}} .elementor-button',
@@ -313,10 +391,10 @@ class Widget_Button extends Widget_Base {
 			]
 		);
 
-		$this->add_control(
+		$this->add_responsive_control(
 			'text_padding',
 			[
-				'label' => __( 'Text Padding', 'elementor' ),
+				'label' => __( 'Padding', 'elementor' ),
 				'type' => Controls_Manager::DIMENSIONS,
 				'size_units' => [ 'px', 'em', '%' ],
 				'selectors' => [
@@ -329,8 +407,16 @@ class Widget_Button extends Widget_Base {
 		$this->end_controls_section();
 	}
 
+	/**
+	 * Render button widget output on the frontend.
+	 *
+	 * Written in PHP and used to generate the final HTML.
+	 *
+	 * @since 1.0.0
+	 * @access protected
+	 */
 	protected function render() {
-		$settings = $this->get_settings();
+		$settings = $this->get_settings_for_display();
 
 		$this->add_render_attribute( 'wrapper', 'class', 'elementor-button-wrapper' );
 
@@ -348,6 +434,7 @@ class Widget_Button extends Widget_Base {
 		}
 
 		$this->add_render_attribute( 'button', 'class', 'elementor-button' );
+		$this->add_render_attribute( 'button', 'role', 'button' );
 
 		if ( ! empty( $settings['size'] ) ) {
 			$this->add_render_attribute( 'button', 'class', 'elementor-size-' . $settings['size'] );
@@ -360,42 +447,77 @@ class Widget_Button extends Widget_Base {
 		?>
 		<div <?php echo $this->get_render_attribute_string( 'wrapper' ); ?>>
 			<a <?php echo $this->get_render_attribute_string( 'button' ); ?>>
-				<?php $this->render_text() ?>
+				<?php $this->render_text(); ?>
 			</a>
 		</div>
 		<?php
 	}
 
+	/**
+	 * Render button widget output in the editor.
+	 *
+	 * Written as a Backbone JavaScript template and used to generate the live preview.
+	 *
+	 * @since 1.0.0
+	 * @access protected
+	 */
 	protected function _content_template() {
 		?>
+		<#
+		view.addRenderAttribute( 'text', 'class', 'elementor-button-text' );
+
+		view.addInlineEditingAttributes( 'text', 'none' );
+		#>
 		<div class="elementor-button-wrapper">
-			<a class="elementor-button elementor-size-{{ settings.size }} elementor-animation-{{ settings.hover_animation }}" href="{{ settings.link.url }}">
+			<a class="elementor-button elementor-size-{{ settings.size }} elementor-animation-{{ settings.hover_animation }}" href="{{ settings.link.url }}" role="button">
 				<span class="elementor-button-content-wrapper">
 					<# if ( settings.icon ) { #>
 					<span class="elementor-button-icon elementor-align-icon-{{ settings.icon_align }}">
-						<i class="{{ settings.icon }}"></i>
+						<i class="{{ settings.icon }}" aria-hidden="true"></i>
 					</span>
 					<# } #>
-					<span class="elementor-button-text">{{{ settings.text }}}</span>
+					<span {{{ view.getRenderAttributeString( 'text' ) }}}>{{{ settings.text }}}</span>
 				</span>
 			</a>
 		</div>
 		<?php
 	}
 
+	/**
+	 * Render button text.
+	 *
+	 * Render button widget text.
+	 *
+	 * @since 1.5.0
+	 * @access protected
+	 */
 	protected function render_text() {
-		$settings = $this->get_settings();
-		$this->add_render_attribute( 'content-wrapper', 'class', 'elementor-button-content-wrapper' );
-		$this->add_render_attribute( 'icon-align', 'class', 'elementor-align-icon-' . $settings['icon_align'] );
-		$this->add_render_attribute( 'icon-align', 'class', 'elementor-button-icon' );
+		$settings = $this->get_settings_for_display();
+
+		$this->add_render_attribute( [
+			'content-wrapper' => [
+				'class' => 'elementor-button-content-wrapper',
+			],
+			'icon-align' => [
+				'class' => [
+					'elementor-button-icon',
+					'elementor-align-icon-' . $settings['icon_align'],
+				],
+			],
+			'text' => [
+				'class' => 'elementor-button-text',
+			],
+		] );
+
+		$this->add_inline_editing_attributes( 'text', 'none' );
 		?>
 		<span <?php echo $this->get_render_attribute_string( 'content-wrapper' ); ?>>
 			<?php if ( ! empty( $settings['icon'] ) ) : ?>
 			<span <?php echo $this->get_render_attribute_string( 'icon-align' ); ?>>
-				<i class="<?php echo esc_attr( $settings['icon'] ); ?>"></i>
+				<i class="<?php echo esc_attr( $settings['icon'] ); ?>" aria-hidden="true"></i>
 			</span>
 			<?php endif; ?>
-			<span class="elementor-button-text"><?php echo $settings['text']; ?></span>
+			<span <?php echo $this->get_render_attribute_string( 'text' ); ?>><?php echo $settings['text']; ?></span>
 		</span>
 		<?php
 	}

@@ -40,7 +40,7 @@ class Advanced_Ads_Ad {
 	/**
 	 * true, if this is an Advanced Ads Ad post type
 	 */
-	protected $is_ad = false;
+	public $is_ad = false;
 
 	/**
 	 * ad type
@@ -321,6 +321,11 @@ class Advanced_Ads_Ad {
 		    return false;
 		}
 
+		// Check If the current ad is requested using a shortcode placed in the content of the current ad.
+		if ( isset( $this->options['shortcode_ad_id'] ) && (int) $this->options['shortcode_ad_id'] === $this->id ) {
+			return false;
+		}
+
 		// force ad display if debug mode is enabled
 		if( isset( $this->output['debugmode'] ) && ! $check_options['ignore_debugmode'] ) {
 		    return true;
@@ -448,10 +453,10 @@ class Advanced_Ads_Ad {
 		global $wpdb;
 
 		// remove slashes from content
-		$content = $this->prepare_content_to_save();
+		$this->content = $this->prepare_content_to_save();
 
 		$where = array('ID' => $this->id);
-		$wpdb->update( $wpdb->posts, array( 'post_content' => $content ), $where );
+		$wpdb->update( $wpdb->posts, array( 'post_content' => $this->content ), $where );
 
 		// clean post from object cache
 		clean_post_cache( $this->id );
@@ -662,6 +667,7 @@ class Advanced_Ads_Ad {
 		//  print_r($this->output);
 
 		$position = ! empty( $this->output['position'] ) ? $this->output['position'] : ''; 
+		$use_placement_pos = false;
 
 		if ( ! isset( $this->args['previous_method'] ) || 'group' !== $this->args['previous_method'] ) {
 			if ( isset($this->output['class'] ) && is_array( $this->output['class'] ) ) {
@@ -669,6 +675,7 @@ class Advanced_Ads_Ad {
 			}
 
 			if ( ! empty( $this->args['placement_position'] ) ) {
+				$use_placement_pos = true;
 				$position = $this->args['placement_position'];
 			}
 		}
@@ -681,7 +688,13 @@ class Advanced_Ads_Ad {
 				$wrapper['style']['float'] = 'right';
 				break;
 			case 'center' :
-				$wrapper['style']['text-align'] = 'center';
+				if ( ! empty ( $this->output['add_wrapper_sizes'] ) && ! $use_placement_pos ) {
+					$wrapper['style']['margin-left'] = 'auto';
+					$wrapper['style']['margin-right'] = 'auto';
+				} else {
+					$wrapper['style']['text-align'] = 'center';
+				}
+
 				// add css rule after wrapper to center the ad
 				// add_filter( 'advanced-ads-output-wrapper-after-content', array( $this, 'center_ad_content' ), 10, 2 );
 				break;

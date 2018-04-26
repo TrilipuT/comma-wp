@@ -22,26 +22,14 @@
 			var rawContent = $( '.advads-adsense-content' ).val();
 
 			var parseResult = parseAdContent( rawContent );
-			if (false === parseResult) {
-				// Not recognized ad code
-				$( '#pastecode-msg' ).append( $( '<p />' ).css( 'color', 'red' ).html( gadsenseData.msg.unknownAd ) );
-			} else {
-				setDetailsFromAdCode( parseResult );
-				$( '.advads-adsense-code' ).hide();
-				$( '.advads-adsense-show-code' ).show();
-			}
-
+			handleParseResult( parseResult );
 		});
 
 		$( document ).on('click', '#advanced-ad-type-adsense', function(){
 			$( '#advanced-ads-ad-parameters' ).on('paramloaded', function(){
 				var content = $( '#advanced-ads-ad-parameters input[name="advanced_ad[content]"]' ).val();
 				var parseResult = parseAdContent( content );
-				if (false !== parseResult) {
-					setDetailsFromAdCode( parseResult );
-					$( '.advads-adsense-code' ).hide();
-					$( '.advads-adsense-show-code' ).show();
-				}
+				handleParseResult( parseResult );
 			});
 		});
 
@@ -49,6 +37,11 @@
 			advads_update_adsense_type();
 		});
 
+		/**
+		 * Parse ad content.
+		 *
+		 * @return {!Object}
+		 */
 		function parseAdContent(content) {
 			var rawContent = ('undefined' != typeof(content))? content.trim() : '';
 			var theAd = {};
@@ -70,18 +63,16 @@
 					theAd.type = 'normal';
 					theAd.width = adByGoogle.css( 'width' ).replace( 'px', '' );
 					theAd.height = adByGoogle.css( 'height' ).replace( 'px', '' );
-					return theAd;
 				}
 
 				/* Responsive ad, auto resize */
-				if ('undefined' != typeof(theAd.format) && 'auto' == theAd.format) {
+				else if ('undefined' != typeof(theAd.format) && 'auto' == theAd.format) {
 					theAd.type = 'responsive';
-					return theAd;
 				}
 				
 				
 				/* older link unit format; for new ads the format type is no longer needed; link units are created through the AdSense panel */
-				if ('undefined' != typeof(theAd.format) && 'link' == theAd.format) {
+				else if ('undefined' != typeof(theAd.format) && 'link' == theAd.format) {
 					
 					if( -1 != theAd.style.indexOf( 'width' ) ){
 					// is fixed size
@@ -92,17 +83,15 @@
 					// is responsive
 					    theAd.type = 'link-responsive';
 					}
-					return theAd;
 				}
 				
 				/* Responsive Matched Content */
-				if ('undefined' != typeof(theAd.format) && 'autorelaxed' == theAd.format) {
+				else if ('undefined' != typeof(theAd.format) && 'autorelaxed' == theAd.format) {
 					theAd.type = 'matched-content';
-					return theAd;
 				}
 				
 				/* InArticle & InFeed ads */
-				if ('undefined' != typeof(theAd.format) && 'fluid' == theAd.format) {
+				else if ('undefined' != typeof(theAd.format) && 'fluid' == theAd.format) {
 				    
 					// InFeed
 					if('undefined' != typeof(theAd.layout) && 'in-article' == theAd.layout){
@@ -111,10 +100,43 @@
 					    // InArticle
 						theAd.type = 'in-feed';
 					}
-					return theAd;
 				}
 			}
-			return false;
+
+			/* Page-Level ad */
+			if ( rawContent.indexOf( 'enable_page_level_ads' ) !== -1 ) {
+				theAd = { 'parse_message': 'pageLevelAd' };
+			}
+
+			else if ( ! theAd.type ) {
+				/* Unknown ad */
+				theAd = { 'parse_message': 'unknownAd' };
+			}
+
+			$( document ).trigger( 'gadsenseParseAdContent', [ theAd, adByGoogle ] );
+			return theAd;
+		}
+
+		/**
+		 * Handle result of parsing content.
+		 *
+		 * @param {!Object}
+		 */
+		function handleParseResult( parseResult) {
+			$( '#pastecode-msg' ).empty();
+			switch ( parseResult.parse_message ) {
+				case 'pageLevelAd' :
+					showPageLevelAdMessage();
+				break;
+				case 'unknownAd' :
+					// Not recognized ad code
+					$( '#pastecode-msg' ).append( $( '<p />' ).css( 'color', 'red' ).html( gadsenseData.msg.unknownAd ) );
+				break;
+				default:
+					setDetailsFromAdCode( parseResult );
+					$( '.advads-adsense-code' ).hide();
+					$( '.advads-adsense-show-code' ).show();
+			}
 		}
 
 		/**
@@ -169,6 +191,7 @@
 			} else {
 				$( '#adsense-ad-param-error' ).empty();
 			}
+			$( document ).trigger( 'setDetailsFromAdCode', [ theAd ] );
 			$( '#unit-type' ).trigger( 'change' );
 		}
 
@@ -196,6 +219,8 @@
 			if ('undefined' != typeof(adContent.resize) && 'auto' != adContent.resize) {
 				$( document ).trigger( 'gadsenseFormatAdResponsive', [adContent] );
 			}
+			$( document ).trigger( 'gadsenseFormatAdContent', [adContent] );
+
 			if ('undefined' != typeof(window.gadsenseAdContent)) {
 				adContent = window.gadsenseAdContent;
 				delete( window.gadsenseAdContent );
@@ -209,7 +234,7 @@
 			$( '.advads-adsense-layout' ).next('div').hide();
 			$( '.advads-adsense-layout-key' ).hide();
 			$( '.advads-adsense-layout-key' ).next('div').hide();
-			$( '#advads-adsense-infeed-tutorial' ).hide();
+			$( '.advads-ad-notice-in-feed-add-on' ).hide();
 			if ( 'responsive' == type || 'link-responsive' == type || 'matched-content' == type ) {
 				$( '#advanced-ads-ad-parameters-size' ).css( 'display', 'none' );
 				$( '#advanced-ads-ad-parameters-size' ).prev('.label').css( 'display', 'none' );
@@ -222,7 +247,8 @@
 				$( '#advanced-ads-ad-parameters-size' ).css( 'display', 'none' );
 				$( '#advanced-ads-ad-parameters-size' ).prev('.label').css( 'display', 'none' );
 				$( '#advanced-ads-ad-parameters-size' ).next('.hr').css( 'display', 'none' );
-				$( '#advads-adsense-infeed-tutorial' ).show();
+				// show add-on notice
+				$( '.advads-ad-notice-in-feed-add-on' ).show();
 			} else if ( 'in-article' == type ) {
 				$( '#advanced-ads-ad-parameters-size' ).css( 'display', 'none' );
 				$( '#advanced-ads-ad-parameters-size' ).prev('.label').css( 'display', 'none' );
@@ -237,7 +263,7 @@
 			
 			// show / hide position warning
 			var position = $( '#advanced-ad-output-position input[name="advanced_ad[output][position]"]:checked' ).val();
-			if ('responsive' == type && ( 'left' == position || 'right' == position ) ){
+			if ( -1 !== ['responsive', 'in-article', 'in-feed' ].indexOf( type ) && ( 'left' == position || 'right' == position ) ){
 				$('#ad-parameters-box-notices .advads-ad-notice-responsive-position').show();
 			} else {
 				$('#ad-parameters-box-notices .advads-ad-notice-responsive-position').hide();
@@ -246,5 +272,32 @@
 		advads_update_adsense_type();
 
 	});
+
+	/**
+	 * Show a message depending on whether Auto ads are enabled.
+	 */
+	function showPageLevelAdMessage() {
+		var $msg = $( '<p class="advads-success-message" />' ).appendTo ( '#pastecode-msg' );
+		if ( gadsenseData.pageLevelEnabled ) {
+			$msg.html( gadsenseData.msg.pageLevelEnabled );
+		} else {
+			$msg.html( gadsenseData.msg.pageLevelDisabled );
+			$( document ).on('click', '#adsense_enable_pla', function(){
+				$msg.hide();
+				$.ajax( {
+					type: 'POST',
+					url: ajaxurl,
+					data: {
+						action: 'advads-adsense-enable-pla',
+						nonce: advadsglobal.ajax_nonce
+					},
+				} ).done(function( data ) {
+					$msg.show().html( gadsenseData.msg.pageLevelEnabled );
+				} ).fail(function( jqXHR, textStatus ) {
+					$msg.show();
+				} );
+			});
+		}
+	}
 
 })(jQuery);

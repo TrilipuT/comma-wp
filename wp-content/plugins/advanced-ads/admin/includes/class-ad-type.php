@@ -18,7 +18,6 @@ class Advanced_Ads_Admin_Ad_Type {
 	protected $post_type = '';
 
 	private function __construct() {
-		add_filter( 'wp', array($this, 'wp_loaded') );
 		// registering custom columns needs to work with and without DOING_AJAX
 		add_filter( 'manage_advanced_ads_posts_columns', array($this, 'ad_list_columns_head') ); // extra column
 		add_filter( 'manage_advanced_ads_posts_custom_column', array($this, 'ad_list_columns_content'), 10, 2 ); // extra column
@@ -42,11 +41,14 @@ class Advanced_Ads_Admin_Ad_Type {
 		add_action( 'edit_form_after_title', array($this, 'edit_form_below_title') );
 		add_action( 'dbx_post_sidebar', array($this, 'edit_form_end') );
 		add_action( 'post_submitbox_misc_actions', array($this, 'add_submit_box_meta') );
+		add_action( 'admin_enqueue_scripts', array($this, 'use_code_editor') );
 
 		// ad updated messages
 		add_filter( 'post_updated_messages', array($this, 'ad_update_messages') );
 
 		$this->post_type = constant( 'Advanced_Ads::POST_TYPE_SLUG' );
+
+		add_filter( 'gettext', array( $this, 'replace_cheating_message' ), 20, 2 );
 	}
 
 	/**
@@ -63,24 +65,6 @@ class Advanced_Ads_Admin_Ad_Type {
 		return self::$instance;
 	}
 	
-	/**
-	 * general stuff after page is loaded and screen variable is available
-	 */
-	public function wp_loaded(){
-		$screen = get_current_screen();
-		
-		if( !isset( $screen->id ) ){
-			return;
-		}
-		
-		switch( $screen->id ){
-			case 'edit-advanced_ads' : // ad edit page
-			    // remove notice about missing first ad
-			    Advanced_Ads_Admin_Notices::get_instance()->remove_from_queue( 'nl_intro' );
-			    break;
-		}
-	}
-
 	/**
 	 * add heading for extra column of ads list
 	 * remove the date column
@@ -162,7 +146,7 @@ class Advanced_Ads_Admin_Ad_Type {
 
 			$expiry = false;
 			$post_future = false;
-			$post_start = get_the_date('U', $ad->id );
+			$post_start = get_post_time('U', true, $ad->id );
 			$html_classes = 'advads-filter-timing';
 			$expiry_date_format = get_option( 'date_format' ). ', ' . get_option( 'time_format' );
 
@@ -280,13 +264,12 @@ class Advanced_Ads_Admin_Ad_Type {
 	 */
 	public function save_ad($post_id) {
 
-		// only use for ads, no other post type
-		if ( ! isset($_POST['post_type']) || $this->post_type != $_POST['post_type'] || ! isset($_POST['advanced_ad']['type']) ) {
-			return;
-		}
-
-		// don’t do this on revisions
-		if ( wp_is_post_revision( $post_id ) ) {
+		if ( ! current_user_can( Advanced_Ads_Plugin::user_cap( 'advanced_ads_edit_ads') )
+			// only use for ads, no other post type
+			|| ! isset($_POST['post_type']) 
+			|| $this->post_type != $_POST['post_type'] 
+			|| ! isset($_POST['advanced_ad']['type']) 
+			|| wp_is_post_revision( $post_id ) ) {
 			return;
 		}
 
@@ -300,11 +283,7 @@ class Advanced_Ads_Admin_Ad_Type {
 		$_POST['advanced_ad'] = apply_filters( 'advanced-ads-ad-settings-pre-save', $_POST['advanced_ad'] );
 
 		$ad->type = $_POST['advanced_ad']['type'];
-		if ( isset($_POST['advanced_ad']['output']) ) {
-			$ad->set_option( 'output', $_POST['advanced_ad']['output'] );
-		} else {
-			$ad->set_option( 'output', array() );
-		}
+
 		/**
 		 * deprecated since introduction of "visitors" in 1.5.4
 		 */
@@ -340,6 +319,17 @@ class Advanced_Ads_Admin_Ad_Type {
 		if ( ! empty($_POST['advanced_ad']['content']) ) {
 			$ad->content = $_POST['advanced_ad']['content']; }
 		else { $ad->content = ''; }
+
+		$output = isset( $_POST['advanced_ad']['output'] ) ? $_POST['advanced_ad']['output'] : array();
+
+		// Find Advanced Ads shortcodes.
+		if ( ! empty( $output['allow_shortcodes'] ) ) {
+			$shortcode_pattern = get_shortcode_regex( array( 'the_ad', 'the_ad_group', 'the_ad_placement' ) );
+			$output['has_shortcode'] = preg_match( '/' . $shortcode_pattern . '/s', $ad->content );
+		}
+
+		// Set output.
+		$ad->set_option( 'output', $output );
 
 		if ( ! empty($_POST['advanced_ad']['conditions']) ){
 			$ad->conditions = $_POST['advanced_ad']['conditions'];
@@ -426,7 +416,10 @@ class Advanced_Ads_Admin_Ad_Type {
 		$placement_types = Advanced_Ads_Placements::get_placement_types();
 		$placements = Advanced_Ads::get_ad_placements_array(); // -TODO use model
 
+		// display general and wizard information
 		include ADVADS_BASE_PATH . 'admin/views/ad-info-top.php';
+		// display ad injection information
+		include ADVADS_BASE_PATH . 'admin/views/placement-injection-top.php';
 	}
 
 	/**
@@ -491,6 +484,38 @@ class Advanced_Ads_Admin_Ad_Type {
 
 		include ADVADS_BASE_PATH . 'admin/views/ad-submitbox-meta.php';
 	}
+	
+	/**
+	 * use CodeMirror for plain text input field
+	 * 
+	 * needs WordPress 4.9 and higher
+	 * 
+	 * @since 1.8.15
+	 */
+	public function use_code_editor(){
+		global $wp_version;
+		if ( 'advanced_ads' !== get_current_screen()->id 
+			|| defined( 'ADVANCED_ADS_DISABLE_CODE_HIGHLIGHTING' )
+			|| -1 === version_compare( $wp_version, '4.9' ) ) {
+		    return;
+		}
+		
+		// Enqueue code editor and settings for manipulating HTML.
+		$settings = wp_enqueue_code_editor( array( 'type' => 'application/x-httpd-php' ) );
+
+		// Bail if user disabled CodeMirror.
+		if ( false === $settings ) {
+			return;
+		}
+
+		wp_add_inline_script(
+		    'code-editor',
+		    sprintf(
+			'jQuery( function() { if( jQuery( "#advads-ad-content-plain" ).length ){ wp.codeEditor.initialize( "advads-ad-content-plain", %s ); } } );',
+			wp_json_encode( $settings )
+		    )
+		);
+	}
 
 	/**
 	 * edit ad update messages
@@ -515,8 +540,8 @@ class Advanced_Ads_Admin_Ad_Type {
 			4  => __( 'Ad updated.', 'advanced-ads' ),
 			/* translators: %s: date and time of the revision */
 			5  => isset( $_GET['revision'] ) ? sprintf( __( 'Ad restored to revision from %s', 'advanced-ads' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-			6  => __( 'Ad published.', 'advanced-ads' ) . ' ' . sprintf(__( 'Ad not showing up? Take a look <a href="%s" target="_blank">here</a>', 'advanced-ads' ), ADVADS_URL . 'manual/ads-not-showing-up/#utm_source=advanced-ads&utm_medium=link&utm_campaign=edit-ad-not-visible'),
-			7  => __( 'Ad saved.', 'advanced-ads' ),
+			6  => __( 'Ad saved.', 'advanced-ads' ), // published
+			7  => __( 'Ad saved.', 'advanced-ads' ), // saved
 			8  => __( 'Ad submitted.', 'advanced-ads' ),
 			9  => sprintf(
 				__( 'Ad scheduled for: <strong>%1$s</strong>.', 'advanced-ads' ),
@@ -597,6 +622,23 @@ class Advanced_Ads_Admin_Ad_Type {
 
 		libxml_use_internal_errors( $libxml_previous_state );
 		return $errors;
+	}
+
+	/**
+	 * Replace 'Cheatin&#8217; uh?' message if user role does not have required permissions.
+	 *
+	 * @param string $translation   Translated text.
+	 * @param string $text          Text to translate.
+	 * @return string $translation  Translated text.
+	 */
+	public function replace_cheating_message( $translated_text, $untranslated_text ) {
+		global $typenow;
+
+		if ( isset( $typenow ) && $untranslated_text === 'Cheatin&#8217; uh?' && $typenow === $this->post_type ) {
+			$translated_text = __( 'You don’t have access to ads. Please deactivate and re-enable Advanced Ads again to fix this.', 'advanced-ads' );
+		}
+
+		return $translated_text;
 	}
 
 }

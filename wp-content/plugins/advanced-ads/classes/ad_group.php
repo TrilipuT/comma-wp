@@ -20,8 +20,9 @@ class Advanced_Ads_Group {
 
 	/**
 	 * default ad group weight
+	 * previously called MAX_AD_GROUP_WEIGHT
 	 */
-	const MAX_AD_GROUP_WEIGHT = 10;
+	const MAX_AD_GROUP_DEFAULT_WEIGHT = 10;
 
 	/**
 	 * term id of this ad group
@@ -142,6 +143,7 @@ class Advanced_Ads_Group {
 		$this->ad_args = $ad_args;
 
 		$this->load_additional_attributes();
+		$this->create_wrapper();
 	}
 
 	/**
@@ -152,8 +154,6 @@ class Advanced_Ads_Group {
 	protected function load_additional_attributes() {
 		// -TODO should abstract (i.e. only call once per request)
 		$all_groups = get_option( 'advads-ad-groups', array() );
-
-		$this->create_wrapper();
 
 		if ( ! isset( $all_groups[ $this->id ] ) || ! is_array( $all_groups[ $this->id ] ) ) { return; }
 
@@ -206,6 +206,7 @@ class Advanced_Ads_Group {
 			'type' => $this->type,
 			'refresh_enabled' => ! empty( $this->options['refresh']['enabled'] ),
 		);
+		$this->ad_args['ad_label'] = 'disabled';
 
 		if( is_array( $ordered_ad_ids ) ){
 			foreach ( $ordered_ad_ids as $_ad_id ) {
@@ -225,14 +226,25 @@ class Advanced_Ads_Group {
 			}
 		}
 
-		// add the group to the global output array
-		$advads = Advanced_Ads::get_instance();
-		$advads->current_ads[] = array('type' => 'group', 'id' => $this->id, 'title' => $this->name);
+		if ( ! isset( $args['global_output'] ) || $args['global_output'] ) {
+			// add the group to the global output array
+			$advads = Advanced_Ads::get_instance();
+			$advads->current_ads[] = array('type' => 'group', 'id' => $this->id, 'title' => $this->name);
+		}
 
-		if ( ! $output ) { return ''; }
-
+		if ( $output === array() || ! is_array( $output ) ){ 
+			return '';
+		}
+		
 		// filter grouped ads output
-		$output_string = implode( '', apply_filters( 'advanced-ads-group-output-array', $output, $this ) );
+		$output_array = apply_filters( 'advanced-ads-group-output-array', $output, $this );
+		
+		// make sure the right format comes through the filter
+		if ( $output_array === array() || ! is_array( $output_array ) ){ 
+			return '';
+		}
+		
+		$output_string = implode( '', $output_array );
 
 		if ( $this->wrapper !== array() ) {
 			$output_string = '<div' . Advanced_Ads_Utils::build_html_attributes( $this->wrapper ) . '>'
@@ -283,9 +295,7 @@ class Advanced_Ads_Group {
 		// order ads based on group type
 		switch($this->type){
 			case 'ordered' :
-				// order to highest weight first
-				arsort( $weights );
-				$ordered_ad_ids = array_keys($weights);
+				$ordered_ad_ids = $this->shuffle_ordered_ads( $weights );
 				break;
 			default : // default
 				$ordered_ad_ids = $this->shuffle_ads($ads, $weights);
@@ -393,6 +403,36 @@ class Advanced_Ads_Group {
 	}
 
 	/**
+	 * Shuffle ads that have the same width.
+	 *
+	 * @since untagged
+	 * @param array $weights Array of $ad_id => weight pairs.
+	 * @return array $ordered_ad_ids Ordered ad ids.
+	 */
+	public function shuffle_ordered_ads( array $weights ) {
+		// order to highest weight first
+		arsort( $weights );
+		$ordered_ad_ids = array_keys( $weights );
+
+		$weights = array_values( $weights );
+		$count = count( $weights );
+		$pos = 0;
+		for ( $i = 1; $i <= $count; $i++ ) {
+			if ( $i == $count || $weights[ $i ] !== $weights[ $i - 1] ) {
+				$slice_len = $i - $pos;
+				if ( $slice_len !== 1 ) {
+					$shuffled = array_slice( $ordered_ad_ids, $pos, $slice_len );
+					shuffle ( $shuffled );
+					// Replace the unshuffled chunk with the shuffled one.
+					array_splice( $ordered_ad_ids, $pos, $slice_len, $shuffled );
+				}
+				$pos = $i;
+			}
+		}
+		return $ordered_ad_ids;
+	}
+
+	/**
 	 * get random ad by ad weight
 	 *
 	 * @since 1.0.0
@@ -496,15 +536,15 @@ class Advanced_Ads_Group {
 	private function update_ad_weights(){
 		$ads = $this->get_all_ads();
 		$weights = $this->get_ad_weights();
-
+		
 		$new_weights = array();
 		// use only ads assigned to the group
 		foreach ( $ads as $_ad ){
 			if ( isset($weights[$_ad->ID]) ){
 				$new_weights[$_ad->ID] = $weights[$_ad->ID];
 			} else {
-				// if no weight is given, use maximum default value
-				$new_weights[$_ad->ID] = self::MAX_AD_GROUP_WEIGHT;
+				// if no weight is given, use default value
+				$new_weights[$_ad->ID] = self::MAX_AD_GROUP_DEFAULT_WEIGHT;
 			}
 		}
 
@@ -541,7 +581,6 @@ class Advanced_Ads_Group {
 		// Add label.
 		$placement_state = isset( $this->ad_args['ad_label'] ) ? $this->ad_args['ad_label'] : 'default';
 		$this->label = Advanced_Ads::get_instance()->get_label( $placement_state );
-		$this->ad_args['ad_label'] = 'disabled';
 
 		// Add placement class.
 		if ( isset( $this->ad_args['output']['class'] ) && is_array( $this->ad_args['output']['class'] ) ) {
@@ -569,5 +608,21 @@ class Advanced_Ads_Group {
 			$this->wrapper['id'] = $prefix . mt_rand();
 		}
 	}
+	
+	/**
+	 * calculate the number of available weights for a group depending on 
+	 * number of ads and default value
+	 * 
+	 * @param   int	$num_ads    number of ads in the group
+	 * @since   1.8.22
+	 */
+	public static function get_max_ad_weight( $num_ads = 1 ){
+	    
+		// use default if lower than default
+		$num_ads = absint( $num_ads );
+		
+		return $num_ads < self::MAX_AD_GROUP_DEFAULT_WEIGHT ? self::MAX_AD_GROUP_DEFAULT_WEIGHT : $num_ads;
+	}
+	
 
 }

@@ -19,7 +19,11 @@ $sizing_array = $db->get_responsive_sizing();
 ?>
 <input type="hidden" id="advads-ad-content-adsense" name="advanced_ad[content]" value="<?php echo esc_attr( $json_content ); ?>" />
 <input type="hidden" name="unit_id" id="unit_id" value="<?php echo esc_attr( $unit_id ); ?>" />
-<?php if ( $use_paste_code ) : ?>
+<?php if( empty( $pub_id ) ) :
+    ?><p><a class="button button-primary" target="_blank" href="<?php echo Advanced_Ads_AdSense_Admin::ADSENSE_NEW_ACCOUNT_LINK; ?>"><?php _e( 'Get a free AdSense account', 'advanced-ads' ); 
+    ?></a></p><?php
+endif;
+if ( $use_paste_code ) : ?>
 <div class="advads-adsense-code" <?php if( !empty( $unit_code ) ): echo 'style="display: none;"'; endif; ?>>
 	<p class="description"><?php _e( 'Copy the ad code from your AdSense account, paste it into the area below and click on <em>Get details</em>.', 'advanced-ads' ); ?></p>
 	<textarea rows="10" cols="40" class="advads-adsense-content"></textarea>
@@ -66,10 +70,6 @@ if( $pub_id_errors ) : ?>
 	<a href="<?php echo ADVADS_URL . 'manual/adsense-ads/#adsense-ad-types'; ?>" target="_blank"><?php _e( 'manual', 'advanced-ads' ); ?></a>
     </div>
     <hr/>
-<?php if ( ! defined( 'AAR_SLUG' ) ) : ?>
-    <p><?php printf( __( 'Use the <a href="%s" target="_blank">Responsive add-on</a> in order to define the exact size for each browser width or choose between horizontal, vertical, or rectangle formats.', 'advanced-ads' ), ADVADS_URL . 'add-ons/responsive-ads/#utm_source=advanced-ads&utm_medium=link&utm_campaign=edit-adsense' ); ?></p>
-<?php else : ?>
-<?php endif; ?>
     <label class="label" <?php if ( ! $is_responsive || 2 > count( $sizing_array ) ) { echo 'style="display: none;"'; } ?> id="resize-label"><?php _e( 'Resizing', 'advanced-ads' ); ?></label>
     <div <?php if ( ! $is_responsive || 2 > count( $sizing_array ) ) { echo 'style="display: none;"'; } ?>>
 	<select name="ad-resize-type" id="ad-resize-type">
@@ -78,7 +78,6 @@ if( $pub_id_errors ) : ?>
 	<?php endforeach; ?>
 	</select>
     </div>
-    <p id="advads-adsense-infeed-tutorial" <?php if ( 'in-feed' !== $unit_type ) { echo 'style="display: none;"'; } ?>><a href="<?php echo ADVADS_URL . 'insert-ads-between-posts-wordpress/#utm_source=advanced-ads&utm_medium=link&utm_campaign=adsense-between-posts'; ?>" target="_blank"><?php _e( 'Tutorial: How to place ads between posts?', 'advanced-ads' ); ?></a></p>
     <label class="label advads-adsense-layout" <?php if ( 'in-feed' !== $unit_type ) { echo 'style="display: none;"'; } ?> id="advads-adsense-layout"><?php _e( 'Layout', 'advanced-ads' ); ?></label>
     <div <?php if ( 'in-feed' !== $unit_type ) { echo 'style="display: none;"'; } ?>>
 	<input name="ad-layout" id="ad-layout" value="<?php echo isset( $layout ) ? $layout : ''; ?>"/>
@@ -88,4 +87,4 @@ if( $pub_id_errors ) : ?>
 	<input name="ad-layout-key" id="ad-layout-key" value="<?php echo isset( $layout_key ) ? $layout_key : ''; ?>"/>
     </div>
     <hr/>
-    <?php do_action( 'advanced-ads-gadsense-extra-ad-param', $extra_params, $content );
+    <?php do_action( 'advanced-ads-gadsense-extra-ad-param', $extra_params, $content, $ad );

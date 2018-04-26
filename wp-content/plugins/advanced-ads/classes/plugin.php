@@ -101,6 +101,7 @@ class Advanced_Ads_Plugin {
 		// Load public-facing style sheet and JavaScript.
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
 		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+		add_action( 'wp_head', array( $this, 'print_head_scripts' ), 7 );
 
 		// add short codes
 		add_shortcode( 'the_ad', array( $this, 'shortcode_display_ad' ) );
@@ -148,6 +149,33 @@ class Advanced_Ads_Plugin {
 		if ( $activated_js ){
 			wp_enqueue_script( $this->get_plugin_slug() . '-advanced-js', ADVADS_BASE_URL . 'public/assets/js/advanced.js', array( 'jquery' ), ADVADS_VERSION );
 		}
+	}
+
+	/**
+	 * Print public-facing JavaScript in the HTML head.
+	 *
+	 * @since    untagged
+	 */
+	public function print_head_scripts() {
+		/**
+		 * Usage example in add-ons:
+		 * ( window.advanced_ads_ready || jQuery( document ).ready ).call( null, function() {
+		 *    // Called when DOM is ready.
+		 * } );
+		 */
+		
+		echo apply_filters( 'advanced-ads-attribution', '<!-- managing ads with Advanced Ads -->' ); 
+
+		ob_start();
+		?><script>
+		<?php if ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) {
+			readfile( ADVADS_BASE_PATH . 'public/assets/js/ready.js' );
+		} else { ?>
+			advanced_ads_ready=function(){var fns=[],listener,doc=typeof document==="object"&&document,hack=doc&&doc.documentElement.doScroll,domContentLoaded="DOMContentLoaded",loaded=doc&&(hack?/^loaded|^c/:/^loaded|^i|^c/).test(doc.readyState);if(!loaded&&doc){listener=function(){doc.removeEventListener(domContentLoaded,listener);window.removeEventListener("load",listener);loaded=1;while(listener=fns.shift())listener()};doc.addEventListener(domContentLoaded,listener);window.addEventListener("load",listener)}return function(fn){loaded?setTimeout(fn,0):fns.push(fn)}}();
+			<?php
+		}
+		?></script><?php
+		echo Advanced_Ads_Utils::get_inline_asset( ob_get_clean() );
 	}
 
 	public function widget_init() {
@@ -337,37 +365,44 @@ class Advanced_Ads_Plugin {
 	}
 
 	/**
-	 * Prepare attributes by converting strings to multi-dimensional array
-	 * Example: [ 'output__margin__top' => 1 ]  =>  ['output']['margin']['top'] = 1
+	 * Prepare shortcode attributes.
 	 *
 	 * @param array $atts array with strings
 	 * @return array
 	 */
 	private function prepare_shortcode_atts( $atts ) {
-		if ( defined( 'ADVANCED_ADS_DISABLE_CHANGE' ) && ADVANCED_ADS_DISABLE_CHANGE ) {
-			return array();
-		}
-
 		$result = array();
 
-		foreach ( $atts as $attr => $data  ) {
-			$levels = explode( '__', $attr );
-			$last = array_pop( $levels );
+		/**
+		 * Prepare attributes by converting strings to multi-dimensional array
+		 * Example: [ 'output__margin__top' => 1 ]  =>  ['output']['margin']['top'] = 1
+		 */
+		if ( ! defined( 'ADVANCED_ADS_DISABLE_CHANGE' ) || ! ADVANCED_ADS_DISABLE_CHANGE ) {
+			foreach ( $atts as $attr => $data  ) {
+				$levels = explode( '__', $attr );
+				$last = array_pop( $levels );
 
-			$cur_lvl = &$result;
+				$cur_lvl = &$result;
 
-			foreach ( $levels as $lvl ) {
-				if ( ! isset( $cur_lvl[ $lvl ] ) ) {
-					$cur_lvl[ $lvl ] = array();
+				foreach ( $levels as $lvl ) {
+					if ( ! isset( $cur_lvl[ $lvl ] ) ) {
+						$cur_lvl[ $lvl ] = array();
+					}
+
+					$cur_lvl = &$cur_lvl[ $lvl ];
 				}
 
-				$cur_lvl = &$cur_lvl[ $lvl ];
+				$cur_lvl[ $last ] = $data;
 			}
 
-			$cur_lvl[ $last ] = $data;
+			$result = array_diff_key( $result, array( 'id' => false, 'blog_id' => false, 'ad_args' => false ) );
 		}
 
-		$result = array_diff_key( $result, array( 'id' => false, 'blog_id' => false ) );
+		// Ad type: 'content' and a shortcode inside.
+		if ( isset( $atts['ad_args'] ) ) {
+			$result = array_merge( $result, json_decode( urldecode( $atts['ad_args'] ) ,true) );
+
+		}
 
 		return $result;
 	}
@@ -472,7 +507,7 @@ class Advanced_Ads_Plugin {
 					$this->frontend_prefix = preg_match( '/[A-Za-z][A-Za-z0-9_]{4}/', $host, $result ) ? $result[0] . '-' : Advanced_Ads_Plugin::DEFAULT_FRONTEND_PREFIX;
 				}
 			} else {
-				$this->frontend_prefix = $options['front-prefix'];
+				$this->frontend_prefix = esc_attr( $options['front-prefix'] );
 			}
         }
 		return $this->frontend_prefix;

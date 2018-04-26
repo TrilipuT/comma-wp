@@ -4,17 +4,16 @@ jQuery( document ).ready(function ($) {
 });
 var advads_wizard = {
     box_order: [ // selectors of elements in the wizard in the correct order
-	'#post-body-content',
-	'#ad-main-box',
+	'#post-body-content, #ad-main-box', // show title and type together
 	'#ad-parameters-box',
 	// '#ad-output-box',
-	'#ad-display-box',
-	'#ad-visitor-box',
+	'#ad-display-box, #ad-visitor-box', // display and visitor conditions
 	// '#advanced_ads_groupsdiv',
 	// '#submitdiv'
     ],
-    current_box: '#post-body-content', // current active box
+    current_box: '#post-body-content, #ad-main-box', // current active box
     one_column: false, // whether the edit screen is in one-column mode
+    status: false, // what is the current status? true if running, else false
     init: function( status ){ // status can be "start" to start wizard or nothing to not start it
 	var _this = this;
 	jQuery('#advads-wizard-controls-next').click( function( ){ _this.next(); } );
@@ -30,13 +29,17 @@ var advads_wizard = {
 	jQuery( '.advads-stop-wizard' ).click( function(){
 	    _this.close();
 	});
+	// jump to next box when ad type is selected
+	jQuery('#advanced-ad-type input').change(function(e){
+	    _this.next();
+	});
     },
     show_current_box: function(){
 	jQuery( this.current_box ).removeClass('advads-hide');
     },
     start: function(){ // do stuff when wizard is started
 	// show page in 1-column stype
-	var _this = this;
+	this.status = true;
 	if( jQuery( '#post-body').hasClass('columns-1') ){
 	    this.one_column = true;
 	} else {
@@ -49,7 +52,6 @@ var advads_wizard = {
 	// display close button and controls
 	jQuery('#advads-stop-wizard, #advads-wizard-controls').removeClass('hidden')
 	this.update_nav();
-	this.update_progress_bar();
 	// initially hide some elemente
 	jQuery( '#advads-ad-description').addClass('advads-hide'); // ad description
 	jQuery( '#advads-ad-info').addClass('advads-hide'); // shortcode and php function info
@@ -60,17 +62,16 @@ var advads_wizard = {
 	// remove close-class from ad type box
 	jQuery( '#ad-main-box' ).removeClass('closed');
 	this.save_hide_wizard( false );
-	// jump to next box when ad type is selected
-	jQuery('#advanced-ad-type input').change(function(){
-	    _this.next();
-	});
     },
     close: function(){ // close the wizard by showing all elements again
+	this.status = false;
 	jQuery('*').removeClass('advads-hide');
 	jQuery('#advads-stop-wizard, #advads-wizard-controls').addClass('hidden');
 	if( this.one_column !== true ){
 	    jQuery( '#post-body').addClass( 'columns-2' ).removeClass( 'columns-1' );
 	}
+	// reset current box
+	this.current_box = this.box_order[0];
 	jQuery('#advads-wizard-welcome').remove();// close wizard welcome message
 	// show all elements with 'advads-hide-for-wizard' class
 	jQuery( '.advads-hide-in-wizard').show();
@@ -90,13 +91,14 @@ var advads_wizard = {
 	    jQuery('#advads-wizard-controls-prev').addClass('hidden');
 	}
 	// hide save button for first boxes
-	if( i <= 3 ){
+	if( i <= 1 ){
 	    jQuery('#advads-wizard-controls-save').addClass('hidden');
 	} else {
 	    jQuery('#advads-wizard-controls-save').removeClass('hidden');
 	}
     },
     next: function(){ // show next box
+	if( ! this.status ){ return }
 	// get index of current item in box-array
 	var i = this.box_order.indexOf( this.current_box );
 	// check if there is a next index
@@ -109,7 +111,6 @@ var advads_wizard = {
 	this.current_box = this.box_order[ i + 1 ];
 	this.show_current_box();
 	this.update_nav();
-	this.update_progress_bar();
     },
     prev: function(){ // show previous box
 	// get index of current item in box-array
@@ -124,7 +125,6 @@ var advads_wizard = {
 	this.current_box = this.box_order[ i - 1 ];
 	this.show_current_box();
 	this.update_nav();
-	this.update_progress_bar();
     },
     save_hide_wizard: function( hide_wizard ){ // update wizard state (started by default or not?)
 
@@ -134,6 +134,7 @@ var advads_wizard = {
 		    data: {
 			    action: 'advads-save-hide-wizard-state',
 			    hide_wizard: hide_wizard,
+			    nonce: advadsglobal.ajax_nonce,
 		    },
 	    });
     },
@@ -141,14 +142,4 @@ var advads_wizard = {
 	    jQuery( box ).find('.advads-show-in-wizard').hide();
 	    jQuery( box ).find('.advads-hide-in-wizard').show();
     },
-    update_progress_bar: function(){ // update the progress bar based on the current element
-	    var max = this.box_order.length;
-	    var current = this.box_order.indexOf( this.current_box );
-	    if( current === 0 ){
-		percent = 1;
-	    } else {
-		var percent = parseInt ( ( current / max ) * 100 );
-	    }
-	    jQuery( '#advads-wizard-progress-bar span' ).css( 'width', percent + '%' );
-    }
 };

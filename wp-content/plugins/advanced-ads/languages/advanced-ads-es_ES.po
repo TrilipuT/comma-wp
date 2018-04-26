@@ -2283,11 +2283,9 @@ msgstr "Detener el Asistente y mostrar todas las opciones"
 #: admin/views/ad-info-top.php:5
 #, php-format
 msgid ""
-"Congratulations! Your ad is now visible in the frontend. You can adjust the "
-"placement options <a href=\"%s\">here</a>."
+"Congratulations! Your ad is now visible in the frontend."
 msgstr ""
-"Felicitaciones! Tu anuncio es ahora visible desde el frente del sitio. "
-"Puedes ajustar las opciones de colocación <a href=\"%s\">aquí</a>."
+"Felicitaciones! Tu anuncio es ahora visible desde el frente del sitio."
 
 #: admin/views/ad-info-top.php:7
 msgid "Where do you want to display the ad?"

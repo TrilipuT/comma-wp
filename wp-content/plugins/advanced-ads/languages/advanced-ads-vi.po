@@ -2269,11 +2269,9 @@ msgstr "Dừng Wizard và hiển thị tất cả tùy chọn"
 #: admin/views/ad-info-top.php:5
 #, php-format
 msgid ""
-"Congratulations! Your ad is now visible in the frontend. You can adjust the "
-"placement options <a href=\"%s\">here</a>."
+"Congratulations! Your ad is now visible in the frontend."
 msgstr ""
-"Xin chúc mừng! Quảng cáo của bạn bây giờ đã có thể nhìn thấy trên trang. Bạn "
-"có thể điều chỉnh các tùy chọn vị trí <a href=\"%s\">tại đây</a>."
+"Xin chúc mừng! Quảng cáo của bạn bây giờ đã có thể nhìn thấy trên trang."
 
 #: admin/views/ad-info-top.php:7
 msgid "Where do you want to display the ad?"

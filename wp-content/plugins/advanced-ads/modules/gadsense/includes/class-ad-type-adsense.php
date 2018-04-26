@@ -178,6 +178,9 @@ class Advanced_Ads_Ad_Type_Adsense extends Advanced_Ads_Ad_Type_Abstract {
 		$output = apply_filters( 'advanced-ads-gadsense-output', false, $ad, $pub_id, $content );
 		if ( $output !== false ) {
 			return $output;
+		} elseif ( advads_is_amp() ) {
+			// Prevent output on AMP pages.
+			return '';
 		}
 
 		$output = '';
@@ -198,24 +201,17 @@ class Advanced_Ads_Ad_Type_Adsense extends Advanced_Ads_Ad_Type_Abstract {
 			$output .= '(adsbygoogle = window.adsbygoogle || []).push({}); ' . "\n";
 			$output .= '</script>' . "\n";
 		} else {
-			if ( ! isset($content->resize) || 'auto' == $content->resize ) {
-				$this->append_defaut_responsive_content( $output, $pub_id, $content );
-			} else {
+			/**
+			 * The value of $ad->content->resize should be tested to format the output correctly
+			 */
+			$unmodified = $output;
+			$output = apply_filters( 'advanced-ads-gadsense-responsive-output', $output, $ad, $pub_id );
+			if ( $unmodified == $output ) {
 				/**
-				 * At this point, the ad is responsive ($ad->content->unitType == responsive)
-				 * The value of $ad->content->resize should be tested to format the output correctly
-				 * The $output variable already contains the first line which includes "adsbygoogle.js",
-				 * The rest of the output should be appended to it.
+				 * If the output has not been modified, perform a default responsive output.
+				 * A simple did_action check isn't sufficient, some hooks may be attached and fired but didn't touch the output
 				 */
-				$unmodified = $output;
-				$output = apply_filters( 'advanced-ads-gadsense-responsive-output', $output, $ad, $pub_id );
-				if ( $unmodified == $output ) {
-					/**
-					 * If the output has not been modified, perform a default responsive output.
-					 * A simple did_action check isn't sufficient, some hooks may be attached and fired but didn't touch the output
-					 */
-					$this->append_defaut_responsive_content( $output, $pub_id, $content );
-				}
+				$this->append_defaut_responsive_content( $output, $pub_id, $content );
 			}
 		}
 		return $output;
@@ -240,9 +236,6 @@ class Advanced_Ads_Ad_Type_Adsense extends Advanced_Ads_Ad_Type_Abstract {
 			    $format = 'fluid';
 			    $layout = 'in-article';
 			    $style = 'display:block; text-align:center;';
-			    break;
-			case 'link-responsive' : 
-			    $format = 'link';
 			    break;
 			default :
 			    $format = 'auto';

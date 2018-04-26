@@ -839,8 +839,7 @@ msgstr ""
 #: admin/views/ad-info-top.php:5
 #, php-format
 msgid ""
-"Congratulations! Your ad is now visible in the frontend. You can adjust the "
-"placement options <a href=\"%s\">here</a>."
+"Congratulations! Your ad is now visible in the frontend."
 msgstr ""
 
 #: admin/views/ad-info-top.php:7

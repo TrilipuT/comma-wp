@@ -31,7 +31,7 @@ services:
       DB_USER: 'wordpress'
       DB_PASSWORD: 'wordpress'
       WP_DEBUG: 'true'
-      AWS_CLOUDFRONT_DOMAIN: 'comma.dev/wp-content/uploads'
+      AWS_CLOUDFRONT_DOMAIN: 'comma.local/wp-content/uploads'
     volumes:
       - ./:/var/www/html:rw
 #      - comma-app:/var/www/html:rw
@@ -54,7 +54,7 @@ services:
     labels:
       - 'traefik.backend=nginx'
       - 'traefik.port=80'
-      - 'traefik.frontend.rule=Host:comma.dev'
+      - 'traefik.frontend.rule=Host:comma.local'
 
 #  varnish:
 #    image: wodby/wordpress-varnish:4.1-2.1.0
@@ -102,9 +102,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
 # Docker-sync for macOS users
-volumes:
-  comma-app:
-    external: true
+#volumes:
+#  comma-app:
+#    external: true
 #  mariadb:
 #    external: true
 

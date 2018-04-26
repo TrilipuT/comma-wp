@@ -46,11 +46,23 @@ class Advanced_Ads_Ajax {
 		if ( $deferedAds ) { // load all ajax ads with a single request
 			$response = array();
 
+			$requests_by_blog = array();
 			foreach ( (array) $deferedAds as $request ) {
-				$result = $this->select_one( $request );
-				$result['elementId'] = ! empty( $request['elementId'] ) ? $request['elementId'] : null;
-				$response[] = $result;
+				$blog_id = isset( $request['blog_id'] ) ? $request['blog_id'] : get_current_blog_id();
+				$requests_by_blog[ $blog_id ][] = $request;
 			}
+			foreach ( $requests_by_blog as $blog_id => $requests ) {
+				if ( $blog_id !== get_current_blog_id() ) { Advanced_Ads::get_instance()->switch_to_blog( $blog_id ); }
+
+				foreach ( $requests as $request ) {
+					$result = $this->select_one( $request );
+					$result['elementId'] = ! empty( $request['elementId'] ) ? $request['elementId'] : null;
+					$response[] = $result;
+				}
+
+				if ( $blog_id !== get_current_blog_id() ) { Advanced_Ads::get_instance()->restore_current_blog(); }
+			}
+
 			echo json_encode( $response );
 			die();
 		}
@@ -89,7 +101,7 @@ class Advanced_Ads_Ajax {
 			$content = $selector->get_ad_by_method( $id, $method, $arguments );
 			$adIds = array_slice( $advads->current_ads, $l ); // ads loaded by this request
 
-			return array( 'status' => 'success', 'item' => $content, 'id' => $id, 'method' => $method, 'ads' => $adIds );
+			return array( 'status' => 'success', 'item' => $content, 'id' => $id, 'method' => $method, 'ads' => $adIds, 'blog_id' => get_current_blog_id() );
 		} else {
 			// report error
 			return array( 'status' => 'error', 'message' => 'No valid ID or METHOD found.' );

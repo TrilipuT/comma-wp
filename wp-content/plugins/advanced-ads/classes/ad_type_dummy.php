@@ -39,14 +39,14 @@ class Advanced_Ads_Ad_Type_Dummy extends Advanced_Ads_Ad_Type_Abstract{
 	 */
 	public function render_parameters( $ad ){
 	    
-		?><img src="<?php echo ADVADS_BASE_URL ?>/public/assets/img/dummy.png" width="300" height="250"/><?php
-		
 		// don’t show url field if tracking plugin enabled
 		if( ! defined( 'AAT_VERSION' )) :
-		    $url = ( ! empty( $ad->url ) ) ? esc_url( $ad->url ) : ADVADS_URL;
-		    ?><span class="label"><?php _e( 'url', 'advanced-ads' ); ?></span>
-		    <div><input type="url" name="advanced_ad[url]" id="advads-url" value="<?php echo $url; ?>"/></div>
+		    $url = ( ! empty( $ad->url ) ) ? esc_url( $ad->url ) : home_url();
+		    ?><span class="label"><?php _e( 'URL', 'advanced-ads' ); ?></span>
+		    <div><input type="url" name="advanced_ad[url]" id="advads-url" class="advads-ad-url" value="<?php echo $url; ?>"/></div><hr/>
 		<?php endif;
+		
+		?><img src="<?php echo ADVADS_BASE_URL ?>/public/assets/img/dummy.jpg" width="300" height="250"/><?php
 		
 		?><input type="hidden" name="advanced_ad[width]" value="300"/>
 		<input type="hidden" name="advanced_ad[height]" value="250"/><?php
@@ -61,10 +61,13 @@ class Advanced_Ads_Ad_Type_Dummy extends Advanced_Ads_Ad_Type_Abstract{
 	public function prepare_output($ad){
 	    
 		$url =	    ( isset( $ad->url ) ) ? esc_url( $ad->url ) : '';
+		// get general target setting
+		$options = Advanced_Ads::get_instance()->options();
+		$target_blank =	!empty( $options['target-blank'] ) ? ' target="_blank"' : '';
 
 		ob_start();
-		if( ! defined( 'AAT_VERSION' ) && $url ){ echo '<a href="'. $url .'">'; }
-		echo '<img src="' . ADVADS_BASE_URL . '/public/assets/img/dummy.png" width="300" height="250"/>';
+		if( ! defined( 'AAT_VERSION' ) && $url ){ echo '<a href="'. $url .'"'.$target_blank.'>'; }
+		echo '<img src="' . ADVADS_BASE_URL . '/public/assets/img/dummy.jpg" width="300" height="250"/>';
 		if( ! defined( 'AAT_VERSION' ) && $url ){ echo '</a>'; }
 
 		return ob_get_clean();

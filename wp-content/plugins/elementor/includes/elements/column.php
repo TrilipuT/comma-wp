@@ -1,45 +1,118 @@
 <?php
 namespace Elementor;
 
-if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
+if ( ! defined( 'ABSPATH' ) ) {
+	exit; // Exit if accessed directly.
+}
 
+/**
+ * Elementor column element.
+ *
+ * Elementor column handler class is responsible for initializing the column
+ * element.
+ *
+ * @since 1.0.0
+ */
 class Element_Column extends Element_Base {
 
+	/**
+	 * Column edit tools.
+	 *
+	 * Holds the column edit tools.
+	 *
+	 * @since 1.0.0
+	 * @access protected
+	 * @static
+	 *
+	 * @var array Column edit tools.
+	 */
 	protected static $_edit_tools;
 
+	/**
+	 * Get default edit tools.
+	 *
+	 * Retrieve the column default edit tools. Used to set initial tools.
+	 *
+	 * @since 1.0.0
+	 * @access protected
+	 * @static
+	 *
+	 * @return array Default column edit tools.
+	 */
 	protected static function get_default_edit_tools() {
 		$column_label = __( 'Column', 'elementor' );
 
 		return [
 			'duplicate' => [
+				/* translators: %s: Column label */
 				'title' => sprintf( __( 'Duplicate %s', 'elementor' ), $column_label ),
 				'icon' => 'clone',
 			],
 			'add' => [
+				/* translators: %s: Column label */
 				'title' => sprintf( __( 'Add %s', 'elementor' ), $column_label ),
 				'icon' => 'plus',
 			],
 			'remove' => [
+				/* translators: %s: Column label */
 				'title' => sprintf( __( 'Remove %s', 'elementor' ), $column_label ),
-				'icon' => 'times',
+				'icon' => 'close',
 			],
 		];
 	}
 
+	/**
+	 * Get column name.
+	 *
+	 * Retrieve the column name.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 *
+	 * @return string Column name.
+	 */
 	public function get_name() {
 		return 'column';
 	}
 
+	/**
+	 * Get column title.
+	 *
+	 * Retrieve the column title.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 *
+	 * @return string Column title.
+	 */
 	public function get_title() {
 		return __( 'Column', 'elementor' );
 	}
 
+	/**
+	 * Get column icon.
+	 *
+	 * Retrieve the column icon.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 *
+	 * @return string Column icon.
+	 */
 	public function get_icon() {
-		return 'eicon-columns';
+		return 'eicon-column';
 	}
 
+	/**
+	 * Register column controls.
+	 *
+	 * Used to add new controls to the column element.
+	 *
+	 * @since 1.0.0
+	 * @access protected
+	 */
 	protected function _register_controls() {
-		// Section Layout
+		// Section Layout.
 		$this->start_controls_section(
 			'layout',
 			[
@@ -53,16 +126,17 @@ class Element_Column extends Element_Base {
 			[
 				'label' => __( 'Column Width', 'elementor' ) . ' (%)',
 				'type' => Controls_Manager::NUMBER,
-				'min' => 10,
-				'max' => 90,
+				'min' => 2,
+				'max' => 98,
+				'required' => true,
 				'device_args' => [
 					Controls_Stack::RESPONSIVE_TABLET => [
-						'nullable' => true,
 						'max' => 100,
+						'required' => false,
 					],
 					Controls_Stack::RESPONSIVE_MOBILE => [
-						'nullable' => true,
 						'max' => 100,
+						'required' => false,
 					],
 				],
 				'min_affected_device' => [
@@ -104,19 +178,24 @@ class Element_Column extends Element_Base {
 				'type' => Controls_Manager::NUMBER,
 				'placeholder' => 20,
 				'selectors' => [
-					'{{WRAPPER}} > .elementor-column-wrap > .elementor-widget-wrap > .elementor-widget' => 'margin-bottom: {{VALUE}}px',
+					'{{WRAPPER}} > .elementor-column-wrap > .elementor-widget-wrap > .elementor-widget:not(:last-child)' => 'margin-bottom: {{VALUE}}px', //Need the full path for exclude the inner section
 				],
 			]
 		);
 
 		$possible_tags = [
 			'div',
+			'header',
+			'footer',
 			'article',
+			'section',
 			'aside',
 			'nav',
 		];
 
-		$options = [ '' => __( 'Default', 'elementor' ) ] + array_combine( $possible_tags, $possible_tags );
+		$options = [
+			'' => __( 'Default', 'elementor' ),
+		] + array_combine( $possible_tags, $possible_tags );
 
 		$this->add_control(
 			'html_tag',
@@ -195,14 +274,14 @@ class Element_Column extends Element_Base {
 
 		$this->end_controls_section();
 
-		// Section Column Background Overlay
+		// Section Column Background Overlay.
 		$this->start_controls_section(
 			'section_background_overlay',
 			[
 				'label' => __( 'Background Overlay', 'elementor' ),
 				'tab' => Controls_Manager::TAB_STYLE,
 				'condition' => [
-					'background_background' => [ 'classic', 'gradient', 'video' ],
+					'background_background' => [ 'classic', 'gradient' ],
 				],
 			]
 		);
@@ -221,16 +300,13 @@ class Element_Column extends Element_Base {
 			[
 				'name' => 'background_overlay',
 				'selector' => '{{WRAPPER}} > .elementor-element-populated >  .elementor-background-overlay',
-				'condition' => [
-					'background_background' => [ 'classic', 'gradient' ],
-				],
 			]
 		);
 
 		$this->add_control(
 			'background_overlay_opacity',
 			[
-				'label' => __( 'Opacity (%)', 'elementor' ),
+				'label' => __( 'Opacity', 'elementor' ),
 				'type' => Controls_Manager::SLIDER,
 				'default' => [
 					'size' => .5,
@@ -270,7 +346,7 @@ class Element_Column extends Element_Base {
 		$this->add_control(
 			'background_overlay_hover_opacity',
 			[
-				'label' => __( 'Opacity (%)', 'elementor' ),
+				'label' => __( 'Opacity', 'elementor' ),
 				'type' => Controls_Manager::SLIDER,
 				'default' => [
 					'size' => .5,
@@ -410,6 +486,20 @@ class Element_Column extends Element_Base {
 						'step' => 0.1,
 					],
 				],
+				'conditions' => [
+					'relation' => 'or',
+					'terms' => [
+						[
+							'name' => 'background_background',
+							'operator' => '!==',
+							'value' => '',
+						], [
+							'name' => 'border_border',
+							'operator' => '!==',
+							'value' => '',
+						],
+					],
+				],
 				'selectors' => [
 					'{{WRAPPER}} > .elementor-element-populated' => 'transition: background {{background_hover_transition.SIZE}}s, border {{SIZE}}s, border-radius {{SIZE}}s, box-shadow {{SIZE}}s',
 					'{{WRAPPER}} > .elementor-element-populated > .elementor-background-overlay' => 'transition: background {{background_overlay_hover_transition.SIZE}}s, border-radius {{SIZE}}s, opacity {{background_overlay_hover_transition.SIZE}}s',
@@ -423,7 +513,7 @@ class Element_Column extends Element_Base {
 
 		$this->end_controls_section();
 
-		// Section Typography
+		// Section Typography.
 		$this->start_controls_section(
 			'section_typo',
 			[
@@ -433,12 +523,12 @@ class Element_Column extends Element_Base {
 			]
 		);
 
-		if ( in_array( Scheme_Color::get_type(), Schemes_Manager::get_enabled_schemes() ) ) {
+		if ( in_array( Scheme_Color::get_type(), Schemes_Manager::get_enabled_schemes(), true ) ) {
 			$this->add_control(
 				'colors_warning',
 				[
 					'type' => Controls_Manager::RAW_HTML,
-					'raw' => __( 'Note: The following colors won\'t work if Global Colors are enabled.', 'elementor' ),
+					'raw' => __( 'Note: The following colors won\'t work if Default Colors are enabled.', 'elementor' ),
 					'content_classes' => 'elementor-panel-alert elementor-panel-alert-warning',
 				]
 			);
@@ -520,11 +610,11 @@ class Element_Column extends Element_Base {
 
 		$this->end_controls_section();
 
-		// Section Advanced
+		// Section Advanced.
 		$this->start_controls_section(
 			'section_advanced',
 			[
-				'label' => __( 'Element Style', 'elementor' ),
+				'label' => __( 'Advanced', 'elementor' ),
 				'type' => Controls_Manager::SECTION,
 				'tab' => Controls_Manager::TAB_ADVANCED,
 			]
@@ -564,6 +654,7 @@ class Element_Column extends Element_Base {
 				'selectors' => [
 					'{{WRAPPER}}' => 'z-index: {{VALUE}};',
 				],
+				'label_block' => false,
 			]
 		);
 
@@ -574,7 +665,7 @@ class Element_Column extends Element_Base {
 				'type' => Controls_Manager::ANIMATION,
 				'default' => '',
 				'prefix_class' => 'animated ',
-				'label_block' => true,
+				'label_block' => false,
 				'frontend_available' => true,
 			]
 		);
@@ -619,8 +710,8 @@ class Element_Column extends Element_Base {
 				'label' => __( 'CSS ID', 'elementor' ),
 				'type' => Controls_Manager::TEXT,
 				'default' => '',
-				'label_block' => true,
 				'title' => __( 'Add your custom id WITHOUT the Pound key. e.g: my-id', 'elementor' ),
+				'label_block' => false,
 			]
 		);
 
@@ -631,8 +722,8 @@ class Element_Column extends Element_Base {
 				'type' => Controls_Manager::TEXT,
 				'default' => '',
 				'prefix_class' => '',
-				'label_block' => true,
 				'title' => __( 'Add your custom class WITHOUT the dot. e.g: my-class', 'elementor' ),
+				'label_block' => false,
 			]
 		);
 
@@ -700,15 +791,26 @@ class Element_Column extends Element_Base {
 		Plugin::$instance->controls_manager->add_custom_css_controls( $this );
 	}
 
-	protected function _render_settings() {
+	/**
+	 * Render column edit tools.
+	 *
+	 * Used to generate the edit tools HTML.
+	 *
+	 * @since 1.8.0
+	 * @access protected
+	 */
+	protected function render_edit_tools() {
 		?>
 		<div class="elementor-element-overlay">
 			<ul class="elementor-editor-element-settings elementor-editor-column-settings">
-				<li class="elementor-editor-element-setting elementor-editor-element-trigger" title="<?php printf( __( 'Edit %s', 'elementor' ), __( 'Column', 'elementor' ) ); ?>"><i class="fa fa-columns"></i></li>
+				<li class="elementor-editor-element-setting elementor-editor-element-trigger" title="<?php echo esc_attr( sprintf( __( 'Edit %s', 'elementor' ), __( 'Column', 'elementor' ) ) ); ?>">
+					<i class="eicon-column" aria-hidden="true"></i>
+					<span class="elementor-screen-only"><?php printf( __( 'Edit %s', 'elementor' ), __( 'Column', 'elementor' ) ); ?></span>
+				</li>
 				<?php foreach ( self::get_edit_tools() as $edit_tool_name => $edit_tool ) : ?>
 					<li class="elementor-editor-element-setting elementor-editor-element-<?php echo $edit_tool_name; ?>" title="<?php echo $edit_tool['title']; ?>">
+						<i class="eicon-<?php echo $edit_tool['icon']; ?>" aria-hidden="true"></i>
 						<span class="elementor-screen-only"><?php echo $edit_tool['title']; ?></span>
-						<i class="fa fa-<?php echo $edit_tool['icon']; ?>"></i>
 					</li>
 				<?php endforeach; ?>
 			</ul>
@@ -717,6 +819,14 @@ class Element_Column extends Element_Base {
 		<?php
 	}
 
+	/**
+	 * Render column output in the editor.
+	 *
+	 * Used to generate the live preview, using a Backbone JavaScript template.
+	 *
+	 * @since 1.0.0
+	 * @access protected
+	 */
 	protected function _content_template() {
 		?>
 		<div class="elementor-column-wrap">
@@ -726,14 +836,27 @@ class Element_Column extends Element_Base {
 		<?php
 	}
 
+	/**
+	 * Before column rendering.
+	 *
+	 * Used to add stuff before the column element.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 */
 	public function before_render() {
-		$settings = $this->get_settings();
+		$settings = $this->get_settings_for_display();
 
-		$has_background_overlay = in_array( $settings['background_overlay_background'], [ 'classic', 'gradient' ] ) ||
-		                          in_array( $settings['background_overlay_hover_background'], [ 'classic', 'gradient' ] );
+		$has_background_overlay = in_array( $settings['background_overlay_background'], [ 'classic', 'gradient' ], true ) ||
+								  in_array( $settings['background_overlay_hover_background'], [ 'classic', 'gradient' ], true );
+
+		$column_wrap_class = 'elementor-column-wrap';
+		if ( $this->get_children() ) {
+			$column_wrap_class .= ' elementor-element-populated';
+		}
 		?>
-		<<?php echo $this->get_html_tag() . ' ' .  $this->get_render_attribute_string( '_wrapper' ); ?>>
-			<div class="elementor-column-wrap<?php if ( $this->get_children() ) echo ' elementor-element-populated'; ?>">
+		<<?php echo $this->get_html_tag() . ' ' . $this->get_render_attribute_string( '_wrapper' ); ?>>
+			<div class="<?php echo $column_wrap_class; ?>">
 			<?php if ( $has_background_overlay ) : ?>
 				<div class="elementor-background-overlay"></div>
 			<?php endif; ?>
@@ -741,6 +864,14 @@ class Element_Column extends Element_Base {
 		<?php
 	}
 
+	/**
+	 * After column rendering.
+	 *
+	 * Used to add stuff after the column element.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 */
 	public function after_render() {
 		?>
 				</div>
@@ -749,6 +880,14 @@ class Element_Column extends Element_Base {
 		<?php
 	}
 
+	/**
+	 * Add column render attributes.
+	 *
+	 * Used to add attributes to the current column wrapper HTML tag.
+	 *
+	 * @since 1.3.0
+	 * @access protected
+	 */
 	protected function _add_render_attributes() {
 		parent::_add_render_attributes();
 
@@ -758,15 +897,29 @@ class Element_Column extends Element_Base {
 
 		$settings = $this->get_settings();
 
-		$this->add_render_attribute( '_wrapper', 'class', [
-			'elementor-column',
-			'elementor-col-' . $settings['_column_size'],
-			'elementor-' . $column_type . '-column',
-		] );
+		$this->add_render_attribute(
+			'_wrapper', 'class', [
+				'elementor-column',
+				'elementor-col-' . $settings['_column_size'],
+				'elementor-' . $column_type . '-column',
+			]
+		);
 
 		$this->add_render_attribute( '_wrapper', 'data-element_type', $this->get_name() );
 	}
 
+	/**
+	 * Get default child type.
+	 *
+	 * Retrieve the column child type based on element data.
+	 *
+	 * @since 1.0.0
+	 * @access protected
+	 *
+	 * @param array $element_data Element ID.
+	 *
+	 * @return Element_Base Column default child type.
+	 */
 	protected function _get_default_child_type( array $element_data ) {
 		if ( 'section' === $element_data['elType'] ) {
 			return Plugin::$instance->elements_manager->get_element_types( 'section' );
@@ -775,6 +928,16 @@ class Element_Column extends Element_Base {
 		return Plugin::$instance->widgets_manager->get_widget_types( $element_data['widgetType'] );
 	}
 
+	/**
+	 * Get HTML tag.
+	 *
+	 * Retrieve the column element HTML tag.
+	 *
+	 * @since 1.5.3
+	 * @access private
+	 *
+	 * @return string Column HTML tag.
+	 */
 	private function get_html_tag() {
 		$html_tag = $this->get_settings( 'html_tag' );
 

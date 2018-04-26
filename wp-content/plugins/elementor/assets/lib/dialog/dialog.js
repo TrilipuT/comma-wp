@@ -1,5 +1,5 @@
 /*!
- * Dialogs Manager v3.2.1
+ * Dialogs Manager v4.2.1
  * https://github.com/kobizz/dialogs-manager
  *
  * Copyright Kobi Zaltzberg
@@ -27,6 +27,8 @@
 			};
 
 			var prototype = WidgetType.prototype = new Parent(typeName);
+
+			prototype.types = prototype.types.concat([typeName]);
 
 			$.extend(prototype, properties);
 
@@ -124,14 +126,19 @@
 			settings = {},
 			events = {},
 			elements = {},
-			baseClosureMethods = [ 'refreshPosition' ];
+			hideTimeOut = 0,
+			baseClosureMethods = ['refreshPosition'];
 
 		var bindEvents = function () {
 
 			elements.window.on('keyup', onWindowKeyUp);
 
-			if (settings.hide.onBackgroundClick) {
-				elements.widget.on('click', hideOnBackgroundClick);
+			if (settings.hide.onOutsideClick) {
+				elements.window[0].addEventListener('click', hideOnOutsideClick, true);
+			}
+
+			if (settings.hide.onClick || settings.hide.onBackgroundClick) {
+				elements.widget.on('click', hideOnClick);
 			}
 
 			if (settings.position.autoRefresh) {
@@ -190,16 +197,20 @@
 				self.setID(id);
 			}
 
-			var className = self.getSettings('className');
+			var classes = [];
 
-			if (className) {
-				self.getElements('widget').addClass(className);
-			}
+			$.each(self.types, function() {
+				classes.push(settings.classes.globalPrefix + '-type-' + this);
+			});
+
+			classes.push(self.getSettings('className'));
+
+			self.getElements('widget').addClass(classes.join(' '));
 		};
 
 		var initSettings = function (parent, userSettings) {
 
-			var parentSettings = parent.getSettings();
+			var parentSettings = $.extend(true, {}, parent.getSettings());
 
 			settings = {
 				effects: parentSettings.effects,
@@ -207,17 +218,23 @@
 					globalPrefix: parentSettings.classPrefix,
 					prefix: parentSettings.classPrefix + '-' + widgetName
 				},
+				selectors: {
+					preventClose: '.' + parentSettings.classPrefix + '-prevent-close'
+				},
 				container: 'body',
 				position: {
 					element: 'widget',
 					my: 'center',
 					at: 'center',
 					of: 'container',
+					enable: true,
 					autoRefresh: false
 				},
 				hide: {
 					auto: false,
 					autoDelay: 5000,
+					onClick: false,
+					onOutsideClick: true,
 					onBackgroundClick: true
 				}
 			};
@@ -251,8 +268,22 @@
 			});
 		};
 
-		var hideOnBackgroundClick = function(event) {
-			if (event.target !== this) {
+		var hideOnClick = function(event) {
+
+			if (settings.hide.onClick) {
+
+				if ($(event.target).closest(settings.selectors.preventClose).length) {
+					return;
+				}
+			} else if (event.target !== this) {
+				return;
+			}
+
+			self.hide();
+		};
+
+		var hideOnOutsideClick = function(event) {
+			if ($(event.target).closest(elements.widget).length) {
 				return;
 			}
 
@@ -272,8 +303,12 @@
 
 			elements.window.off('keyup', onWindowKeyUp);
 
-			if (settings.hide.onBackgroundClick) {
-				elements.widget.off('click', hideOnBackgroundClick);
+			if (settings.hide.onOutsideClick) {
+				elements.window[0].removeEventListener('click', hideOnOutsideClick, true);
+			}
+
+			if (settings.hide.onClick || settings.hide.onBackgroundClick) {
+				elements.widget.off('click', hideOnClick);
 			}
 
 			if (settings.position.autoRefresh) {
@@ -285,21 +320,17 @@
 
 			var $newElement = elements[name] = $(element || '<div>'),
 				normalizedName = normalizeClassName(name),
-				className;
+				className = [];
 
-			if (settings.classes[name]) {
-				className = settings.classes[name];
-			} else {
-				className = settings.classes.prefix + '-' + normalizedName;
+			if (type) {
+				className.push(settings.classes.globalPrefix + '-' + type);
 			}
 
-			if (!type) {
-				type = normalizedName;
-			}
+			className.push(settings.classes.globalPrefix + '-' + normalizedName);
 
-			className += ' ' + settings.classes.globalPrefix + '-' + type;
+			className.push(settings.classes.prefix + '-' + normalizedName);
 
-			$newElement.addClass(className);
+			$newElement.addClass(className.join(' '));
 
 			return $newElement;
 		};
@@ -347,6 +378,8 @@
 
 		this.hide = function () {
 
+			clearTimeout(hideTimeOut);
+
 			callEffect('hide', arguments);
 
 			unbindEvents();
@@ -356,13 +389,30 @@
 			return self;
 		};
 
+		this.isVisible = function() {
+
+			return elements.widget.is(':visible');
+		};
+
 		this.on = function (eventName, callback) {
 
-			if (!events[eventName]) {
-				events[eventName] = [];
+			if ('object' === typeof eventName) {
+				$.each(eventName, function(singleEventName) {
+					self.on(singleEventName, this);
+				});
+
+				return self;
 			}
 
-			events[eventName].push(callback);
+			var eventNames = eventName.split(' ');
+
+			eventNames.forEach(function(singleEventName) {
+				if (! events[singleEventName]) {
+					events[singleEventName] = [];
+				}
+
+				events[singleEventName].push(callback);
+			});
 
 			return self;
 		};
@@ -394,14 +444,16 @@
 
 		this.show = function () {
 
-			elements.widget.appendTo(elements.container);
+			clearTimeout(hideTimeOut);
+
+			elements.widget.appendTo(elements.container).hide();
 
 			callEffect('show', arguments);
 
 			self.refreshPosition();
 
 			if (settings.hide.auto) {
-				setTimeout(self.hide, settings.hide.autoDelay);
+				hideTimeOut = setTimeout(self.hide, settings.hide.autoDelay);
 			}
 
 			bindEvents();
@@ -413,9 +465,13 @@
 
 		this.refreshPosition = function () {
 
+			if (! settings.position.enable) {
+				return;
+			}
+
 			var position = $.extend({}, settings.position);
 
-			if ( elements[position.of] ) {
+			if (elements[position.of]) {
 				position.of = elements[position.of];
 			}
 
@@ -443,7 +499,20 @@
 
 			return self;
 		};
+
+		this.destroy = function() {
+
+			unbindEvents();
+
+			elements.widget.remove();
+
+			self.trigger('destroy');
+
+			return self;
+		};
 	};
+
+	DialogsManager.Widget.prototype.types = [];
 
 	// Inheritable widget methods
 	DialogsManager.Widget.prototype.buildWidget = function () {
@@ -477,69 +546,7 @@
 
 	DialogsManager.widgetsTypes.simple = DialogsManager.Widget;
 
-	DialogsManager.addWidgetType('lightbox', {
-		getDefaultSettings: function () {
-
-			return {
-				headerMessage: '',
-				contentWidth: 'auto',
-				contentHeight: 'auto',
-				closeButton: false,
-				position: {
-					element: 'widgetContent',
-					of: 'widget',
-					autoRefresh: true
-				}
-			};
-		},
-		buildWidget: function () {
-
-			var $widgetHeader = this.addElement('widgetHeader'),
-				$widgetContent = this.addElement('widgetContent');
-
-			var elements = this.getElements();
-
-			$widgetContent.append($widgetHeader, elements.message);
-
-			elements.widget.html($widgetContent);
-
-			if (! this.getSettings('closeButton')) {
-				return;
-			}
-
-			var $closeButton = this.addElement('closeButton', '<div><i class="fa fa-times"></i></div>');
-
-			$widgetContent.prepend($closeButton);
-		},
-		attachEvents: function() {
-			if (this.getSettings('closeButton')) {
-				this.getElements('closeButton').on('click', this.hide);
-			}
-		},
-		onReady: function(){
-
-			var elements = this.getElements(),
-				settings = this.getSettings();
-
-			if ('auto' !== settings.contentWidth) {
-				elements.message.width(settings.contentWidth);
-			}
-
-			if ('auto' !== settings.contentHeight) {
-				elements.message.height(settings.contentHeight);
-			}
-
-			this.setHeaderMessage(settings.headerMessage);
-		},
-		setHeaderMessage: function (message) {
-
-			this.getElements('widgetHeader').html(message);
-
-			return this;
-		}
-	});
-
-	DialogsManager.addWidgetType('options', DialogsManager.getWidgetType('lightbox').extend('options', {
+	DialogsManager.addWidgetType('buttons', {
 		activeKeyUp: function (event) {
 
 			var TAB_KEY = 9;
@@ -584,13 +591,13 @@
 		addButton: function (options) {
 
 			var self = this,
-				$button = self.addElement(options.name, $('<button>').text(options.text));
+				$button = self.addElement(options.name, $('<' + this.getSettings('buttonTag') + '>').text(options.text), 'button');
 
 			self.buttons.push($button);
 
 			var buttonFn = function () {
 
-				if (self.getSettings('hideOnButtonClick')) {
+				if (self.getSettings('hide').onButtonClick) {
 					self.hide();
 				}
 
@@ -622,33 +629,27 @@
 		},
 		buildWidget: function () {
 
-			DialogsManager.getWidgetType('lightbox').prototype.buildWidget.apply(this, arguments);
+			DialogsManager.Widget.prototype.buildWidget.apply(this, arguments);
 
 			var $buttonsWrapper = this.addElement('buttonsWrapper');
 
-			this.getElements('widgetContent').append($buttonsWrapper);
+			this.getElements('widget').append($buttonsWrapper);
 		},
 		getClosureMethods: function () {
 
-			var closureMethods = DialogsManager.getWidgetType('lightbox').prototype.getClosureMethods.apply(this, arguments);
-
-			return closureMethods.concat([
+			return [
 				'activeKeyUp',
 				'activeKeyDown'
-			]);
+			];
 		},
 		getDefaultSettings: function () {
 
-			var settings = DialogsManager.getWidgetType('lightbox').prototype.getDefaultSettings.apply(this, arguments);
-
-			$.extend(true, settings,  {
-				position: {
-					at: 'center center-100'
+			return {
+				hide: {
+					onButtonClick: true
 				},
-				hideOnButtonClick: true
-			});
-
-			return settings;
+				buttonTag: 'button'
+			};
 		},
 		onHide: function () {
 
@@ -681,12 +682,79 @@
 				keydown: this.activeKeyDown
 			});
 		}
+	});
+
+	DialogsManager.addWidgetType('lightbox', DialogsManager.getWidgetType('buttons').extend('lightbox', {
+		getDefaultSettings: function () {
+
+			var settings = DialogsManager.getWidgetType('buttons').prototype.getDefaultSettings.apply(this, arguments);
+
+			return $.extend(true, settings, {
+				headerMessage: '',
+				contentWidth: 'auto',
+				contentHeight: 'auto',
+				closeButton: false,
+				closeButtonClass: 'fa fa-times',
+				position: {
+					element: 'widgetContent',
+					of: 'widget',
+					autoRefresh: true
+				}
+			});
+		},
+		buildWidget: function () {
+
+			DialogsManager.getWidgetType('buttons').prototype.buildWidget.apply(this, arguments);
+
+			var $widgetHeader = this.addElement('widgetHeader'),
+				$widgetContent = this.addElement('widgetContent');
+
+			var elements = this.getElements();
+
+			$widgetContent.append($widgetHeader, elements.message, elements.buttonsWrapper);
+
+			elements.widget.html($widgetContent);
+
+			if (! this.getSettings('closeButton')) {
+				return;
+			}
+
+			var $closeButton = this.addElement('closeButton', '<div><i class="' + this.getSettings('closeButtonClass') + '"></i></div>');
+
+			$widgetContent.prepend($closeButton);
+		},
+		attachEvents: function() {
+			if (this.getSettings('closeButton')) {
+				this.getElements('closeButton').on('click', this.hide);
+			}
+		},
+		onReady: function(){
+
+			var elements = this.getElements(),
+				settings = this.getSettings();
+
+			if ('auto' !== settings.contentWidth) {
+				elements.message.width(settings.contentWidth);
+			}
+
+			if ('auto' !== settings.contentHeight) {
+				elements.message.height(settings.contentHeight);
+			}
+
+			this.setHeaderMessage(settings.headerMessage);
+		},
+		setHeaderMessage: function (message) {
+
+			this.getElements('widgetHeader').html(message);
+
+			return this;
+		}
 	}));
 
-	DialogsManager.addWidgetType('confirm', DialogsManager.getWidgetType('options').extend('confirm', {
+	DialogsManager.addWidgetType('confirm', DialogsManager.getWidgetType('lightbox').extend('confirm', {
 		onReady: function () {
 
-			DialogsManager.getWidgetType('options').prototype.onReady.apply(this, arguments);
+			DialogsManager.getWidgetType('lightbox').prototype.onReady.apply(this, arguments);
 
 			var strings = this.getSettings('strings'),
 				isDefaultCancel = this.getSettings('defaultOption') === 'cancel';
@@ -713,7 +781,7 @@
 		},
 		getDefaultSettings: function () {
 
-			var settings = DialogsManager.getWidgetType('options').prototype.getDefaultSettings.apply(this, arguments);
+			var settings = DialogsManager.getWidgetType('lightbox').prototype.getDefaultSettings.apply(this, arguments);
 
 			settings.strings = {
 				confirm: 'OK',
@@ -726,10 +794,10 @@
 		}
 	}));
 
-	DialogsManager.addWidgetType('alert', DialogsManager.getWidgetType('options').extend('alert', {
+	DialogsManager.addWidgetType('alert', DialogsManager.getWidgetType('lightbox').extend('alert', {
 		onReady: function () {
 
-			DialogsManager.getWidgetType('options').prototype.onReady.apply(this, arguments);
+			DialogsManager.getWidgetType('lightbox').prototype.onReady.apply(this, arguments);
 
 			var strings = this.getSettings('strings');
 
@@ -744,7 +812,7 @@
 		},
 		getDefaultSettings: function () {
 
-			var settings = DialogsManager.getWidgetType('options').prototype.getDefaultSettings.apply(this, arguments);
+			var settings = DialogsManager.getWidgetType('lightbox').prototype.getDefaultSettings.apply(this, arguments);
 
 			settings.strings = {
 				confirm: 'OK'
@@ -756,4 +824,7 @@
 
 	// Exporting the DialogsManager variable to global
 	global.DialogsManager = DialogsManager;
-})(typeof require === 'function' ? require('jquery') : jQuery, typeof module !== 'undefined' ? module.exports : window);
+})(
+	typeof jQuery !== 'undefined' ? jQuery : typeof require === 'function' && require('jquery'),
+	typeof module !== 'undefined' ? module.exports : window
+);

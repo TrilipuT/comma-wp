@@ -265,8 +265,9 @@ class Advanced_Ads_Ad_Debug {
 	 */
 	public static function is_https_and_http( Advanced_Ads_Ad $ad ) {
 		if ( is_ssl()
-			&& $ad->type === 'plain'
-			&& preg_match( '/http:\/\//i', $ad->content )
+			&& ( $ad->type === 'plain' || $ad->type === 'content' )
+			// Find img, iframe, script. '\\\\' denotes a single backslash
+			&& preg_match( '#\ssrc=\\\\?[\'"]http:\\\\?/\\\\?/#i', $ad->content )
 		) {
 			return __( 'Your website is using HTTPS, but the ad code contains HTTP and might not work.', 'advanced-ads' );
 		}

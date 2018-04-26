@@ -13,6 +13,18 @@
 /* .toplevel_page_advanced-ads #dashboard-widgets .postbox-container .postbox + .postbox { margin-left: 1%; } */
 .toplevel_page_advanced-ads #dashboard-widgets .postbox-container .postbox ul.list { list-style: inside; }
 .toplevel_page_advanced-ads .metabox-holder .postbox-container .empty-container { display: none; }
+#advads-overview { max-width: 1000px; }
+#advads-overview .postbox.position-left { width: 49%; float: left }
+#advads-overview .postbox.position-right { width: 49%; float: right }
+#advads-overview .postbox.position-full { clear: both; float: none; }
+#advads-overview .postbox h2 { border-bottom: 1px solid #eee; font-size: 14px; padding: 8px 12px; margin: 0; line-height: 1.4; }
+#advads-overview #advads_overview_addons ul, #advads-overview #advads_overview_addons ul li { list-style: disc inside; }
+#advads-overview #advads_overview_addons table th { vertical-align: top; font-weight: bold; max-width: 300px; position: relative; top: 0; }
+#advads-overview #advads_overview_addons table tr.recommended th:before { position:absolute; top: 2px; left: 10px; font-size: .9em; content: 'Recommended'; color: green; font-weight: normal; }
+#advads-overview #advads_overview_addons table tr.free th:before { position:absolute; top: 2px; left: 10px; font-size: .9em; content: 'Free'; color: green; }
+#advads-overview #advads_overview_addons table tr.recommended th, 
+#advads-overview #advads_overview_addons table tr.free th { padding-top: 20px; }
+#advads_overview_news .button-primary { margin-left: 0; }
 
 /**
 * AD OVERVIEW PAGE
@@ -31,7 +43,7 @@ h2.hndle .advads-hndlelinks { display: inline-block; margin-left: 1em; }
 h2.hndle .advads-hndlelinks a { text-decoration: none; }
 h2.hndle .advads-hndlelinks a + a { margin-left: 1em; }
 .advads-video-link-container { text-align: center; }
-.advads-ad-metabox { position: relative; top: 0; left: 0; padding: 3em; background: #fff; }
+.advads-ad-metabox { position: relative; top: 0; left: 0; padding: 2em; background: #fff; }
 .advads-ad-metabox h2 { font-weight: bold; color: #0074a2; font-size: 1.6em; margin: 0 0 1em; }
 
 #advads-ad-injection-box hr { clear: both; }
@@ -39,14 +51,16 @@ h2.hndle .advads-hndlelinks a + a { margin-left: 1em; }
 #advads-ad-injection-box .ui-accordion .ui-accordion-header { margin-top: 0; border-radius: 0; }
 #advads-ad-injection-box .ui-accordion .ui-accordion-content { border-radius: 0; }
 #advads-ad-injection-box .advads-ad-injection-box-button-wrap { width: 100px; float: left; margin-right: 10px; margin-bottom: 10px; padding: 1px; text-align: center; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-#advads-ad-injection-box .button-primary { display: block; margin-bottom: 10px; padding: 0px; width: 100%; height: 75px; background-size: 100px 75px; font-size: 1.5em; text-indent: -9999px; border: solid 1px #0085ba; }
-#advads-ad-injection-box .button-primary { box-shadow: 0px 0px 2px #0085ba; }
-#advads-ad-injection-box button:hover { background: #0085ba !important; color: #fff; text-indent: 0; white-space: normal; cursor: pointer; }
+#advads-ad-injection-box .advads-ad-injection-box-button-wrap .button-primary { display: block; margin-bottom: 10px; padding: 0px; width: 100%; height: 75px; background-size: 100px 75px; font-size: 1.5em; text-indent: -9999px; border: solid 1px #0085ba; }
+#advads-ad-injection-box .advads-ad-injection-box-button-wrap .button-primary { position: relative; box-shadow: 0px 0px 2px #0085ba; }
+#advads-ad-injection-box .advads-ad-injection-box-button-wrap button:hover { background: #0085ba !important; color: #fff; text-indent: 0; white-space: normal; cursor: pointer; }
 #advads-ad-injection-box input[type="number"] { width: 4.5em; }
 
 #advads-ad-injection-shortcode { width: 130px; border: none; background: #ededed; }
-#advads-ad-injection-message-placement-created { font-size: 1.5em; }
+#advads-ad-injection-message-placement-created > p:first-child { font-size: 1.5em; }
 .advads-pro-link { opacity: 0.5; }
+.advads-pro-link:before { content: 'ADD-ON'; position: absolute; bottom: -4px; right: 2px; text-indent: 0; color: #000; text-shadow: none; font-weight: bold; font-size: .8em; }
+.advads-pro-link:hover:before { text-indent: -9999px; }
 
 #advads-ad-info { overflow: hidden; margin-bottom: 1em; }
 #advads-ad-info > * { float: left; margin: 0; line-height: 2em; }
@@ -55,6 +69,7 @@ h2.hndle .advads-hndlelinks a + a { margin-left: 1em; }
 #advads-ad-info > label + pre { margin-right: .5em; }
 #advads-ad-info > label { margin-left: 1em; }
 #advads-ad-info pre input { background: transparent; }
+.advads-ad-url { min-width: 300px; }
 
 .advads-metabox-notices { }
 .advads-metabox-notices li { border: solid 1px #eee; margin: -1px 0 0; padding: 5px; }
@@ -183,26 +198,10 @@ select + .advads-conditions-single { display: inline-block; }
 
 /* Wizard adjustments */
 .advads-hide { display: none; }
+#advads-wizard-controls button { text-transform: capitalize; }
 #advads-wizard-controls button span { line-height: 32px; }
-
-/* Wizard progress bar */
-#advads-wizard-progress-bar {
-    float: right;
-    background-color: #fff;
-    height: 20px;
-    padding: 3px;
-    width: 300px;
-    margin: 10px 0;         
-    box-shadow: 0 0 1px 0 #0085ba inset;
-}
-
-#advads-wizard-progress-bar span {
-    display: inline-block;
-    height: 100%;
-    box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset;
-    transition: width .4s ease-in-out;
-    background-color: #0085ba;
-}
+#advads-start-wizard.dashicons-before:before,
+#advads-stop-wizard.dashicons-before:before { height: 15px; line-height: 0.9em; }
 
 /**
  AD GROUP LIST
@@ -256,6 +255,12 @@ fieldset.advads-group-add-ad { margin-top: 1em; }
 .advads-placements-table-options { text-align: right; }
 .advads-placements-table-options input[type="number"] { width: 4.5em; }
 .advads-placements-table ol { margin: 0.5em 0; list-style-position: inside; }
+.advads-placement-background-blink {
+    box-shadow: inset 0px 0px 3px 3px #ff9800;
+    -webkit-transition: box-shadow 1.0s ease-in-out;
+    -ms-transition:     box-shadow 1.0s ease-in-out;
+    transition:         box-shadow 1.0s ease-in-out;
+}
 
 /**
  GENERAL ELEMENTS
@@ -284,7 +289,10 @@ tr:hover .on-hover { display: block; }
 /**
 - TABS + SETTINGS
 -*/
-.advads-tab { display: none; }
+#advads-tabs .nav-tab-active { background: #fff; border-bottom: 0; margin-top: 1px; }
+.advads-tab { display: none; padding: 5px 15px; overflow: hidden; background-color: #fff; border: 1px solid #ccc; border-top: none; }
+.advads-tab input[type="checkbox"] { margin-right: 8px; }
+.advads-tab .form-table th, .advads-tab, .advads-tab .form-table td { padding-bottom: 30px; }
 .advads-tab.active { display: block; }
 .advads-license-activate-active { color: green; }
 .advads-license-activate-error { color: red; }
@@ -324,12 +332,13 @@ tr:hover .on-hover { display: block; }
 #advanced-ads-feedback-content textarea,
 #advanced-ads-feedback-content input[type="text"] { display:none; width: 100%; }
 #advanced-ads-feedback-content .advanced_ads_disable_reply { display:none; }
-.advanced-ads-feedback-not-deactivate { display: block; text-align: right; }
+.advanced-ads-feedback-only-deactivate { display: block; text-align: right; }
 
 /**
 - GENERAL
 -*/
 .advads-error-message { color: red !important; }
+.advads-error-message a { color: red; text-decoration: underline; }
 .advads-success-message { color: green !important; }
 .advads-hidden { display: none; }
 .advads-loader { display: block; width: 43px; height: 11px; background: url(../img/loader.gif) no-repeat; }
@@ -357,7 +366,7 @@ tr:hover .on-hover { display: block; }
 #advanced-ads-rfc-dialog .cancel-button { display: inline; }
 
 /* Fix Safari autofill: https://stackoverflow.com/questions/38663578/how-to-hide-autofill-safari-icon-in-input-field */
-input::-webkit-contacts-auto-fill-button {
+.post-type-advanced_ads input::-webkit-contacts-auto-fill-button {
   visibility: hidden;
   display: none !important;
   pointer-events: none;
@@ -365,3 +374,11 @@ input::-webkit-contacts-auto-fill-button {
   width: 0;
   margin: 0;
 }
+
+/* Pro Pitch List */
+.advads-pro-pitch { max-width: 500px; float: left; padding: 1em; margin-right: 1em; line-height: 2em; font-size: 14px; text-transform: capitalize; }
+.advads-pro-pitch .dashicons { line-height: 1.4em; }
+#advads-tracking-pitch .advads-pro-pitch { float: none; }
+
+/* manual link without underline (e.g., when icon is used )*/
+a.advads-manual-icon { text-decoration: none; }

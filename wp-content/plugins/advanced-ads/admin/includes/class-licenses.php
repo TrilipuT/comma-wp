@@ -14,9 +14,9 @@ class Advanced_Ads_Admin_Licenses {
 
 	private function __construct() {
 		if ( ! defined( 'DOING_AJAX' ) ) {
-			add_action( 'plugins_loaded', array( $this, 'wp_plugins_loaded' ) );
 			add_action( 'load-plugins.php', array( $this, 'check_plugin_licenses' ) );
 		}
+		add_action( 'plugins_loaded', array( $this, 'wp_plugins_loaded' ) );
 		
 		// todo: check if this is loaded late enough and all add-ons are registered already
 		add_filter( 'upgrader_pre_download', array( $this, 'addon_upgrade_filter' ), 10, 3 );		
@@ -160,8 +160,8 @@ class Advanced_Ads_Admin_Licenses {
 		    }
 		} else {
 		    // reset license_expires admin notification
-		    Advanced_Ads_Admin_Notices::get_instance()->remove_from_queue( 'license_expires' );
-		    Advanced_Ads_Admin_Notices::get_instance()->remove_from_queue( 'license_expired' );
+		    Advanced_Ads_Admin_Notices::get_instance()->remove_from_queue( 'license_expires' ); // this one is no longer added, but we keep the check here in case it is still in the queue for some users
+		    Advanced_Ads_Admin_Notices::get_instance()->remove_from_queue( 'license_expired' ); // this one is no longer added, but we keep the check here in case it is still in the queue for some users
 		    Advanced_Ads_Admin_Notices::get_instance()->remove_from_queue( 'license_invalid' );
 		    // save license key
 		    $licenses = $this->get_licenses();		    
@@ -248,13 +248,17 @@ class Advanced_Ads_Admin_Licenses {
 
 		$license_data = json_decode( wp_remote_retrieve_body( $response ) );
 		
+		// check if call was blocked by our site (e.g., Firewall)
+		if( isset( $response['response']['code'] ) &&  403 === $response['response']['code'] ){
+			return sprintf(__( 'Your call was blocked by a Firewall. <a href="%s" target="_blank">Learn more</a>', 'advanced-ads' ), ADVADS_URL . "manual/i-cant-activate-my-license/" );
+		}
+		
 		// save license status
 
 		// remove data
 		if( 'deactivated' === $license_data->license ) {
 		    delete_option( $options_slug . '-license-status' );
 		    delete_option( $options_slug . '-license-expires' );
-		    Advanced_Ads_Admin_Notices::get_instance()->remove_from_queue( 'license_expires' );
 		} elseif( 'failed' === $license_data->license ) {
 		    update_option($options_slug . '-license-expires', $license_data->expires, false);
 		    update_option($options_slug . '-license-status', $license_data->license, false);
@@ -357,7 +361,7 @@ class Advanced_Ads_Admin_Licenses {
          */
         public function add_on_updater(){
 	    
-		// ignore, if not main blog or is ajax
+		// ignore, if not main blog
 		if( ( is_multisite() && ! is_main_site() ) ){
 		    return;
 		}
@@ -409,7 +413,7 @@ class Advanced_Ads_Admin_Licenses {
 				// add_filter( 'expiration_of_transient_' . $transient_key, array( $this, 'set_expiration_of_update_transient' ) );
 				add_filter( 'pre_update_option_' . $transient_key, array( $this, 'set_expiration_of_update_option' ) );
 				
-				new EDD_SL_Plugin_Updater( ADVADS_URL, $_add_on['path'], array(
+				new ADVADS_SL_Plugin_Updater( ADVADS_URL, $_add_on['path'], array(
 					'version' 	=> $_add_on['version'],
 					'license' 	=> $license_key,
 					'item_name' => $_add_on['name'],
@@ -500,7 +504,35 @@ class Advanced_Ads_Admin_Licenses {
 		    }
 		}
 		return null;
-	}	
+	}
+	
+	/**
+	 * check if any license is valid
+	 * can be used to display information for any Pro user only, like link to direct support
+	 */
+	public static function any_license_valid(){
+		$add_ons = apply_filters( 'advanced-ads-add-ons', array() );
+	    
+		if( $add_ons === array() ) {
+			return false;
+		}
+
+		foreach( $add_ons as $_add_on ){
+			$status = Advanced_Ads_Admin_Licenses::get_instance()->get_license_status( $_add_on['options_slug'] );
+
+			// check expiry date
+			$expiry_date = Advanced_Ads_Admin_Licenses::get_instance()->get_license_expires( $_add_on['options_slug'] );
+
+			if( ( $expiry_date && strtotime( $expiry_date ) > time() ) 
+				|| 'valid' === $status
+				|| 'lifetime' === $expiry_date ){
+			    
+				return true;
+			}
+		}
+
+		return false;
+	}
 
 
 }
